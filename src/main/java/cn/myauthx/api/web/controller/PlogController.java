@@ -7,14 +7,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 /**
  * <p>
- *  前端控制器123
+ *  前端控制器
  * </p>
  *
  * @author DaenMax
- * @since 2022-01-05
+ * @since 2022-01-06
  */
 @RestController
-@RequestMapping("/web/soft-user")
-public class SoftUserController {
+@RequestMapping("/web/plog")
+public class PlogController {
 
 }

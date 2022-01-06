@@ -15,13 +15,13 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author DaenMax
- * @since 2022-01-05
+ * @since 2022-01-06
  */
 @Getter
 @Setter
 @Accessors(chain = true)
-@TableName("ma_soft_user")
-public class SoftUser extends baseEntity {
+@TableName("ma_user")
+public class User extends baseEntity {
 
     private static final long serialVersionUID = 1L;
 
@@ -48,10 +48,7 @@ public class SoftUser extends baseEntity {
      */
     private Integer point;
 
-    /**
-     * 联系人信息，例如QQ
-     */
-    private String userInfo;
+    private String qq;
 
     /**
      * 最后登录的设备信息
@@ -79,14 +76,24 @@ public class SoftUser extends baseEntity {
     private Integer authTime;
 
     /**
+     * 所属软件id
+     */
+    private Integer fromSoftId;
+
+    /**
      * 所属软件key
      */
-    private String softKey;
+    private String fromSoftKey;
+
+    /**
+     * 最后登录的软件的版本id
+     */
+    private Integer fromVerId;
 
     /**
      * 最后登录的软件的版本key
      */
-    private String verKey;
+    private String fromVerKey;
 
     /**
      * 登录成功的token
@@ -94,14 +101,14 @@ public class SoftUser extends baseEntity {
     private String token;
 
     /**
-     * 上级代理id
-     */
-    private Integer upproxyId;
-
-    /**
      * 0=禁用，1=正常
      */
     private Integer status;
+
+    /**
+     * 备注
+     */
+    private String remark;
 
 
 }

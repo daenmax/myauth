@@ -1,6 +1,6 @@
 package cn.myauthx.api.web.service;
 
-import cn.myauthx.api.web.entity.SoftUser;
+import cn.myauthx.api.web.entity.Data;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
@@ -9,8 +9,8 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * </p>
  *
  * @author DaenMax
- * @since 2022-01-05
+ * @since 2022-01-06
  */
-public interface ISoftUserService extends IService<SoftUser> {
+public interface IDataService extends IService<Data> {
 
 }

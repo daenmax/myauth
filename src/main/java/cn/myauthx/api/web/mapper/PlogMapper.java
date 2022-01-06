@@ -1,6 +1,6 @@
 package cn.myauthx.api.web.mapper;
 
-import cn.myauthx.api.web.entity.SoftUser;
+import cn.myauthx.api.web.entity.Plog;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -10,9 +10,9 @@ import org.apache.ibatis.annotations.Mapper;
  * </p>
  *
  * @author DaenMax
- * @since 2022-01-05
+ * @since 2022-01-06
  */
 @Mapper
-public interface SoftUserMapper extends BaseMapper<SoftUser> {
+public interface PlogMapper extends BaseMapper<Plog> {
 
 }
