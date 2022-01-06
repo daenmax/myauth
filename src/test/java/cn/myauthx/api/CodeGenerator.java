@@ -12,7 +12,7 @@ import java.util.Collections;
  * 代码生成器
  */
 public class CodeGenerator {
-    private String moudleName = "web";//模块名
+    private String moudleName = "main";//模块名
     private String tableName = "ma_user";//表名
     @Test
     public void generate() {
