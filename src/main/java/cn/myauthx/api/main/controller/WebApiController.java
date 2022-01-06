@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 /**
  * 前端web使用的API接口
- * @author 13301
+ * @author DaenMax
  */
 @RestController
 @RequestMapping("/web")

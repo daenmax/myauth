@@ -3,6 +3,7 @@ package cn.myauthx.api.base.exception;
 import cn.myauthx.api.base.vo.Result;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -64,6 +65,17 @@ public class MyExceptionHandle {
     }
 
     /**
+     * 请求模式错误
+     * @param e HttpRequestMethodNotSupportedException
+     * @return
+     */
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    public Result<?> missingRequestParam(HttpRequestMethodNotSupportedException e) {
+        log.warn("该接口不允许使用当前请求方式", e);
+        return Result.error("该接口不允许使用当前请求方式");
+    }
+
+    /**
      * 以上未处理的异常
      * @param e Exception
      * @return Result
@@ -71,7 +83,7 @@ public class MyExceptionHandle {
     @ExceptionHandler(Exception.class)
     public Result<?> handleException(Exception e){
         log.error("未处理的异常信息：", e);
-        return Result.error("操作失败，请联系管理员");
+        return Result.error("系统未知异常，请联系开发者");
     }
 
 }
