@@ -4,6 +4,10 @@ import cn.myauthx.api.base.po.baseEntity;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import java.io.Serializable;
+
+import com.baomidou.mybatisplus.extension.activerecord.Model;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -14,13 +18,12 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author DaenMax
- * @since 2022-01-06
+ * @since 2022-01-07
  */
-@Getter
-@Setter
+@Data
 @Accessors(chain = true)
 @TableName("ma_user")
-public class User extends baseEntity {
+public class User extends Model {
 
     private static final long serialVersionUID = 1L;
 
@@ -48,11 +51,6 @@ public class User extends baseEntity {
     private Integer point;
 
     private String qq;
-
-    /**
-     * 最后登录的设备信息
-     */
-    private String deviceInfo;
 
     /**
      * 最后登录的IP
@@ -108,6 +106,16 @@ public class User extends baseEntity {
      * 备注
      */
     private String remark;
+
+    /**
+     * 最后登录的设备信息
+     */
+    private String deviceInfo;
+
+    /**
+     * 机器码
+     */
+    private String deviceCode;
 
 
 }

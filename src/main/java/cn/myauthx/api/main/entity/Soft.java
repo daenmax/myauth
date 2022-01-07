@@ -4,8 +4,9 @@ import cn.myauthx.api.base.po.baseEntity;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.Getter;
-import lombok.Setter;
+import com.baomidou.mybatisplus.extension.activerecord.Model;
+import lombok.*;
+import lombok.Data;
 import lombok.experimental.Accessors;
 
 /**
@@ -16,23 +17,22 @@ import lombok.experimental.Accessors;
  * @author DaenMax
  * @since 2022-01-06
  */
-@Getter
-@Setter
+@Data
 @Accessors(chain = true)
 @TableName("ma_soft")
-public class Soft extends baseEntity {
+public class Soft extends Model {
 
     private static final long serialVersionUID = 1L;
 
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
-    private String key;
+    private String skey;
 
     private String name;
 
     /**
-     * -1=封禁，0=停用，1=正常，2=维护
+     * 0=停用，1=正常，2=维护
      */
     private Integer status;
 

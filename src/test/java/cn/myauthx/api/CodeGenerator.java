@@ -12,8 +12,8 @@ import java.util.Collections;
  * 代码生成器
  */
 public class CodeGenerator {
-    private String moudleName = "main";//模块名
-    private String tableName = "ma_user";//表名
+    private final String moudleName = "main";//模块名
+    private final String tableName = "ma_user";//表名
     @Test
     public void generate() {
         FastAutoGenerator.create("jdbc:mysql://localhost:3306/myauthtest?serverTimezone=Asia/Shanghai", "myauthtest", "myauthtest")

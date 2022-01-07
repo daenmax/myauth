@@ -6,6 +6,9 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 
 import java.math.BigDecimal;
+
+import com.baomidou.mybatisplus.extension.activerecord.Model;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -18,11 +21,10 @@ import lombok.experimental.Accessors;
  * @author DaenMax
  * @since 2022-01-06
  */
-@Getter
-@Setter
+@Data
 @Accessors(chain = true)
 @TableName("ma_config")
-public class Config extends baseEntity {
+public class Config extends Model {
 
     private static final long serialVersionUID = 1L;
 
