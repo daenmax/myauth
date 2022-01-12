@@ -1,7 +1,9 @@
 package cn.myauthx.api.base.interceptor;
 
-import cn.myauthx.api.base.annotation.GenAndSign;
+import cn.myauthx.api.base.annotation.DataDecrypt;
 import cn.myauthx.api.base.annotation.Admin;
+import cn.myauthx.api.base.annotation.SignValidated;
+import cn.myauthx.api.base.annotation.SoftValidated;
 import cn.myauthx.api.base.vo.Result;
 import cn.myauthx.api.main.entity.Soft;
 import cn.myauthx.api.main.mapper.SoftMapper;
@@ -32,28 +34,22 @@ public class MyInterceptor implements HandlerInterceptor {
      */
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        JSONObject jsonObject = JSONObject.parseObject(MyUtils.getRequestPostStr(request));
-        System.out.println("拦截器->"+jsonObject.toJSONString());
         response.setHeader("content-type","application/json; charset=utf-8");
         //判断请求的方法上是否有注解
         boolean haveAnnotataion = handler.getClass().isAssignableFrom(HandlerMethod.class);
         //如果有注解，判断是否是MyAnnotation
         if (haveAnnotataion){
-            //判断是否有admin注解
-            if(((HandlerMethod)handler).getMethodAnnotation(Admin.class) != null){
-                return true;
+            JSONObject jsonObject = new JSONObject(true);
+            String reqStr = MyUtils.getRequestPostStr(request);
+            if(!CheckUtils.isObjectEmpty(reqStr)){
+                jsonObject = JSONObject.parseObject(reqStr);
             }
-            //判断是否有Gen注解
-            if(((HandlerMethod)handler).getMethodAnnotation(GenAndSign.class) != null){
-
+            request.setAttribute("json",jsonObject);
+            //@SoftValidated
+            if(((HandlerMethod)handler).getMethodAnnotation(SoftValidated.class) != null){
                 String skey = jsonObject.getString("skey");
                 if(CheckUtils.isObjectEmpty(skey)){
                     response.getWriter().write(Result.error("缺少skey参数").toJsonString());
-                    return false;
-                }
-                String sign = jsonObject.getString("sign");
-                if(CheckUtils.isObjectEmpty(sign)){
-                    response.getWriter().write(Result.error("缺少sign参数").toJsonString());
                     return false;
                 }
                 LambdaQueryWrapper<Soft> softLambdaQueryWrapper = new LambdaQueryWrapper<>();
@@ -61,16 +57,6 @@ public class MyInterceptor implements HandlerInterceptor {
                 Soft soft = softMapper.selectOne(softLambdaQueryWrapper);
                 if(CheckUtils.isObjectEmpty(soft)){
                     response.getWriter().write(Result.error("skey错误").toJsonString());
-                    return false;
-                }
-                if(soft.getGenStatus() == 1){
-                    String jsonStr = AESUtils.decrypt(jsonObject.getString("data"),soft.getGenKey());
-                    Object object = JSONObject.parseObject(jsonStr);
-                    jsonObject.put("data",object);
-                }
-                String privateSign = MyUtils.calculateSign(jsonObject.getJSONObject("data"),soft.getGenKey());
-                if(!privateSign.equals(sign)){
-                    response.getWriter().write(Result.error("sign错误").toJsonString());
                     return false;
                 }
                 if(soft.getStatus() == 0){
@@ -81,11 +67,75 @@ public class MyInterceptor implements HandlerInterceptor {
                     response.getWriter().write(Result.error("软件维护中").toJsonString());
                     return false;
                 }
-                request.setAttribute("json",jsonObject);
                 request.setAttribute("obj_soft",soft);
-                return true;
-
             }
+
+            //@DataDecrypt
+            if(((HandlerMethod)handler).getMethodAnnotation(DataDecrypt.class) != null){
+                if(CheckUtils.isObjectEmpty(reqStr)){
+                    response.getWriter().write(Result.error("获取请求数据失败").toJsonString());
+                    return false;
+                }
+                Soft soft = (Soft) request.getAttribute("obj_soft");
+                //如果没有@SoftValidated注解，那么就重新获取soft对象
+                if(CheckUtils.isObjectEmpty(soft)){
+                    String skey = jsonObject.getString("skey");
+                    if(CheckUtils.isObjectEmpty(skey)){
+                        response.getWriter().write(Result.error("缺少skey参数").toJsonString());
+                        return false;
+                    }
+                    LambdaQueryWrapper<Soft> softLambdaQueryWrapper = new LambdaQueryWrapper<>();
+                    softLambdaQueryWrapper.eq(Soft::getSkey,skey);
+                    soft = softMapper.selectOne(softLambdaQueryWrapper);
+                    if(CheckUtils.isObjectEmpty(soft)){
+                        response.getWriter().write(Result.error("skey错误").toJsonString());
+                        return false;
+                    }
+                    request.setAttribute("obj_soft",soft);
+                }
+                if(soft.getGenStatus() == 1){
+                    String jsonStr = AESUtils.decrypt(jsonObject.getString("data"),soft.getGenKey());
+                    if(CheckUtils.isObjectEmpty(jsonStr)){
+                        response.getWriter().write(Result.error("数据解密失败").toJsonString());
+                        return false;
+                    }
+                    Object object = JSONObject.parseObject(jsonStr);
+                    jsonObject.put("data",object);
+                }
+                request.setAttribute("json",jsonObject);
+            }
+            //@SignValidated
+            if(((HandlerMethod)handler).getMethodAnnotation(SignValidated.class) != null){
+                String sign = jsonObject.getString("sign");
+                if(CheckUtils.isObjectEmpty(sign)){
+                    response.getWriter().write(Result.error("缺少sign参数").toJsonString());
+                    return false;
+                }
+                Soft soft = (Soft) request.getAttribute("obj_soft");
+                //如果没有@SoftValidated注解，那么就重新获取soft对象
+                if(CheckUtils.isObjectEmpty(soft)){
+                    String skey = jsonObject.getString("skey");
+                    if(CheckUtils.isObjectEmpty(skey)){
+                        response.getWriter().write(Result.error("缺少skey参数").toJsonString());
+                        return false;
+                    }
+                    LambdaQueryWrapper<Soft> softLambdaQueryWrapper = new LambdaQueryWrapper<>();
+                    softLambdaQueryWrapper.eq(Soft::getSkey,skey);
+                    soft = softMapper.selectOne(softLambdaQueryWrapper);
+                    if(CheckUtils.isObjectEmpty(soft)){
+                        response.getWriter().write(Result.error("skey错误").toJsonString());
+                        return false;
+                    }
+                    request.setAttribute("obj_soft",soft);
+                }
+                String privateSign = MyUtils.calculateSign(jsonObject.getJSONObject("data"),soft.getGenKey());
+                if(!privateSign.equals(sign)){
+                    response.getWriter().write(Result.error("sign错误").toJsonString());
+                    return false;
+                }
+            }
+
+            return true;
         }
         return true;
     }

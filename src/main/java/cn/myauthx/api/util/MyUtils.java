@@ -1,12 +1,12 @@
 package cn.myauthx.api.util;
 
+import cn.myauthx.api.base.exception.MyException;
 import com.alibaba.fastjson.JSONObject;
+import lombok.extern.java.Log;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.DigestUtils;
-
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
  *
  * @author DaenMax
  */
+@Slf4j
 public class MyUtils {
     /**
      * 获取Request中的JSON字符串
@@ -27,10 +28,17 @@ public class MyUtils {
      * @throws IOException
      */
     public static String getRequestPostStr(HttpServletRequest request) throws IOException {
+        if(!"POST".equals(request.getMethod())){
+            return null;
+        }
         byte[] buffer = getRequestPostBytes(request);
         String charEncoding = request.getCharacterEncoding();
         if (charEncoding == null) {
             charEncoding = "UTF-8";
+        }
+        if(CheckUtils.isObjectEmpty(buffer)){
+            log.error("取请求体为空");
+            return null;
         }
         return new String(buffer, charEncoding);
     }
@@ -57,6 +65,7 @@ public class MyUtils {
      * @return
      */
     public static String json2pathValue(JSONObject jsonObject)  {
+        System.out.println(jsonObject.toJSONString());
         Map map = jsonObject.toJavaObject(Map.class);
         Set<String> set = map.keySet();
         List<String> keyList = new ArrayList<>(set);
@@ -67,6 +76,7 @@ public class MyUtils {
             stringBuilder.append(s).append("=").append(value).append("&");
         }
         stringBuilder.deleteCharAt(stringBuilder.lastIndexOf("&"));
+        System.out.println(stringBuilder.toString());
         return stringBuilder.toString();
     }
 
@@ -78,7 +88,6 @@ public class MyUtils {
      */
     public static String calculateSign(JSONObject jsonObject, String genKey) {
         String pathvalue = json2pathValue(jsonObject);
-        System.out.println(pathvalue);
         pathvalue = pathvalue + "&gen_key=" + genKey;
         System.out.println(pathvalue);
         String sign = DigestUtils.md5DigestAsHex(pathvalue.getBytes(StandardCharsets.UTF_8));

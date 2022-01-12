@@ -3,8 +3,8 @@ package cn.myauthx.api.base.annotation;
 import java.lang.annotation.*;
 
 /**
- * 解密data数据和签名校验
- * @author 13301
+ * sign签名校验
+ * @author DaenMax
  */
 //定义可以在方法和类上使用此注解
 @Target({ElementType.METHOD,ElementType.TYPE})
@@ -13,5 +13,5 @@ import java.lang.annotation.*;
 //定义子类可以继承父类中的该注解
 @Inherited
 
-public @interface GenAndSign {
+public @interface SignValidated {
 }

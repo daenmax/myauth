@@ -1,5 +1,6 @@
 package cn.myauthx.api.util;
 
+import cn.myauthx.api.base.exception.MyException;
 import org.apache.tomcat.util.codec.binary.Base64;
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
@@ -40,7 +41,7 @@ public class AESUtils {
      * @return
      * @throws Exception
      */
-    public static String decrypt(String sSrc, String sKey) throws Exception {
+    public static String decrypt(String sSrc, String sKey)  {
         try {
             // 判断Key是否正确
             if (CheckUtils.isObjectEmpty(sKey)) {
@@ -55,17 +56,11 @@ public class AESUtils {
             Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
             cipher.init(Cipher.DECRYPT_MODE, skeySpec);
             byte[] encrypted1 = new Base64().decode(sSrc);
-            try {
-                byte[] original = cipher.doFinal(encrypted1);
-                String originalString = new String(original, StandardCharsets.UTF_8);
-                return originalString;
-            } catch (Exception e) {
-                System.out.println(e);
-                return "";
-            }
+            byte[] original = cipher.doFinal(encrypted1);
+            String originalString = new String(original, StandardCharsets.UTF_8);
+            return originalString;
         } catch (Exception ex) {
-            System.out.println(ex);
-            return "";
+            throw new MyException("AES解密时发生异常");
         }
     }
 }
