@@ -1,6 +1,8 @@
 package cn.myauthx.api.util;
 
 import cn.myauthx.api.base.exception.MyException;
+import cn.myauthx.api.base.vo.Result;
+import cn.myauthx.api.main.entity.Soft;
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.java.Log;
 import lombok.extern.slf4j.Slf4j;
@@ -65,7 +67,6 @@ public class MyUtils {
      * @return
      */
     public static String json2pathValue(JSONObject jsonObject)  {
-        System.out.println(jsonObject.toJSONString());
         Map map = jsonObject.toJavaObject(Map.class);
         Set<String> set = map.keySet();
         List<String> keyList = new ArrayList<>(set);
@@ -76,7 +77,6 @@ public class MyUtils {
             stringBuilder.append(s).append("=").append(value).append("&");
         }
         stringBuilder.deleteCharAt(stringBuilder.lastIndexOf("&"));
-        System.out.println(stringBuilder.toString());
         return stringBuilder.toString();
     }
 
@@ -89,11 +89,27 @@ public class MyUtils {
     public static String calculateSign(JSONObject jsonObject, String genKey) {
         String pathvalue = json2pathValue(jsonObject);
         pathvalue = pathvalue + "&gen_key=" + genKey;
-        System.out.println(pathvalue);
         String sign = DigestUtils.md5DigestAsHex(pathvalue.getBytes(StandardCharsets.UTF_8));
         return sign;
     }
 
- 
- 
+    public static Result calculateSignReturn(String msg,JSONObject jsonObject,Integer gen_status,String gen_key){
+        jsonObject.put("timeStamp",MyUtils.getTimeStamp());
+        String pathvalue = json2pathValue(jsonObject);
+        pathvalue = pathvalue + "&gen_key=" + gen_key;
+        String sign = DigestUtils.md5DigestAsHex(pathvalue.getBytes(StandardCharsets.UTF_8));
+        if(gen_status != 1){
+            return Result.ok(msg,jsonObject).sign(sign);
+        }
+        String enStr = AESUtils.encrypt(jsonObject.toJSONString(),gen_key);
+        return Result.ok(msg,enStr).sign(sign);
+    }
+
+    /**+
+     * 获取10位时间戳
+     * @return
+     */
+    public static String getTimeStamp(){
+        return String.valueOf(System.currentTimeMillis()/1000L);
+    }
 }

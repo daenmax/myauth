@@ -18,20 +18,24 @@ public class AESUtils {
      * @return
      * @throws Exception
      */
-    public static String encrypt(String sSrc, String sKey) throws Exception {
-        if(CheckUtils.isObjectEmpty(sSrc)){
-            return "";
+    public static String encrypt(String sSrc, String sKey){
+        try{
+            if(CheckUtils.isObjectEmpty(sSrc)){
+                return "";
+            }
+            if (sKey.length() != 16) {
+                return "";
+            }
+            byte[] raw = sKey.getBytes(StandardCharsets.UTF_8);
+            SecretKeySpec skeySpec = new SecretKeySpec(raw, "AES");
+            //算法/模式/补码方式
+            Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
+            cipher.init(Cipher.ENCRYPT_MODE, skeySpec);
+            byte[] encrypted = cipher.doFinal(sSrc.getBytes(StandardCharsets.UTF_8));
+            return new Base64().encodeToString(encrypted);
+        } catch (Exception ex) {
+            throw new MyException("数据加密时发生异常");
         }
-        if (sKey.length() != 16) {
-            return "";
-        }
-        byte[] raw = sKey.getBytes(StandardCharsets.UTF_8);
-        SecretKeySpec skeySpec = new SecretKeySpec(raw, "AES");
-        //算法/模式/补码方式
-        Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
-        cipher.init(Cipher.ENCRYPT_MODE, skeySpec);
-        byte[] encrypted = cipher.doFinal(sSrc.getBytes(StandardCharsets.UTF_8));
-        return new Base64().encodeToString(encrypted);
     }
 
     /**
@@ -60,7 +64,7 @@ public class AESUtils {
             String originalString = new String(original, StandardCharsets.UTF_8);
             return originalString;
         } catch (Exception ex) {
-            throw new MyException("AES解密时发生异常");
+            throw new MyException("数据解密时发生异常");
         }
     }
 }

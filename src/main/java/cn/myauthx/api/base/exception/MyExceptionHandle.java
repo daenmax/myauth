@@ -24,8 +24,7 @@ public class MyExceptionHandle {
      */
     @ExceptionHandler(MyException.class)
     public Result<?> abpException(MyException e) {
-        //log.error(e.getMessage(), e);
-        log.info(e.getMessage());
+        log.error(e.getMessage(), e);
         return Result.error(e.getMessage());
     }
 
@@ -49,7 +48,7 @@ public class MyExceptionHandle {
      */
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public Result<?> jsonParseException(HttpMessageNotReadableException e) {
-        log.warn("参数格式错误", e);
+        log.error("参数格式错误", e);
         return Result.error("参数格式错误");
     }
 
@@ -60,7 +59,7 @@ public class MyExceptionHandle {
      */
     @ExceptionHandler(MissingServletRequestParameterException.class)
     public Result<?> missingRequestParam(MissingServletRequestParameterException e) {
-        log.warn("请求参数不全", e);
+        log.error("请求参数不全", e);
         return Result.error("参数不全，请检查后重试");
     }
 
@@ -70,9 +69,20 @@ public class MyExceptionHandle {
      * @return
      */
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
-    public Result<?> missingRequestParam(HttpRequestMethodNotSupportedException e) {
-        log.warn("该接口不允许使用当前请求方式", e);
+    public Result<?> HttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException e) {
+        log.error("该接口不允许使用当前请求方式", e);
         return Result.error("该接口不允许使用当前请求方式");
+    }
+
+    /**
+     * 空指针异常
+     * @param e NullPointerException
+     * @return
+     */
+    @ExceptionHandler(NullPointerException.class)
+    public Result<?> NullPointerException(NullPointerException e) {
+        log.error("内部错误：空指针异常", e);
+        return Result.error("内部错误：空指针异常");
     }
 
     /**

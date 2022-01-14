@@ -1,11 +1,13 @@
 package cn.myauthx.api.main.controller;
 
 import cn.myauthx.api.base.annotation.DataDecrypt;
+import cn.myauthx.api.base.annotation.Open;
 import cn.myauthx.api.base.annotation.SignValidated;
 import cn.myauthx.api.base.annotation.SoftValidated;
 import cn.myauthx.api.base.vo.Result;
 import cn.myauthx.api.main.entity.Soft;
 import cn.myauthx.api.util.IpUtil;
+import cn.myauthx.api.util.MyUtils;
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,6 +30,7 @@ public class SoftApiController {
      * @param request
      * @return
      */
+    @Open
     @GetMapping("/connect")
     public Result conn(HttpServletRequest request){
         JSONObject retJson = new JSONObject(true);
@@ -48,8 +51,6 @@ public class SoftApiController {
         //不管有没有加密和解密，取提交的JSON都要通过下面这行去取
         JSONObject jsonObject = (JSONObject) request.getAttribute("json");
         Soft soft = (Soft) request.getAttribute("obj_soft");
-        System.out.println("软件->" + soft.toString());
-        System.out.println("执行->" + jsonObject.toJSONString());
         JSONObject retJson = new JSONObject(true);
         retJson.put("Name",soft.getName());
         retJson.put("Status",soft.getStatus());

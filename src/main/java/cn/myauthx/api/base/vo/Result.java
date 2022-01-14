@@ -1,5 +1,6 @@
 package cn.myauthx.api.base.vo;
 
+import cn.myauthx.api.util.CheckUtils;
 import com.alibaba.fastjson.JSONObject;
 import lombok.Data;
 
@@ -29,12 +30,17 @@ public class Result<T> implements Serializable {
     private String msg = "操作成功";
 
     /**
+     * 签名校验sign
+     */
+    private String sign = "";
+
+    /**
      * 返回数据对象 data
      */
     private T result;
 
     /**
-     * 时间戳
+     * 13位时间戳
      */
     private long timestamp = System.currentTimeMillis();
 
@@ -80,15 +86,6 @@ public class Result<T> implements Serializable {
         return r;
     }
 
-    public static Result<Object> ok(Object data, String msg) {
-        Result<Object> r = new Result<>();
-        r.setCode(200);
-        r.setSuccess(true);
-        r.setResult(data);
-        r.setMsg(msg);
-        return r;
-    }
-
     public static Result<Object> ok(String msg,Object data) {
         Result<Object> r = new Result<>();
         r.setSuccess(true);
@@ -96,6 +93,18 @@ public class Result<T> implements Serializable {
         r.setMsg(msg);
         r.setResult(data);
         return r;
+    }
+    public static Result<Object> ok(String msg,String data) {
+        Result<Object> r = new Result<>();
+        r.setSuccess(true);
+        r.setCode(200);
+        r.setMsg(msg);
+        r.setResult(data);
+        return r;
+    }
+    public Result<T> sign(String sign) {
+        this.sign = sign;
+        return this;
     }
 
     /**
@@ -152,8 +161,13 @@ public class Result<T> implements Serializable {
         jsonObject.put("code",this.code);
         jsonObject.put("success",this.success);
         jsonObject.put("msg",this.msg);
-        jsonObject.put("result",this.result);
+        if(!CheckUtils.isObjectEmpty(this.result)){
+            jsonObject.put("result",this.result);
+        }
         jsonObject.put("timestamp",this.timestamp);
+        if(!CheckUtils.isObjectEmpty(this.sign)){
+            jsonObject.put("sign",this.sign);
+        }
         return jsonObject.toJSONString();
     }
 
