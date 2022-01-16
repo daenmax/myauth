@@ -92,6 +92,8 @@ public class SoftServiceImpl extends ServiceImpl<SoftMapper, Soft> implements IS
         if(num <= 0){
             return Result.error("修改失败");
         }
+        Soft newSoft = softMapper.selectById(soft.getId());
+        redisUtil.set("soft_" + newSoft.getSkey(),newSoft);
         return Result.ok("修改成功");
     }
 
