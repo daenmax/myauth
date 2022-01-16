@@ -157,7 +157,7 @@ public class Result<T> implements Serializable {
      * @return
      */
     public String toJsonString(){
-        JSONObject jsonObject = new JSONObject(true);
+        JSONObject jsonObject = new JSONObject();
         jsonObject.put("code",this.code);
         jsonObject.put("success",this.success);
         jsonObject.put("msg",this.msg);

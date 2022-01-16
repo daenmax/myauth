@@ -1,6 +1,7 @@
 package cn.myauthx.api.main.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
@@ -65,6 +66,8 @@ public class Soft extends Model {
      * 心跳有效时间
      */
     private Integer heartTime;
+
+
 
 
 }

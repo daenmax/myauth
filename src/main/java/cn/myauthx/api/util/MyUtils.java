@@ -10,10 +10,7 @@ import org.springframework.util.DigestUtils;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -111,5 +108,20 @@ public class MyUtils {
      */
     public static String getTimeStamp(){
         return String.valueOf(System.currentTimeMillis()/1000L);
+    }
+
+    /**
+     * 生成UUID
+     * @param hg 是否带横杠
+     * @return
+     */
+    public static String getUUID(boolean hg){
+        String uuid = null;
+        if(hg){
+            uuid = UUID.randomUUID().toString().toLowerCase();
+        }else{
+            uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
+        }
+        return uuid;
     }
 }

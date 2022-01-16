@@ -42,5 +42,10 @@ public class Admin extends Model {
 
     private String token;
 
+    /**
+     * 0=禁用，1=正常
+     */
+    private Integer status;
+
 
 }

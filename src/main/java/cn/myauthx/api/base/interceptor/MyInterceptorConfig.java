@@ -25,6 +25,7 @@ public class MyInterceptorConfig implements WebMvcConfigurer {
 
         //添加拦截请求
         registration.addPathPatterns("/soft/**");
+        registration.addPathPatterns("/web/**");
 
         //添加不拦截的请求
         registration.excludePathPatterns("/test/**");

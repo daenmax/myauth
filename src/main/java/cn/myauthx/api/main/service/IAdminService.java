@@ -1,5 +1,6 @@
 package cn.myauthx.api.main.service;
 
+import cn.myauthx.api.base.vo.Result;
 import cn.myauthx.api.main.entity.Admin;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -12,5 +13,11 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * @since 2022-01-06
  */
 public interface IAdminService extends IService<Admin> {
-
+    /**
+     * 登录
+     * @param user
+     * @param pass
+     * @return
+     */
+    Result login(String user,String pass,String ip);
 }

@@ -27,7 +27,7 @@ public class Version extends Model {
 
     private String ver;
 
-    private String verKey;
+    private String vkey;
 
     /**
      * 所属软件id

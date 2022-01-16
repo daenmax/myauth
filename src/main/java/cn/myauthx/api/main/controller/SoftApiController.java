@@ -1,9 +1,6 @@
 package cn.myauthx.api.main.controller;
 
-import cn.myauthx.api.base.annotation.DataDecrypt;
-import cn.myauthx.api.base.annotation.Open;
-import cn.myauthx.api.base.annotation.SignValidated;
-import cn.myauthx.api.base.annotation.SoftValidated;
+import cn.myauthx.api.base.annotation.*;
 import cn.myauthx.api.base.vo.Result;
 import cn.myauthx.api.main.entity.Soft;
 import cn.myauthx.api.util.IpUtil;
@@ -44,6 +41,7 @@ public class SoftApiController {
      * @return
      */
     @SoftValidated
+    @VersionValidated
     @DataDecrypt
     @SignValidated
     @PostMapping("/init")
