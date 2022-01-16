@@ -33,6 +33,12 @@ public class WebApiController {
     @Resource
     private ISoftService iSoftService;
 
+    /**
+     * 登录
+     * @param map
+     * @param request
+     * @return
+     */
     @Open
     @PostMapping("login")
     public Result login(@RequestBody Map<String,Object> map, HttpServletRequest request){
@@ -45,6 +51,11 @@ public class WebApiController {
         return adminService.login(user.toString(),pass.toString(),ip);
     }
 
+    /**
+     * 获取软件列表
+     * @param request
+     * @return
+     */
     @Open
     @AdminAuth
     @PostMapping("getSoftList")
@@ -53,5 +64,90 @@ public class WebApiController {
         Soft soft = jsonObject.toJavaObject(Soft.class);
         MyPage myPage = jsonObject.toJavaObject(MyPage.class);
         return iSoftService.getSoftList(soft,myPage);
+    }
+
+    /**
+     * 添加软件
+     * @param request
+     * @return
+     */
+    @Open
+    @AdminAuth
+    @PostMapping("addSoft")
+    public Result addSoft(HttpServletRequest request){
+        JSONObject jsonObject = (JSONObject) request.getAttribute("json");
+        Soft soft = jsonObject.toJavaObject(Soft.class);
+        if(CheckUtils.isObjectEmpty(soft)){
+            return Result.error("参数错误");
+        }
+        if(CheckUtils.isObjectEmpty(soft.getName()) || CheckUtils.isObjectEmpty(soft.getStatus()) || CheckUtils.isObjectEmpty(soft.getType())
+                || CheckUtils.isObjectEmpty(soft.getGenKey()) || CheckUtils.isObjectEmpty(soft.getGenStatus()) || CheckUtils.isObjectEmpty(soft.getBatchSoft())
+                || CheckUtils.isObjectEmpty(soft.getMultipleLogin()) || CheckUtils.isObjectEmpty(soft.getHeartTime())){
+            return Result.error("参数不全");
+        }
+        return iSoftService.addSoft(soft);
+    }
+
+    /**
+     * 修改软件
+     * @param request
+     * @return
+     */
+    @Open
+    @AdminAuth
+    @PostMapping("updSoft")
+    public Result updSoft(HttpServletRequest request){
+        JSONObject jsonObject = (JSONObject) request.getAttribute("json");
+        Soft soft = jsonObject.toJavaObject(Soft.class);
+        if(CheckUtils.isObjectEmpty(soft)){
+            return Result.error("参数错误");
+        }
+        soft.setSkey(null);
+        if(CheckUtils.isObjectEmpty(soft.getId()) && CheckUtils.isObjectEmpty(soft.getName()) && CheckUtils.isObjectEmpty(soft.getStatus())
+                && CheckUtils.isObjectEmpty(soft.getType()) && CheckUtils.isObjectEmpty(soft.getGenKey()) && CheckUtils.isObjectEmpty(soft.getGenStatus())
+                && CheckUtils.isObjectEmpty(soft.getBatchSoft()) && CheckUtils.isObjectEmpty(soft.getMultipleLogin()) && CheckUtils.isObjectEmpty(soft.getHeartTime())){
+            return Result.error("参数不能全部为空");
+        }
+        return iSoftService.updSoft(soft);
+    }
+
+    /**
+     * 删除软件，会同步删除版本、卡密、用户、事件、数据、封禁、JS、回复、日志
+     * @param request
+     * @return
+     */
+    @Open
+    @AdminAuth
+    @PostMapping("delSoft")
+    public Result delSoft(HttpServletRequest request){
+        JSONObject jsonObject = (JSONObject) request.getAttribute("json");
+        Soft soft = jsonObject.toJavaObject(Soft.class);
+        if(CheckUtils.isObjectEmpty(soft)){
+            return Result.error("参数错误");
+        }
+        if(CheckUtils.isObjectEmpty(soft.getId())){
+            return Result.error("id不能为空");
+        }
+        return iSoftService.delSoft(soft);
+    }
+
+    /**
+     * 查询软件，根据id或者skey
+     * @param request
+     * @return
+     */
+    @Open
+    @AdminAuth
+    @PostMapping("getSoft")
+    public Result getSoft(HttpServletRequest request){
+        JSONObject jsonObject = (JSONObject) request.getAttribute("json");
+        Soft soft = jsonObject.toJavaObject(Soft.class);
+        if(CheckUtils.isObjectEmpty(soft)){
+            return Result.error("参数错误");
+        }
+        if(CheckUtils.isObjectEmpty(soft.getId()) && CheckUtils.isObjectEmpty(soft.getSkey())){
+            return Result.error("id和skey不能全部为空");
+        }
+        return iSoftService.getSoft(soft);
     }
 }

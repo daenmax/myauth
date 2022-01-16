@@ -22,4 +22,32 @@ public interface ISoftService extends IService<Soft> {
      */
     Result getSoftList(Soft soft, MyPage myPage);
 
+    /**
+     * 添加软件
+     * @param soft
+     * @return
+     */
+    Result addSoft(Soft soft);
+
+    /**
+     * 修改软件
+     * @param soft
+     * @return
+     */
+    Result updSoft(Soft soft);
+
+    /**
+     * 删除软件，会同步删除版本、卡密、用户、事件、数据、封禁、JS、回复、日志
+     * @param soft
+     * @return
+     */
+    Result delSoft(Soft soft);
+
+    /**
+     * 获取软件，通过id或者skey
+     * @param soft
+     * @return
+     */
+    Result getSoft(Soft soft);
+
 }
