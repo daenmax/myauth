@@ -53,7 +53,7 @@ public class MyInterceptor implements HandlerInterceptor {
             }
             request.setAttribute("json",jsonObject);
 
-            if(((HandlerMethod)handler).getMethodAnnotation(Open.class) != null){
+            if(((HandlerMethod)handler).getMethodAnnotation(OpenApi.class) != null){
                 request.setAttribute("open", OpenEnums.YES.getCode());
             }else{
                 request.setAttribute("open",OpenEnums.NO.getCode());

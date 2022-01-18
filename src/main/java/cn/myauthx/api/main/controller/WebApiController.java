@@ -1,7 +1,7 @@
 package cn.myauthx.api.main.controller;
 
 import cn.myauthx.api.base.annotation.AdminAuth;
-import cn.myauthx.api.base.annotation.Open;
+import cn.myauthx.api.base.annotation.OpenApi;
 import cn.myauthx.api.base.vo.Result;
 import cn.myauthx.api.main.entity.MyPage;
 import cn.myauthx.api.main.entity.Soft;
@@ -35,20 +35,34 @@ public class WebApiController {
 
     /**
      * 登录
-     * @param map
      * @param request
      * @return
      */
-    @Open
+    @OpenApi
     @PostMapping("login")
-    public Result login(@RequestBody Map<String,Object> map, HttpServletRequest request){
-        Object user = map.get("user");
-        Object pass = map.get("pass");
+    public Result login(HttpServletRequest request){
+        JSONObject jsonObject = (JSONObject) request.getAttribute("json");
+        System.out.println(jsonObject.toJSONString());
+
+        String user = jsonObject.getString("user");
+        String pass = jsonObject.getString("pass");
         if(CheckUtils.isObjectEmpty(user) || CheckUtils.isObjectEmpty(pass)){
             return Result.error("参数错误");
         }
         String ip = IpUtil.getIpAddr(request);
-        return adminService.login(user.toString(),pass.toString(),ip);
+        return adminService.login(user,pass,ip);
+    }
+
+    /**
+     * 检查登录token有效性
+     * @param request
+     * @return
+     */
+    @OpenApi
+    @AdminAuth
+    @PostMapping("checkLogin")
+    public Result checkLogin(HttpServletRequest request){
+        return Result.ok("token正常");
     }
 
     /**
@@ -56,13 +70,16 @@ public class WebApiController {
      * @param request
      * @return
      */
-    @Open
+    @OpenApi
     @AdminAuth
     @PostMapping("getSoftList")
     public Result getSoftList(HttpServletRequest request){
         JSONObject jsonObject = (JSONObject) request.getAttribute("json");
         Soft soft = jsonObject.toJavaObject(Soft.class);
         MyPage myPage = jsonObject.toJavaObject(MyPage.class);
+        if(CheckUtils.isObjectEmpty(myPage.getPageIndex()) || CheckUtils.isObjectEmpty(myPage.getPageSize())){
+            return Result.error("页码和尺寸参数不能为空");
+        }
         return iSoftService.getSoftList(soft,myPage);
     }
 
@@ -71,7 +88,7 @@ public class WebApiController {
      * @param request
      * @return
      */
-    @Open
+    @OpenApi
     @AdminAuth
     @PostMapping("addSoft")
     public Result addSoft(HttpServletRequest request){
@@ -93,7 +110,7 @@ public class WebApiController {
      * @param request
      * @return
      */
-    @Open
+    @OpenApi
     @AdminAuth
     @PostMapping("updSoft")
     public Result updSoft(HttpServletRequest request){
@@ -116,7 +133,7 @@ public class WebApiController {
      * @param request
      * @return
      */
-    @Open
+    @OpenApi
     @AdminAuth
     @PostMapping("delSoft")
     public Result delSoft(HttpServletRequest request){
@@ -136,7 +153,7 @@ public class WebApiController {
      * @param request
      * @return
      */
-    @Open
+    @OpenApi
     @AdminAuth
     @PostMapping("getSoft")
     public Result getSoft(HttpServletRequest request){
@@ -150,4 +167,5 @@ public class WebApiController {
         }
         return iSoftService.getSoft(soft);
     }
+
 }

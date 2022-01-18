@@ -4,7 +4,6 @@ import cn.myauthx.api.base.annotation.*;
 import cn.myauthx.api.base.vo.Result;
 import cn.myauthx.api.main.entity.Soft;
 import cn.myauthx.api.util.IpUtil;
-import cn.myauthx.api.util.MyUtils;
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,7 +26,7 @@ public class SoftApiController {
      * @param request
      * @return
      */
-    @Open
+    @OpenApi
     @GetMapping("/connect")
     public Result conn(HttpServletRequest request){
         JSONObject retJson = new JSONObject(true);

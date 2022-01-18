@@ -4,18 +4,18 @@
 授权管理系统
 
 #### 软件架构
-软件架构说明
+此为后端代码
 
 
 #### 安装教程
 
-1.  xxxx
+1.  本机需要有redis、mysql
 2.  xxxx
 3.  xxxx
 
 #### 使用说明
 
-1.  xxxx
+1.  文档地址：https://docs.apipost.cn/preview/869c49ca2ae5a81f/9dd4b2f48d34bc08
 2.  xxxx
 3.  xxxx
 
