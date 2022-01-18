@@ -6,7 +6,7 @@ import cn.myauthx.api.main.entity.Admin;
 import cn.myauthx.api.main.entity.Soft;
 import cn.myauthx.api.main.entity.Version;
 import cn.myauthx.api.main.enums.AdminEnums;
-import cn.myauthx.api.main.enums.OpenEnums;
+import cn.myauthx.api.main.enums.OpenApiEnums;
 import cn.myauthx.api.main.enums.SoftEnums;
 import cn.myauthx.api.main.enums.VersionEnums;
 import cn.myauthx.api.main.mapper.SoftMapper;
@@ -52,11 +52,11 @@ public class MyInterceptor implements HandlerInterceptor {
                 jsonObject = JSONObject.parseObject(reqStr);
             }
             request.setAttribute("json",jsonObject);
-
+            //判断是否是OpenAPI
             if(((HandlerMethod)handler).getMethodAnnotation(OpenApi.class) != null){
-                request.setAttribute("open", OpenEnums.YES.getCode());
+                request.setAttribute("open", OpenApiEnums.YES.getCode());
             }else{
-                request.setAttribute("open",OpenEnums.NO.getCode());
+                request.setAttribute("open", OpenApiEnums.NO.getCode());
             }
             //@AdminAuth
             if(((HandlerMethod)handler).getMethodAnnotation(AdminAuth.class) != null){
@@ -101,15 +101,19 @@ public class MyInterceptor implements HandlerInterceptor {
             }
             //@VersionValidated
             if(((HandlerMethod)handler).getMethodAnnotation(VersionValidated.class) != null){
+                Soft soft = (Soft) request.getAttribute("obj_soft");
                 String vkey = jsonObject.getString("vkey");
                 if(CheckUtils.isObjectEmpty(vkey)){
                     response.getWriter().write(Result.error("缺少vkey参数").toJsonString());
                     return false;
                 }
-
                 Version version = (Version) redisUtil.get("version_" + vkey);
                 if(CheckUtils.isObjectEmpty(version)){
                     response.getWriter().write(Result.error("vkey错误").toJsonString());
+                    return false;
+                }
+                if(!version.getFromSoftId().equals(soft.getId())){
+                    response.getWriter().write(Result.error("vkey与skey不匹配").toJsonString());
                     return false;
                 }
                 if(VersionEnums.STATUS_DISABLE.getCode().equals(version.getStatus())){

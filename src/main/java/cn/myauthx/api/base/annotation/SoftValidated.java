@@ -3,7 +3,7 @@ package cn.myauthx.api.base.annotation;
 import java.lang.annotation.*;
 
 /**
- * 软件校验
+ * 软件校验，主要校验skey是否正确、软件是否停用、是否维护
  * @author DaenMax
  */
 //定义可以在方法和类上使用此注解

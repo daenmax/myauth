@@ -15,7 +15,7 @@ import java.util.Map;
 
 @AllArgsConstructor
 @Getter
-public enum OpenEnums {
+public enum OpenApiEnums {
     YES(1,"开放API"),
     NO(0,"非开放API");
     private Integer code;
@@ -27,7 +27,7 @@ public enum OpenEnums {
         codeMap = new HashMap<>();
         descMap = new HashMap<>();
         list = new ArrayList<>();
-        for (OpenEnums value : OpenEnums.values()) {
+        for (OpenApiEnums value : OpenApiEnums.values()) {
             codeMap.put(value.getCode(), value.getDesc());
             descMap.put(value.getDesc(),value.getCode());
             list.add(value.getCode());

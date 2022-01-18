@@ -11,10 +11,7 @@ import cn.myauthx.api.util.CheckUtils;
 import cn.myauthx.api.util.IpUtil;
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -31,8 +28,21 @@ public class WebApiController {
     @Resource
     private IAdminService adminService;
     @Resource
-    private ISoftService iSoftService;
+    private ISoftService softService;
 
+    /**
+     * 检测连接
+     * @param request
+     * @return
+     */
+    @OpenApi
+    @GetMapping("/connect")
+    public Result conn(HttpServletRequest request){
+        JSONObject retJson = new JSONObject(true);
+        retJson.put("ip", IpUtil.getIpAddr(request));
+        retJson.put("ua",request.getHeader("user-agent"));
+        return Result.ok("服务器正常",retJson);
+    }
     /**
      * 登录
      * @param request
@@ -80,7 +90,7 @@ public class WebApiController {
         if(CheckUtils.isObjectEmpty(myPage.getPageIndex()) || CheckUtils.isObjectEmpty(myPage.getPageSize())){
             return Result.error("页码和尺寸参数不能为空");
         }
-        return iSoftService.getSoftList(soft,myPage);
+        return softService.getSoftList(soft,myPage);
     }
 
     /**
@@ -102,7 +112,7 @@ public class WebApiController {
                 || CheckUtils.isObjectEmpty(soft.getMultipleLogin()) || CheckUtils.isObjectEmpty(soft.getHeartTime())){
             return Result.error("参数不全");
         }
-        return iSoftService.addSoft(soft);
+        return softService.addSoft(soft);
     }
 
     /**
@@ -125,7 +135,7 @@ public class WebApiController {
                 && CheckUtils.isObjectEmpty(soft.getBatchSoft()) && CheckUtils.isObjectEmpty(soft.getMultipleLogin()) && CheckUtils.isObjectEmpty(soft.getHeartTime())){
             return Result.error("参数不能全部为空");
         }
-        return iSoftService.updSoft(soft);
+        return softService.updSoft(soft);
     }
 
     /**
@@ -145,7 +155,7 @@ public class WebApiController {
         if(CheckUtils.isObjectEmpty(soft.getId())){
             return Result.error("id不能为空");
         }
-        return iSoftService.delSoft(soft);
+        return softService.delSoft(soft);
     }
 
     /**
@@ -165,7 +175,7 @@ public class WebApiController {
         if(CheckUtils.isObjectEmpty(soft.getId()) && CheckUtils.isObjectEmpty(soft.getSkey())){
             return Result.error("id和skey不能全部为空");
         }
-        return iSoftService.getSoft(soft);
+        return softService.getSoft(soft);
     }
 
 }
