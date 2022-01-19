@@ -14,7 +14,15 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * @since 2022-01-07
  */
 public interface IUserService extends IService<User> {
-
+    /**
+     * 注册
+     * @param user
+     * @param softC
+     * @return
+     */
     Result register(User user, Soft softC);
+
+
+    Result login(User user, Soft softC);
 
 }

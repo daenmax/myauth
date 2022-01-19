@@ -1,6 +1,6 @@
 package cn.myauthx.api.main.controller;
 
-import cn.myauthx.api.base.annotation.AdminAuth;
+import cn.myauthx.api.base.annotation.AdminLogin;
 import cn.myauthx.api.base.annotation.OpenApi;
 import cn.myauthx.api.base.vo.Result;
 import cn.myauthx.api.main.entity.MyPage;
@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.util.Map;
 
 /**
  * 前端web使用的API接口
@@ -67,7 +66,7 @@ public class WebApiController {
      * @return
      */
     @OpenApi
-    @AdminAuth
+    @AdminLogin
     @PostMapping("checkLogin")
     public Result checkLogin(HttpServletRequest request){
         return Result.ok("token正常");
@@ -79,7 +78,7 @@ public class WebApiController {
      * @return
      */
     @OpenApi
-    @AdminAuth
+    @AdminLogin
     @PostMapping("getSoftList")
     public Result getSoftList(HttpServletRequest request){
         JSONObject jsonObject = (JSONObject) request.getAttribute("json");
@@ -97,7 +96,7 @@ public class WebApiController {
      * @return
      */
     @OpenApi
-    @AdminAuth
+    @AdminLogin
     @PostMapping("addSoft")
     public Result addSoft(HttpServletRequest request){
         JSONObject jsonObject = (JSONObject) request.getAttribute("json");
@@ -119,7 +118,7 @@ public class WebApiController {
      * @return
      */
     @OpenApi
-    @AdminAuth
+    @AdminLogin
     @PostMapping("updSoft")
     public Result updSoft(HttpServletRequest request){
         JSONObject jsonObject = (JSONObject) request.getAttribute("json");
@@ -143,7 +142,7 @@ public class WebApiController {
      * @return
      */
     @OpenApi
-    @AdminAuth
+    @AdminLogin
     @PostMapping("delSoft")
     public Result delSoft(HttpServletRequest request){
         JSONObject jsonObject = (JSONObject) request.getAttribute("json");
@@ -163,7 +162,7 @@ public class WebApiController {
      * @return
      */
     @OpenApi
-    @AdminAuth
+    @AdminLogin
     @PostMapping("getSoft")
     public Result getSoft(HttpServletRequest request){
         JSONObject jsonObject = (JSONObject) request.getAttribute("json");

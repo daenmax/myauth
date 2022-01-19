@@ -94,6 +94,14 @@ public class Result<T> implements Serializable {
         r.setResult(data);
         return r;
     }
+    public static Result<Object> error(String msg,Object data) {
+        Result<Object> r = new Result<>();
+        r.setSuccess(false);
+        r.setCode(500);
+        r.setMsg(msg);
+        r.setResult(data);
+        return r;
+    }
     public static Result<Object> ok(String msg,String data) {
         Result<Object> r = new Result<>();
         r.setSuccess(true);

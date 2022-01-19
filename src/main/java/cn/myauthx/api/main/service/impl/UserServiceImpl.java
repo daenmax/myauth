@@ -6,6 +6,7 @@ import cn.myauthx.api.main.entity.Soft;
 import cn.myauthx.api.main.entity.User;
 import cn.myauthx.api.main.enums.CardEnums;
 import cn.myauthx.api.main.enums.SoftEnums;
+import cn.myauthx.api.main.enums.UserEnums;
 import cn.myauthx.api.main.mapper.CardMapper;
 import cn.myauthx.api.main.mapper.UserMapper;
 import cn.myauthx.api.main.service.IUserService;
@@ -31,10 +32,18 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     private UserMapper userMapper;
     @Autowired
     private CardMapper cardMapper;
+
+    /**
+     * 注册
+     * @param userC
+     * @param softC
+     * @return
+     */
     @Override
     public Result register(User userC, Soft softC) {
         LambdaQueryWrapper<User> userLambdaQueryWrapper = new LambdaQueryWrapper<>();
         userLambdaQueryWrapper.eq(User::getUser,userC.getUser());
+        userLambdaQueryWrapper.eq(User::getFromSoftId,softC.getId());
         User userA = userMapper.selectOne(userLambdaQueryWrapper);
         if(!CheckUtils.isObjectEmpty(userA)){
             return Result.error("账号已存在");
@@ -139,5 +148,26 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
                 }
             }
         }
+    }
+
+
+    @Override
+    public Result login(User userC, Soft softC) {
+        LambdaQueryWrapper<User> userLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        userLambdaQueryWrapper.eq(User::getUser,userC.getUser());
+        userLambdaQueryWrapper.eq(User::getFromSoftId,softC.getId());
+        User userA = userMapper.selectOne(userLambdaQueryWrapper);
+        if(CheckUtils.isObjectEmpty(userA)){
+            return Result.error("账号不存在");
+        }
+        if(userA.getStatus().equals(UserEnums.STATUS_DISABLE.getCode())){
+            return Result.error("账号已被禁用");
+        }
+        if(softC.getType().equals(SoftEnums.TYPE_FREE.getCode())) {
+            //免费模式
+        }else{
+            //收费模式
+        }
+        return null;
     }
 }

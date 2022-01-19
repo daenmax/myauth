@@ -41,6 +41,7 @@ public class SoftApiController {
     @VersionValidated
     @DataDecrypt
     @SignValidated
+    @BanValidated(is_ip = true,is_device_code = true,is_user = false)
     @PostMapping("/init")
     public Result init(HttpServletRequest request) {
         //不管有没有加密和解密，取提交的JSON都要通过下面这行去取
@@ -58,6 +59,7 @@ public class SoftApiController {
     @SoftValidated
     @DataDecrypt
     @SignValidated
+    @BanValidated(is_ip = true,is_device_code = true,is_user = false)
     @PostMapping("/checkUpdate")
     public Result checkUpdate(HttpServletRequest request){
         //不管有没有加密和解密，取提交的JSON都要通过下面这行去取
@@ -76,11 +78,11 @@ public class SoftApiController {
     @VersionValidated
     @DataDecrypt
     @SignValidated
+    @BanValidated(is_ip = true,is_device_code = true,is_user = false)
     @PostMapping("/register")
     public Result register(HttpServletRequest request){
         //不管有没有加密和解密，取提交的JSON都要通过下面这行去取
         JSONObject jsonObject = (JSONObject) request.getAttribute("json");
-        System.out.println(jsonObject.toJSONString());
         Soft soft = (Soft) request.getAttribute("obj_soft");
         User user = jsonObject.getJSONObject("data").toJavaObject(User.class);
         if(CheckUtils.isObjectEmpty(user)){
@@ -95,5 +97,12 @@ public class SoftApiController {
         String ip = IpUtil.getIpAddr(request);
         user.setLastIp(ip);
         return userService.register(user,soft);
+    }
+    @BanValidated(is_ip = true,is_device_code = true,is_user = false)
+    @PostMapping("login")
+    public Result login(HttpServletRequest request){
+        //不管有没有加密和解密，取提交的JSON都要通过下面这行去取
+        JSONObject jsonObject = (JSONObject) request.getAttribute("json");
+        return Result.ok("测试通过");
     }
 }

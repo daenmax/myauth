@@ -29,14 +29,14 @@ public class Ban extends Model {
     private Integer id;
 
     /**
-     * 要封禁的机器码或者IP
+     * 要封禁的对象
      */
     private String value;
 
     private Integer addTime;
 
     /**
-     * 封禁到期时间，0=永久
+     * 封禁到期时间，-1=永久
      */
     private Integer toTime;
 
@@ -46,6 +46,9 @@ public class Ban extends Model {
     private String why;
 
     private Integer fromSoftId;
-
+    /**
+     * 封禁类型，1=机器码，2=IP，3=账号
+     */
+    private Integer type;
 
 }

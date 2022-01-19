@@ -40,7 +40,7 @@ public class VersionServiceImpl extends ServiceImpl<VersionMapper, Version> impl
      */
     @Override
     public Result checkUpdate(Version versionC, Soft soft) {
-        Version version = (Version) redisUtil.get("version_" + versionC.getVkey());
+        Version version = (Version) redisUtil.get("version:" + versionC.getVkey());
         if(CheckUtils.isObjectEmpty(version)){
             return Result.error("vkey错误");
         }

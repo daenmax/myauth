@@ -60,7 +60,7 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin> implements
         String token = MyUtils.getUUID(false);
         admin.setToken(token);
         adminMapper.updateById(admin);
-        redisUtil.set("admin_" + token,admin,AdminEnums.TOKEN_VALIDITY.getCode());
+        redisUtil.set("admin:" + token,admin,AdminEnums.TOKEN_VALIDITY.getCode());
         JSONObject jsonObject = new JSONObject(true);
         jsonObject.put("user",admin.getUser());
         jsonObject.put("qq",admin.getQq());

@@ -9,5 +9,5 @@ import java.lang.annotation.*;
 //定义子类可以继承父类中的该注解
 @Inherited
 
-public @interface AdminAuth {
+public @interface AdminLogin {
 }
