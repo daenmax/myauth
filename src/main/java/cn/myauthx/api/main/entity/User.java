@@ -26,7 +26,7 @@ public class User extends Model {
     private Integer id;
 
     /**
-     * 账号，卡密登录时，为卡密，免费用户时为机器码
+     * 账号
      */
     private String user;
 
@@ -48,7 +48,7 @@ public class User extends Model {
     private String qq;
 
     /**
-     * 最后登录的IP
+     * 最后登录或注册时的IP
      */
     private String lastIp;
 
@@ -103,14 +103,19 @@ public class User extends Model {
     private String remark;
 
     /**
-     * 最后登录的设备信息
+     * 最后登录或注册时的设备信息
      */
     private String deviceInfo;
 
     /**
-     * 机器码
+     * 最后登录或注册时的机器码
      */
     private String deviceCode;
+
+    /**
+     * 卡密
+     */
+    private String ckey;
 
 
 }

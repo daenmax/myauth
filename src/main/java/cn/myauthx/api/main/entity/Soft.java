@@ -36,7 +36,7 @@ public class Soft extends Model {
     private Integer status;
 
     /**
-     * 0=收费，1=免费
+     * 0=需要授权，1=不需要授权
      */
     private Integer type;
 
@@ -66,7 +66,10 @@ public class Soft extends Model {
      * 心跳有效时间
      */
     private Integer heartTime;
-
+    /**
+     * 0=关闭注册，1=开启注册
+     */
+    private Integer register;
 
 
 

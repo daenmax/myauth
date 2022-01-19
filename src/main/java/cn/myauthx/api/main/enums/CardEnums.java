@@ -9,21 +9,16 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 软件相关
+ * 卡密状态
  * @author DaenMax
  */
 
 @AllArgsConstructor
 @Getter
-public enum SoftEnums {
-    STATUS_DISABLE(0,"停用"),
-    STATUS_ABLE(1,"正常"),
-    STATUS_FIX(2,"维护"),
-    TYPE_PAY(0,"收费"),
-    TYPE_FREE(1,"免费"),
-    REGISTER_DISABLE(0,"关闭注册"),
-    REGISTER_ABLE(1,"开启注册"),
-    DIFF_TIME(30,"允许时间戳误差");
+public enum CardEnums {
+    STATUS_NOTUSEd(0,"未使用"),
+    STATUS_USED(1,"已使用"),
+    STATUS_DISABLE(2,"被禁用");
     private Integer code;
     private String desc;
     private static final Map<Integer, String> codeMap;
@@ -33,7 +28,7 @@ public enum SoftEnums {
         codeMap = new HashMap<>();
         descMap = new HashMap<>();
         list = new ArrayList<>();
-        for (SoftEnums value : SoftEnums.values()) {
+        for (CardEnums value : CardEnums.values()) {
             codeMap.put(value.getCode(), value.getDesc());
             descMap.put(value.getDesc(),value.getCode());
             list.add(value.getCode());

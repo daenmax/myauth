@@ -3,7 +3,10 @@ package cn.myauthx.api.main.controller;
 import cn.myauthx.api.base.annotation.*;
 import cn.myauthx.api.base.vo.Result;
 import cn.myauthx.api.main.entity.Soft;
+import cn.myauthx.api.main.entity.User;
 import cn.myauthx.api.main.entity.Version;
+import cn.myauthx.api.main.enums.SoftEnums;
+import cn.myauthx.api.main.service.IUserService;
 import cn.myauthx.api.main.service.IVersionService;
 import cn.myauthx.api.util.CheckUtils;
 import cn.myauthx.api.util.IpUtil;
@@ -27,7 +30,8 @@ import javax.servlet.http.HttpServletRequest;
 public class SoftApiController {
     @Resource
     private IVersionService versionService;
-
+    @Resource
+    private IUserService userService;
     /**
      * 初始化软件
      * @param request
@@ -67,5 +71,29 @@ public class SoftApiController {
         version.setVkey(vkey);
         version.setFromSoftId(soft.getId());
         return versionService.checkUpdate(version,soft);
+    }
+    @SoftValidated
+    @VersionValidated
+    @DataDecrypt
+    @SignValidated
+    @PostMapping("/register")
+    public Result register(HttpServletRequest request){
+        //不管有没有加密和解密，取提交的JSON都要通过下面这行去取
+        JSONObject jsonObject = (JSONObject) request.getAttribute("json");
+        System.out.println(jsonObject.toJSONString());
+        Soft soft = (Soft) request.getAttribute("obj_soft");
+        User user = jsonObject.getJSONObject("data").toJavaObject(User.class);
+        if(CheckUtils.isObjectEmpty(user)){
+            return Result.error("参数错误");
+        }
+        if(soft.getRegister().equals(SoftEnums.REGISTER_DISABLE.getCode())){
+            return Result.error("当前不允许注册新用户");
+        }
+        if(CheckUtils.isObjectEmpty(user.getUser())){
+            return Result.error("账号不能为空");
+        }
+        String ip = IpUtil.getIpAddr(request);
+        user.setLastIp(ip);
+        return userService.register(user,soft);
     }
 }

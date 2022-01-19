@@ -52,8 +52,6 @@ public class WebApiController {
     @PostMapping("login")
     public Result login(HttpServletRequest request){
         JSONObject jsonObject = (JSONObject) request.getAttribute("json");
-        System.out.println(jsonObject.toJSONString());
-
         String user = jsonObject.getString("user");
         String pass = jsonObject.getString("pass");
         if(CheckUtils.isObjectEmpty(user) || CheckUtils.isObjectEmpty(pass)){
@@ -109,7 +107,7 @@ public class WebApiController {
         }
         if(CheckUtils.isObjectEmpty(soft.getName()) || CheckUtils.isObjectEmpty(soft.getStatus()) || CheckUtils.isObjectEmpty(soft.getType())
                 || CheckUtils.isObjectEmpty(soft.getGenKey()) || CheckUtils.isObjectEmpty(soft.getGenStatus()) || CheckUtils.isObjectEmpty(soft.getBatchSoft())
-                || CheckUtils.isObjectEmpty(soft.getMultipleLogin()) || CheckUtils.isObjectEmpty(soft.getHeartTime())){
+                || CheckUtils.isObjectEmpty(soft.getMultipleLogin()) || CheckUtils.isObjectEmpty(soft.getHeartTime()) || CheckUtils.isObjectEmpty(soft.getRegister())){
             return Result.error("参数不全");
         }
         return softService.addSoft(soft);
@@ -132,7 +130,8 @@ public class WebApiController {
         soft.setSkey(null);
         if(CheckUtils.isObjectEmpty(soft.getId()) && CheckUtils.isObjectEmpty(soft.getName()) && CheckUtils.isObjectEmpty(soft.getStatus())
                 && CheckUtils.isObjectEmpty(soft.getType()) && CheckUtils.isObjectEmpty(soft.getGenKey()) && CheckUtils.isObjectEmpty(soft.getGenStatus())
-                && CheckUtils.isObjectEmpty(soft.getBatchSoft()) && CheckUtils.isObjectEmpty(soft.getMultipleLogin()) && CheckUtils.isObjectEmpty(soft.getHeartTime())){
+                && CheckUtils.isObjectEmpty(soft.getBatchSoft()) && CheckUtils.isObjectEmpty(soft.getMultipleLogin()) && CheckUtils.isObjectEmpty(soft.getHeartTime())
+                && CheckUtils.isObjectEmpty(soft.getRegister())){
             return Result.error("参数不能全部为空");
         }
         return softService.updSoft(soft);

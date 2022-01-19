@@ -70,6 +70,10 @@ public class MyInterceptor implements HandlerInterceptor {
                     response.getWriter().write(Result.error("非法请求").toJsonString());
                     return false;
                 }
+                if(admin.getStatus().equals(AdminEnums.STATUS_DISABLE.getCode())){
+                    response.getWriter().write(Result.error("账号已被禁用").toJsonString());
+                    return false;
+                }
                 if(admin.getLastTime() + AdminEnums.TOKEN_VALIDITY.getCode() < Integer.parseInt(MyUtils.getTimeStamp())){
                     response.getWriter().write(Result.error("登录失效，请重新登录").toJsonString());
                     return false;
@@ -153,6 +157,12 @@ public class MyInterceptor implements HandlerInterceptor {
                 String sign = jsonObject.getString("sign");
                 if(CheckUtils.isObjectEmpty(sign)){
                     response.getWriter().write(Result.error("缺少sign参数").toJsonString());
+                    return false;
+                }
+                Integer times = jsonObject.getJSONObject("data").getInteger("timestamp");
+                Integer diffTime = Math.abs(times - Integer.parseInt(MyUtils.getTimeStamp()));
+                if(diffTime > SoftEnums.DIFF_TIME.getCode()){
+                    response.getWriter().write(Result.error("sign已过期").toJsonString());
                     return false;
                 }
                 String skey = jsonObject.getString("skey");
