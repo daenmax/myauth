@@ -78,3 +78,5 @@ spring:
       max-idle: 10
       # 连接池中的最小空闲连接
       min-idle:
+# 加密token的秘钥，长度必须为16位，不支持中文
+genKey: myauthdaen666888

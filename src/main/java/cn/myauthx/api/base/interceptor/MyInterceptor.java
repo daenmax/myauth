@@ -3,10 +3,7 @@ package cn.myauthx.api.base.interceptor;
 import cn.myauthx.api.base.annotation.*;
 import cn.myauthx.api.base.vo.Result;
 import cn.myauthx.api.main.entity.*;
-import cn.myauthx.api.main.enums.AdminEnums;
-import cn.myauthx.api.main.enums.OpenApiEnums;
-import cn.myauthx.api.main.enums.SoftEnums;
-import cn.myauthx.api.main.enums.VersionEnums;
+import cn.myauthx.api.main.enums.*;
 import cn.myauthx.api.main.mapper.AdminMapper;
 import cn.myauthx.api.main.mapper.UserMapper;
 import cn.myauthx.api.util.*;
@@ -15,6 +12,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
@@ -29,6 +27,8 @@ public class MyInterceptor implements HandlerInterceptor {
     private UserMapper userMapper;
     @Autowired
     private RedisUtil redisUtil;
+    @Value("${genKey}")
+    private String genKey;
 
     /**
      * 在请求处理之前进行调用（Controller方法调用之前）
@@ -62,6 +62,7 @@ public class MyInterceptor implements HandlerInterceptor {
             if(((HandlerMethod)handler).getMethodAnnotation(AdminLogin.class) != null){
                 String token = request.getHeader("token");
                 if(CheckUtils.isObjectEmpty(token)){
+                    log.info("接收->" + jsonObject.toJSONString());
                     String retStr = Result.error("非法请求").toJsonString();
                     log.info("响应->" + retStr);
                     response.getWriter().write(retStr);
@@ -71,18 +72,21 @@ public class MyInterceptor implements HandlerInterceptor {
                 adminLambdaQueryWrapper.eq(Admin::getToken,token);
                 Admin admin = adminMapper.selectOne(adminLambdaQueryWrapper);
                 if(CheckUtils.isObjectEmpty(admin)){
+                    log.info("接收->" + jsonObject.toJSONString());
                     String retStr = Result.error("非法请求").toJsonString();
                     log.info("响应->" + retStr);
                     response.getWriter().write(retStr);
                     return false;
                 }
                 if(admin.getStatus().equals(AdminEnums.STATUS_DISABLE.getCode())){
+                    log.info("接收->" + jsonObject.toJSONString());
                     String retStr = Result.error("账号已被禁用").toJsonString();
                     log.info("响应->" + retStr);
                     response.getWriter().write(retStr);
                     return false;
                 }
                 if(admin.getLastTime() + AdminEnums.TOKEN_VALIDITY.getCode() < Integer.parseInt(MyUtils.getTimeStamp())){
+                    log.info("接收->" + jsonObject.toJSONString());
                     String retStr = Result.error("登录失效，请重新登录").toJsonString();
                     log.info("响应->" + retStr);
                     response.getWriter().write(retStr);
@@ -93,16 +97,39 @@ public class MyInterceptor implements HandlerInterceptor {
             if(((HandlerMethod)handler).getMethodAnnotation(UserLogin.class) != null){
                 String token = jsonObject.getString("token");
                 if(CheckUtils.isObjectEmpty(token)){
+                    log.info("接收->" + jsonObject.toJSONString());
                     String retStr = Result.error("非法请求").toJsonString();
                     log.info("响应->" + retStr);
                     response.getWriter().write(retStr);
                     return false;
                 }
-                LambdaQueryWrapper<User> userLambdaQueryWrapper = new LambdaQueryWrapper<>();
-                userLambdaQueryWrapper.eq(User::getToken,token);
-                User user = userMapper.selectOne(userLambdaQueryWrapper);
-                if(CheckUtils.isObjectEmpty(user)){
+                JSONObject jsonObject1 = MyUtils.decUserToken(token,genKey);
+                if(CheckUtils.isObjectEmpty(jsonObject1)){
+                    log.info("接收->" + jsonObject.toJSONString());
                     String retStr = Result.error("非法请求").toJsonString();
+                    log.info("响应->" + retStr);
+                    response.getWriter().write(retStr);
+                    return false;
+                }
+
+                User user = (User) redisUtil.get(jsonObject1.getString("user"));
+                if(CheckUtils.isObjectEmpty(user)){
+                    log.info("接收->" + jsonObject.toJSONString());
+                    String retStr = Result.error("用户未登录").toJsonString();
+                    log.info("响应->" + retStr);
+                    response.getWriter().write(retStr);
+                    return false;
+                }
+                if(user.getStatus().equals(AdminEnums.STATUS_DISABLE.getCode())){
+                    log.info("接收->" + jsonObject.toJSONString());
+                    String retStr = Result.error("账号已被禁用").toJsonString();
+                    log.info("响应->" + retStr);
+                    response.getWriter().write(retStr);
+                    return false;
+                }
+                if(user.getLastTime() + UserEnums.TOKEN_VALIDITY.getCode() < Integer.parseInt(MyUtils.getTimeStamp())){
+                    log.info("接收->" + jsonObject.toJSONString());
+                    String retStr = Result.error("登录失效，请重新登录").toJsonString();
                     log.info("响应->" + retStr);
                     response.getWriter().write(retStr);
                     return false;
@@ -114,26 +141,30 @@ public class MyInterceptor implements HandlerInterceptor {
             if(((HandlerMethod)handler).getMethodAnnotation(SoftValidated.class) != null){
                 String skey = jsonObject.getString("skey");
                 if(CheckUtils.isObjectEmpty(skey)){
+                    log.info("接收->" + jsonObject.toJSONString());
                     String retStr = Result.error("缺少skey参数").toJsonString();
                     log.info("响应->" + retStr);
                     response.getWriter().write(retStr);
                     return false;
                 }
 
-                Soft soft = (Soft) redisUtil.get("soft_" + skey);
+                Soft soft = (Soft) redisUtil.get("soft:" + skey);
                 if(CheckUtils.isObjectEmpty(soft)){
+                    log.info("接收->" + jsonObject.toJSONString());
                     String retStr = Result.error("skey错误").toJsonString();
                     log.info("响应->" + retStr);
                     response.getWriter().write(retStr);
                     return false;
                 }
                 if(SoftEnums.STATUS_DISABLE.getCode().equals(soft.getStatus())){
+                    log.info("接收->" + jsonObject.toJSONString());
                     String retStr = Result.error("软件已停用").toJsonString();
                     log.info("响应->" + retStr);
                     response.getWriter().write(retStr);
                     return false;
                 }
                 if(SoftEnums.STATUS_FIX.getCode().equals(soft.getStatus())){
+                    log.info("接收->" + jsonObject.toJSONString());
                     String retStr = Result.error("软件维护中").toJsonString();
                     log.info("响应->" + retStr);
                     response.getWriter().write(retStr);
@@ -146,6 +177,7 @@ public class MyInterceptor implements HandlerInterceptor {
                 Soft soft = (Soft) request.getAttribute("obj_soft");
                 String vkey = jsonObject.getString("vkey");
                 if(CheckUtils.isObjectEmpty(vkey)){
+                    log.info("接收->" + jsonObject.toJSONString());
                     String retStr = Result.error("缺少vkey参数").toJsonString();
                     log.info("响应->" + retStr);
                     response.getWriter().write(retStr);
@@ -153,18 +185,21 @@ public class MyInterceptor implements HandlerInterceptor {
                 }
                 Version version = (Version) redisUtil.get("version:" + vkey);
                 if(CheckUtils.isObjectEmpty(version)){
+                    log.info("接收->" + jsonObject.toJSONString());
                     String retStr = Result.error("vkey错误").toJsonString();
                     log.info("响应->" + retStr);
                     response.getWriter().write(retStr);
                     return false;
                 }
                 if(!version.getFromSoftId().equals(soft.getId())){
+                    log.info("接收->" + jsonObject.toJSONString());
                     String retStr = Result.error("vkey与skey不匹配").toJsonString();
                     log.info("响应->" + retStr);
                     response.getWriter().write(retStr);
                     return false;
                 }
                 if(VersionEnums.STATUS_DISABLE.getCode().equals(version.getStatus())){
+                    log.info("接收->" + jsonObject.toJSONString());
                     String retStr = Result.error("版本已停用").toJsonString();
                     log.info("响应->" + retStr);
                     response.getWriter().write(retStr);
@@ -176,14 +211,16 @@ public class MyInterceptor implements HandlerInterceptor {
             //@DataDecrypt
             if(((HandlerMethod)handler).getMethodAnnotation(DataDecrypt.class) != null){
                 if(CheckUtils.isObjectEmpty(reqStr)){
+                    log.info("接收->" + jsonObject.toJSONString());
                     String retStr = Result.error("获取请求数据失败").toJsonString();
                     log.info("响应->" + retStr);
                     response.getWriter().write(retStr);
                     return false;
                 }
                 String skey = jsonObject.getString("skey");
-                Soft soft = (Soft) redisUtil.get("soft_" + skey);
+                Soft soft = (Soft) redisUtil.get("soft:" + skey);
                 if(CheckUtils.isObjectEmpty(soft)){
+                    log.info("接收->" + jsonObject.toJSONString());
                     String retStr = Result.error("skey错误").toJsonString();
                     log.info("响应->" + retStr);
                     response.getWriter().write(retStr);
@@ -193,6 +230,7 @@ public class MyInterceptor implements HandlerInterceptor {
                 if(soft.getGenStatus() == 1){
                     String jsonStr = AESUtils.decrypt(jsonObject.getString("data"),soft.getGenKey());
                     if(CheckUtils.isObjectEmpty(jsonStr)){
+                        log.info("接收->" + jsonObject.toJSONString());
                         String retStr = Result.error("数据解密失败").toJsonString();
                         log.info("响应->" + retStr);
                         response.getWriter().write(retStr);
@@ -228,7 +266,7 @@ public class MyInterceptor implements HandlerInterceptor {
                     return false;
                 }
                 String skey = jsonObject.getString("skey");
-                Soft soft = (Soft) redisUtil.get("soft_" + skey);
+                Soft soft = (Soft) redisUtil.get("soft:" + skey);
                 if(CheckUtils.isObjectEmpty(soft)){
                     String retStr = Result.error("skey错误").toJsonString();
                     log.info("响应->" + retStr);
@@ -247,7 +285,7 @@ public class MyInterceptor implements HandlerInterceptor {
             //@BanValidated
             if(((HandlerMethod)handler).getMethodAnnotation(BanValidated.class) != null){
                 String skey = jsonObject.getString("skey");
-                Soft soft = (Soft) redisUtil.get("soft_" + skey);
+                Soft soft = (Soft) redisUtil.get("soft:" + skey);
                 if(CheckUtils.isObjectEmpty(soft)){
                     String retStr = Result.error("skey错误").toJsonString();
                     log.info("响应->" + retStr);

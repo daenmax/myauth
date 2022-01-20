@@ -76,7 +76,7 @@ public class SoftServiceImpl extends ServiceImpl<SoftMapper, Soft> implements IS
         if(num <= 0){
             return Result.error("添加失败");
         }
-        redisUtil.set("soft_" + soft.getSkey(),soft);
+        redisUtil.set("soft:" + soft.getSkey(),soft);
         return Result.ok("添加成功");
     }
 
@@ -93,7 +93,7 @@ public class SoftServiceImpl extends ServiceImpl<SoftMapper, Soft> implements IS
             return Result.error("修改失败");
         }
         Soft newSoft = softMapper.selectById(soft.getId());
-        redisUtil.set("soft_" + newSoft.getSkey(),newSoft);
+        redisUtil.set("soft:" + newSoft.getSkey(),newSoft);
         return Result.ok("修改成功");
     }
 
@@ -149,7 +149,7 @@ public class SoftServiceImpl extends ServiceImpl<SoftMapper, Soft> implements IS
         LambdaQueryWrapper<Plog> plogLambdaQueryWrapper = new LambdaQueryWrapper<>();
         plogLambdaQueryWrapper.eq(Plog::getFromSoftId,soft.getId());
         plogMapper.delete(plogLambdaQueryWrapper);
-        redisUtil.del("soft_" + soft.getSkey());
+        redisUtil.del("soft:" + soft.getSkey());
         return Result.ok("删除成功");
     }
 
@@ -190,7 +190,7 @@ public class SoftServiceImpl extends ServiceImpl<SoftMapper, Soft> implements IS
         LambdaQueryWrapper.eq(!CheckUtils.isObjectEmpty(soft.getAddTime()),Soft::getAddTime,soft.getAddTime());
         LambdaQueryWrapper.eq(!CheckUtils.isObjectEmpty(soft.getGenKey()),Soft::getGenKey,soft.getGenKey());
         LambdaQueryWrapper.eq(!CheckUtils.isObjectEmpty(soft.getGenStatus()),Soft::getGenStatus,soft.getGenStatus());
-        LambdaQueryWrapper.eq(!CheckUtils.isObjectEmpty(soft.getBatchSoft()),Soft::getBatchSoft,soft.getBatchSoft());
+        LambdaQueryWrapper.eq(!CheckUtils.isObjectEmpty(soft.getBindDeviceCode()),Soft::getBindDeviceCode,soft.getBindDeviceCode());
         LambdaQueryWrapper.eq(!CheckUtils.isObjectEmpty(soft.getMultipleLogin()),Soft::getMultipleLogin,soft.getMultipleLogin());
         LambdaQueryWrapper.eq(!CheckUtils.isObjectEmpty(soft.getHeartTime()),Soft::getHeartTime,soft.getHeartTime());
         LambdaQueryWrapper.eq(!CheckUtils.isObjectEmpty(soft.getRegister()),Soft::getType,soft.getRegister());

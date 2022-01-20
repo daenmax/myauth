@@ -10,6 +10,7 @@ import cn.myauthx.api.main.service.IUserService;
 import cn.myauthx.api.main.service.IVersionService;
 import cn.myauthx.api.util.CheckUtils;
 import cn.myauthx.api.util.IpUtil;
+import cn.myauthx.api.util.MyUtils;
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -51,7 +52,7 @@ public class SoftApiController {
         retJson.put("Name",soft.getName());
         retJson.put("Status",soft.getStatus());
         retJson.put("Type",soft.getType());
-        retJson.put("BatchSoft",soft.getBatchSoft());
+        retJson.put("BindDeviceCode",soft.getBindDeviceCode());
         retJson.put("MultipleLogin",soft.getMultipleLogin());
         retJson.put("HeartTime",soft.getHeartTime());
         return Result.ok("初始化成功",retJson);
@@ -98,11 +99,23 @@ public class SoftApiController {
         user.setLastIp(ip);
         return userService.register(user,soft);
     }
+    @SoftValidated
+    @VersionValidated
+    @DataDecrypt
+    @SignValidated
     @BanValidated(is_ip = true,is_device_code = true,is_user = false)
     @PostMapping("login")
     public Result login(HttpServletRequest request){
         //不管有没有加密和解密，取提交的JSON都要通过下面这行去取
         JSONObject jsonObject = (JSONObject) request.getAttribute("json");
-        return Result.ok("测试通过");
+        Soft soft = (Soft) request.getAttribute("obj_soft");
+        Version version = (Version) request.getAttribute("obj_version");
+        User user = jsonObject.getJSONObject("data").toJavaObject(User.class);
+        String ip = IpUtil.getIpAddr(request);
+        user.setLastIp(ip);
+        user.setFromVerId(version.getId());
+        user.setFromVerKey(version.getVkey());
+        user.setLastTime(Integer.valueOf(MyUtils.getTimeStamp()));
+        return userService.login(user,soft);
     }
 }

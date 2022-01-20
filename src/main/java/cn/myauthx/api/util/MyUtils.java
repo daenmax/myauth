@@ -70,7 +70,12 @@ public class MyUtils {
         List<String> collect = keyList.stream().sorted().collect(Collectors.toList());
         StringBuilder stringBuilder = new StringBuilder();
         for (String s : collect) {
-            String value =map.get(s).toString();
+            String value = "";
+            if(CheckUtils.isObjectEmpty(map.get(s))){
+                value = "";
+            }else{
+                value =map.get(s).toString();
+            }
             stringBuilder.append(s).append("=").append(value).append("&");
         }
         stringBuilder.deleteCharAt(stringBuilder.lastIndexOf("&"));
@@ -123,5 +128,33 @@ public class MyUtils {
             uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
         }
         return uuid;
+    }
+
+    /**
+     * 生成用户token
+     * @param user
+     * @param time
+     * @param genKey
+     * @return
+     */
+    public static String encUserToken(String user,String time,String softId,String genKey){
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("user",user);
+        jsonObject.put("time",time);
+        jsonObject.put("softId",softId);
+        String encrypt = AESUtils.encrypt(jsonObject.toJSONString(), genKey);
+        return encrypt;
+    }
+
+    /**
+     * 解密用户token
+     * @param token
+     * @param genKey
+     * @return
+     */
+    public static JSONObject decUserToken(String token,String genKey){
+        String decrypt = AESUtils.decrypt(token, genKey);
+        JSONObject jsonObject = JSONObject.parseObject(decrypt);
+        return jsonObject;
     }
 }

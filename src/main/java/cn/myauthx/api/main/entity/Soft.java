@@ -53,9 +53,9 @@ public class Soft extends Model {
     private Integer genStatus;
 
     /**
-     * 0=不允许多开，1=允许多开
+     * 0=不绑定机器码，1=绑定机器码
      */
-    private Integer batchSoft;
+    private Integer bindDeviceCode;
 
     /**
      * 0=不允许多地同时登录，1=允许多地同时登录

@@ -19,10 +19,19 @@ public enum SoftEnums {
     STATUS_DISABLE(0,"停用"),
     STATUS_ABLE(1,"正常"),
     STATUS_FIX(2,"维护"),
+
+    BIND_DISABLE(0,"不绑定机器码"),
+    BIND_ABLE(1,"绑定机器码"),
+
+    MULOGIN_DISABLE(0,"不允许多地同时登录"),
+    MULOGIN_ABLE(1,"允许多地同时登录"),
+
     TYPE_PAY(0,"收费"),
     TYPE_FREE(1,"免费"),
+
     REGISTER_DISABLE(0,"关闭注册"),
     REGISTER_ABLE(1,"开启注册"),
+
     DIFF_TIME(30,"允许时间戳误差");
     private Integer code;
     private String desc;
