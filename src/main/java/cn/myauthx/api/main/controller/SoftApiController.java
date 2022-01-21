@@ -6,10 +6,7 @@ import cn.myauthx.api.main.entity.Soft;
 import cn.myauthx.api.main.entity.User;
 import cn.myauthx.api.main.entity.Version;
 import cn.myauthx.api.main.enums.SoftEnums;
-import cn.myauthx.api.main.service.IDataService;
-import cn.myauthx.api.main.service.IJsService;
-import cn.myauthx.api.main.service.IUserService;
-import cn.myauthx.api.main.service.IVersionService;
+import cn.myauthx.api.main.service.*;
 import cn.myauthx.api.util.CheckUtils;
 import cn.myauthx.api.util.IpUtil;
 import cn.myauthx.api.util.MyUtils;
@@ -39,6 +36,8 @@ public class SoftApiController {
     private IJsService jsService;
     @Resource
     private IDataService dataService;
+    @Resource
+    private IEventService eventService;
     /**
      * 初始化软件
      * @param request
@@ -270,5 +269,29 @@ public class SoftApiController {
             return Result.error("device_code不能为空");
         }
         return dataService.upData(type,content,ip,device_info,device_code,soft,version);
+    }
+
+    /**
+     * 触发事件
+     * @param request
+     * @return
+     */
+    @SoftValidated
+    @VersionValidated
+    @DataDecrypt
+    @SignValidated
+    @UserLogin
+    @BanValidated(is_ip = true,is_device_code = true,is_user = true)
+    @PostMapping("/letEvent")
+    public Result letEvent(HttpServletRequest request){
+        //不管有没有加密和解密，取提交的JSON都要通过下面这行去取
+        JSONObject jsonObject = (JSONObject) request.getAttribute("json");
+        Soft soft = (Soft) request.getAttribute("obj_soft");
+        User user = (User) request.getAttribute("obj_user");
+        String name = jsonObject.getJSONObject("data").getString("name");
+        if(CheckUtils.isObjectEmpty(name)){
+            return Result.error("事件name不能为空");
+        }
+        return eventService.letEvent(name,user,soft);
     }
 }
