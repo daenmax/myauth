@@ -8,6 +8,10 @@ import lombok.extern.java.Log;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.Base64Utils;
 import org.springframework.util.DigestUtils;
+
+import javax.script.Invocable;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -177,5 +181,31 @@ public class MyUtils {
         String decrypt = AESUtils.decrypt(token, genKey);
         JSONObject jsonObject = JSONObject.parseObject(decrypt);
         return jsonObject;
+    }
+
+    /**
+     * 执行JS函数，参数和返回值都是String类型
+     * @param jsStr
+     * @param func
+     * @param parameter
+     * @return
+     */
+    public static String runJs(String jsStr,String func,String...parameter){
+        String regular = jsStr;
+        //创建引擎实例
+        ScriptEngine engine = new ScriptEngineManager().getEngineByName("javascript");
+        Object result = "";
+        try {
+            //编译
+            engine.eval(regular);
+            if (engine instanceof Invocable) {
+                // 执行方法
+                result = ((Invocable) engine).invokeFunction(func, parameter);
+                return String.valueOf(result);
+            }
+        } catch (Exception e) {
+            return "表达式runtime错误:" + e.getMessage();
+        }
+        return "";
     }
 }

@@ -42,10 +42,7 @@ public class Data extends Model {
      */
     private String ip;
 
-    /**
-     * 设备信息
-     */
-    private String deviceInfo;
+
 
     /**
      * 上报时间
@@ -55,6 +52,13 @@ public class Data extends Model {
     private Integer fromSoftId;
 
     private Integer fromVerId;
-
+    /**
+     * 设备信息
+     */
+    private String deviceInfo;
+    /**
+     * 机器码
+     */
+    private String deviceCode;
 
 }

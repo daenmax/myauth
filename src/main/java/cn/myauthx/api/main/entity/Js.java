@@ -28,15 +28,24 @@ public class Js extends Model {
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
+    /**
+     * 执行JS函数名，同一软件下不要重复
+     */
     private String jsFun;
-
+    /**
+     * JS代码
+     */
     private String jsContent;
 
     private Integer addTime;
-
+    /**
+     * 0=禁用，1=正常
+     */
     private Integer status;
 
     private Integer fromSoftId;
-
-
+    /**
+     * 备注
+     */
+    private String remark;
 }

@@ -6,6 +6,8 @@ import cn.myauthx.api.main.entity.Soft;
 import cn.myauthx.api.main.entity.User;
 import cn.myauthx.api.main.entity.Version;
 import cn.myauthx.api.main.enums.SoftEnums;
+import cn.myauthx.api.main.service.IDataService;
+import cn.myauthx.api.main.service.IJsService;
 import cn.myauthx.api.main.service.IUserService;
 import cn.myauthx.api.main.service.IVersionService;
 import cn.myauthx.api.util.CheckUtils;
@@ -33,6 +35,10 @@ public class SoftApiController {
     private IVersionService versionService;
     @Resource
     private IUserService userService;
+    @Resource
+    private IJsService jsService;
+    @Resource
+    private IDataService dataService;
     /**
      * 初始化软件
      * @param request
@@ -206,5 +212,63 @@ public class SoftApiController {
             return Result.error("keyword不能为空");
         }
         return userService.getMsg(soft,version,keyword);
+    }
+    @SoftValidated
+    @VersionValidated
+    @DataDecrypt
+    @SignValidated
+    @UserLogin
+    @BanValidated(is_ip = true,is_device_code = true,is_user = true)
+    @PostMapping("/runJs")
+    public Result runJs(HttpServletRequest request){
+        //不管有没有加密和解密，取提交的JSON都要通过下面这行去取
+        JSONObject jsonObject = (JSONObject) request.getAttribute("json");
+        Soft soft = (Soft) request.getAttribute("obj_soft");
+        String func = jsonObject.getJSONObject("data").getString("func");
+        if(CheckUtils.isObjectEmpty(func)){
+            return Result.error("func不能为空");
+        }
+        String c1 = jsonObject.getJSONObject("data").getString("c1");
+        String c2 = jsonObject.getJSONObject("data").getString("c2");
+        String c3 = jsonObject.getJSONObject("data").getString("c3");
+        String c4 = jsonObject.getJSONObject("data").getString("c4");
+        String c5 = jsonObject.getJSONObject("data").getString("c5");
+        String c6 = jsonObject.getJSONObject("data").getString("c6");
+        String c7 = jsonObject.getJSONObject("data").getString("c7");
+        String c8 = jsonObject.getJSONObject("data").getString("c8");
+        String c9 = jsonObject.getJSONObject("data").getString("c9");
+        String c10 = jsonObject.getJSONObject("data").getString("c10");
+        return jsService.runJs(soft,func,c1,c2,c3,c4,c5,c6,c7,c8,c9,c10);
+    }
+
+    @SoftValidated
+    @VersionValidated
+    @DataDecrypt
+    @SignValidated
+    @BanValidated(is_ip = true,is_device_code = true,is_user = false)
+    @PostMapping("/upData")
+    public Result upData(HttpServletRequest request){
+        //不管有没有加密和解密，取提交的JSON都要通过下面这行去取
+        JSONObject jsonObject = (JSONObject) request.getAttribute("json");
+        Soft soft = (Soft) request.getAttribute("obj_soft");
+        Version version = (Version) request.getAttribute("obj_version");
+        String type = jsonObject.getJSONObject("data").getString("type");
+        String content = jsonObject.getJSONObject("data").getString("content");
+        String device_info = jsonObject.getJSONObject("data").getString("device_info");
+        String device_code = jsonObject.getJSONObject("data").getString("device_code");
+        String ip = IpUtil.getIpAddr(request);
+        if(CheckUtils.isObjectEmpty(type)){
+            return Result.error("type不能为空");
+        }
+        if(CheckUtils.isObjectEmpty(content)){
+            return Result.error("content不能为空");
+        }
+        if(CheckUtils.isObjectEmpty(device_info)){
+            return Result.error("device_info不能为空");
+        }
+        if(CheckUtils.isObjectEmpty(device_code)){
+            return Result.error("device_code不能为空");
+        }
+        return dataService.upData(type,content,ip,device_info,device_code,soft,version);
     }
 }
