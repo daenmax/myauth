@@ -6,6 +6,7 @@ import cn.myauthx.api.main.entity.Soft;
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.java.Log;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.Base64Utils;
 import org.springframework.util.DigestUtils;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
@@ -105,6 +106,24 @@ public class MyUtils {
         }
         String enStr = AESUtils.encrypt(jsonObject.toJSONString(),gen_key);
         return Result.ok(msg,enStr).sign(sign);
+    }
+
+    /**
+     * base64编码
+     * @param txt
+     * @return
+     */
+    public static String base64Encode(String txt){
+        return Base64Utils.encodeToString(txt.getBytes(StandardCharsets.UTF_8));
+    }
+
+    /**
+     * base64解码
+     * @param txt
+     * @return
+     */
+    public static String base64Decode(String txt){
+        return Base64Utils.decodeFromString(txt).toString();
     }
 
     /**+

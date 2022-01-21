@@ -56,6 +56,12 @@ public class SoftApiController {
         retJson.put("HeartTime",soft.getHeartTime());
         return Result.ok("初始化成功",retJson);
     }
+
+    /**
+     * 检测更新
+     * @param request
+     * @return
+     */
     @SoftValidated
     @DataDecrypt
     @SignValidated
@@ -74,6 +80,12 @@ public class SoftApiController {
         version.setFromSoftId(soft.getId());
         return versionService.checkUpdate(version,soft);
     }
+
+    /**
+     * 注册
+     * @param request
+     * @return
+     */
     @SoftValidated
     @VersionValidated
     @DataDecrypt
@@ -98,6 +110,12 @@ public class SoftApiController {
         user.setLastIp(ip);
         return userService.register(user,soft);
     }
+
+    /**
+     * 登录
+     * @param request
+     * @return
+     */
     @SoftValidated
     @VersionValidated
     @DataDecrypt
@@ -117,6 +135,12 @@ public class SoftApiController {
         user.setFromVerKey(version.getVkey());
         return userService.login(user,soft);
     }
+
+    /**
+     * 心跳
+     * @param request
+     * @return
+     */
     @SoftValidated
     @VersionValidated
     @DataDecrypt
@@ -132,6 +156,12 @@ public class SoftApiController {
         user.setLastTime(Integer.valueOf(MyUtils.getTimeStamp()));
         return userService.heart(user,soft);
     }
+
+    /**
+     * 使用卡密
+     * @param request
+     * @return
+     */
     @SoftValidated
     @VersionValidated
     @DataDecrypt
@@ -153,5 +183,28 @@ public class SoftApiController {
             return Result.error("卡密不能为空");
         }
         return userService.useCkey(user,soft);
+    }
+
+    /**
+     * 获取回复
+     * @param request
+     * @return
+     */
+    @SoftValidated
+    @VersionValidated
+    @DataDecrypt
+    @SignValidated
+    @BanValidated(is_ip = true,is_device_code = true,is_user = false)
+    @PostMapping("/getMsg")
+    public Result getMsg(HttpServletRequest request){
+        //不管有没有加密和解密，取提交的JSON都要通过下面这行去取
+        JSONObject jsonObject = (JSONObject) request.getAttribute("json");
+        Soft soft = (Soft) request.getAttribute("obj_soft");
+        Version version = (Version) request.getAttribute("obj_version");
+        String keyword = jsonObject.getJSONObject("data").getString("keyword");
+        if(CheckUtils.isObjectEmpty(keyword)){
+            return Result.error("keyword不能为空");
+        }
+        return userService.getMsg(soft,version,keyword);
     }
 }

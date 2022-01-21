@@ -1,15 +1,14 @@
 package cn.myauthx.api.main.service.impl;
 
 import cn.myauthx.api.base.vo.Result;
-import cn.myauthx.api.main.entity.Ban;
-import cn.myauthx.api.main.entity.Card;
-import cn.myauthx.api.main.entity.Soft;
-import cn.myauthx.api.main.entity.User;
+import cn.myauthx.api.main.entity.*;
 import cn.myauthx.api.main.enums.CardEnums;
+import cn.myauthx.api.main.enums.MsgEnums;
 import cn.myauthx.api.main.enums.SoftEnums;
 import cn.myauthx.api.main.enums.UserEnums;
 import cn.myauthx.api.main.mapper.BanMapper;
 import cn.myauthx.api.main.mapper.CardMapper;
+import cn.myauthx.api.main.mapper.MsgMapper;
 import cn.myauthx.api.main.mapper.UserMapper;
 import cn.myauthx.api.main.service.IUserService;
 import cn.myauthx.api.util.CheckUtils;
@@ -40,6 +39,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     private BanMapper banMapper;
     @Autowired
     private CardMapper cardMapper;
+    @Autowired
+    private MsgMapper msgMapper;
     @Value("${genKey}")
     private String genKey;
     /**
@@ -160,7 +161,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         }
     }
 
-
+    /**
+     * 登录
+     * @param userC
+     * @param softC
+     * @return
+     */
     @Override
     public Result login(User userC, Soft softC) {
         LambdaQueryWrapper<User> userLambdaQueryWrapper = new LambdaQueryWrapper<>();
@@ -349,6 +355,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         return null;
     }
 
+    /**
+     * 心跳
+     * @param userA
+     * @param softC
+     * @return
+     */
     @Override
     public Result heart(User userA, Soft softC) {
         redisUtil.set("user:" + userA.getFromSoftId() + ":" + userA.getUser(),userA);
@@ -365,6 +377,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         return Result.ok("心跳成功",jsonObject);
     }
 
+    /**
+     * 使用卡密
+     * @param userC
+     * @param softC
+     * @return
+     */
     @Override
     public Result useCkey(User userC, Soft softC) {
         LambdaQueryWrapper<User> userLambdaQueryWrapper = new LambdaQueryWrapper<>();
@@ -446,6 +464,60 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
             return Result.ok("使用卡密成功",jsonObject);
         }else{
             return Result.error("使用卡密失败");
+        }
+    }
+
+    /**
+     * 获取回复
+     * @param soft
+     * @param version
+     * @param keyword
+     * @return
+     */
+    @Override
+    public Result getMsg(Soft soft, Version version, String keyword) {
+        LambdaQueryWrapper<Msg> msgLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        msgLambdaQueryWrapper.eq(Msg::getFromSoftId,soft.getId());
+        msgLambdaQueryWrapper.eq(Msg::getKeyword,keyword);
+        msgLambdaQueryWrapper.eq(Msg::getFromVerId,version.getId());
+        Msg msg = msgMapper.selectOne(msgLambdaQueryWrapper);
+        JSONObject jsonObject = new JSONObject(true);
+        if(CheckUtils.isObjectEmpty(msg)){
+            LambdaQueryWrapper<Msg> msgLambdaQueryWrapper2 = new LambdaQueryWrapper<>();
+            msgLambdaQueryWrapper2.eq(Msg::getFromSoftId,soft.getId());
+            msgLambdaQueryWrapper2.eq(Msg::getKeyword,keyword);
+            msg = msgMapper.selectOne(msgLambdaQueryWrapper2);
+            if(CheckUtils.isObjectEmpty(msg)){
+                return Result.error("回复不存在");
+            }else {
+                if(CheckUtils.isObjectEmpty(msg.getFromVerId())){
+                    if(msg.getStatus().equals(MsgEnums.STATUS_DISABLE.getCode())){
+                        return Result.error("回复已被禁用");
+                    }
+                    jsonObject.put("keyword",msg.getKeyword());
+                    jsonObject.put("msg",MyUtils.base64Encode(msg.getMsg()));
+                    return Result.ok("获取回复成功",jsonObject);
+                }else{
+                    if(msg.getFromVerId().equals(version.getId())){
+                        if(msg.getStatus().equals(MsgEnums.STATUS_DISABLE.getCode())){
+                            return Result.error("回复已被禁用");
+                        }
+                        jsonObject.put("keyword",msg.getKeyword());
+                        jsonObject.put("msg", MyUtils.base64Encode(msg.getMsg()));
+                        return Result.ok("获取回复成功",jsonObject);
+                    }else{
+                        return Result.error("该回复在当前版本不能使用");
+                    }
+                }
+
+            }
+        }else{
+            if(msg.getStatus().equals(MsgEnums.STATUS_DISABLE.getCode())){
+                return Result.error("回复已被禁用");
+            }
+            jsonObject.put("keyword",msg.getKeyword());
+            jsonObject.put("msg",MyUtils.base64Encode(msg.getMsg()));
+            return Result.ok("获取回复成功",jsonObject);
         }
     }
 }

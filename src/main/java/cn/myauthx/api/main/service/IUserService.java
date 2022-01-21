@@ -3,6 +3,7 @@ package cn.myauthx.api.main.service;
 import cn.myauthx.api.base.vo.Result;
 import cn.myauthx.api.main.entity.Soft;
 import cn.myauthx.api.main.entity.User;
+import cn.myauthx.api.main.entity.Version;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
@@ -30,8 +31,29 @@ public interface IUserService extends IService<User> {
      */
     Result login(User user, Soft softC);
 
+    /**
+     * 心跳
+     * @param user
+     * @param softC
+     * @return
+     */
     Result heart(User user, Soft softC);
 
+    /**
+     * 使用卡密
+     * @param user
+     * @param soft
+     * @return
+     */
     Result useCkey(User user,Soft soft);
+
+    /**
+     * 获取回复
+     * @param soft
+     * @param version
+     * @param keyword
+     * @return
+     */
+    Result getMsg(Soft soft, Version version, String keyword);
 
 }
