@@ -93,49 +93,7 @@ public class MyInterceptor implements HandlerInterceptor {
                     return false;
                 }
             }
-            //@UserLogin
-            if(((HandlerMethod)handler).getMethodAnnotation(UserLogin.class) != null){
-                String token = jsonObject.getString("token");
-                if(CheckUtils.isObjectEmpty(token)){
-                    log.info("接收->" + jsonObject.toJSONString());
-                    String retStr = Result.error("非法请求").toJsonString();
-                    log.info("响应->" + retStr);
-                    response.getWriter().write(retStr);
-                    return false;
-                }
-                JSONObject jsonObject1 = MyUtils.decUserToken(token,genKey);
-                if(CheckUtils.isObjectEmpty(jsonObject1)){
-                    log.info("接收->" + jsonObject.toJSONString());
-                    String retStr = Result.error("非法请求").toJsonString();
-                    log.info("响应->" + retStr);
-                    response.getWriter().write(retStr);
-                    return false;
-                }
 
-                User user = (User) redisUtil.get(jsonObject1.getString("user"));
-                if(CheckUtils.isObjectEmpty(user)){
-                    log.info("接收->" + jsonObject.toJSONString());
-                    String retStr = Result.error("用户未登录").toJsonString();
-                    log.info("响应->" + retStr);
-                    response.getWriter().write(retStr);
-                    return false;
-                }
-                if(user.getStatus().equals(AdminEnums.STATUS_DISABLE.getCode())){
-                    log.info("接收->" + jsonObject.toJSONString());
-                    String retStr = Result.error("账号已被禁用").toJsonString();
-                    log.info("响应->" + retStr);
-                    response.getWriter().write(retStr);
-                    return false;
-                }
-                if(user.getLastTime() + UserEnums.TOKEN_VALIDITY.getCode() < Integer.parseInt(MyUtils.getTimeStamp())){
-                    log.info("接收->" + jsonObject.toJSONString());
-                    String retStr = Result.error("登录失效，请重新登录").toJsonString();
-                    log.info("响应->" + retStr);
-                    response.getWriter().write(retStr);
-                    return false;
-                }
-                request.setAttribute("obj_user",user);
-            }
 
             //@SoftValidated
             if(((HandlerMethod)handler).getMethodAnnotation(SoftValidated.class) != null){
@@ -242,6 +200,49 @@ public class MyInterceptor implements HandlerInterceptor {
                 request.setAttribute("json",jsonObject);
             }
             log.info("接收->" + jsonObject.toJSONString());
+            //@UserLogin
+            if(((HandlerMethod)handler).getMethodAnnotation(UserLogin.class) != null){
+                Soft soft = (Soft) request.getAttribute("obj_soft");
+                String token = jsonObject.getJSONObject("data").getString("token");
+                if(CheckUtils.isObjectEmpty(token)){
+                    log.info("接收->" + jsonObject.toJSONString());
+                    String retStr = Result.error("非法请求").toJsonString();
+                    log.info("响应->" + retStr);
+                    response.getWriter().write(retStr);
+                    return false;
+                }
+                JSONObject jsonObject1 = MyUtils.decUserToken(token,genKey);
+                if(CheckUtils.isObjectEmpty(jsonObject1)){
+                    log.info("接收->" + jsonObject.toJSONString());
+                    String retStr = Result.error("非法请求").toJsonString();
+                    log.info("响应->" + retStr);
+                    response.getWriter().write(retStr);
+                    return false;
+                }
+                User user = (User) redisUtil.get("user:" + soft.getId() + ":" + jsonObject1.getString("user"));
+                if(CheckUtils.isObjectEmpty(user)){
+                    log.info("接收->" + jsonObject.toJSONString());
+                    String retStr = Result.error("用户未登录").toJsonString();
+                    log.info("响应->" + retStr);
+                    response.getWriter().write(retStr);
+                    return false;
+                }
+                if(!user.getToken().equals(token)){
+                    log.info("接收->" + jsonObject.toJSONString());
+                    String retStr = Result.error("账号可能异地登录，请重新登录").toJsonString();
+                    log.info("响应->" + retStr);
+                    response.getWriter().write(retStr);
+                    return false;
+                }
+                if((user.getLastTime() + UserEnums.TOKEN_VALIDITY.getCode()) < Integer.parseInt(MyUtils.getTimeStamp())){
+                    log.info("接收->" + jsonObject.toJSONString());
+                    String retStr = Result.error("登录失效，请重新登录").toJsonString();
+                    log.info("响应->" + retStr);
+                    response.getWriter().write(retStr);
+                    return false;
+                }
+                request.setAttribute("obj_user",user);
+            }
             //@SignValidated
             if(((HandlerMethod)handler).getMethodAnnotation(SignValidated.class) != null){
                 String sign = jsonObject.getString("sign");

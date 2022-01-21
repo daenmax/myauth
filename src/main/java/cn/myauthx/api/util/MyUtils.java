@@ -138,10 +138,12 @@ public class MyUtils {
      * @return
      */
     public static String encUserToken(String user,String time,String softId,String genKey){
+        int kk =  (int)(1000000+Math.random()*9999999);
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("user",user);
         jsonObject.put("time",time);
         jsonObject.put("softId",softId);
+        jsonObject.put("radom", String.valueOf(kk));
         String encrypt = AESUtils.encrypt(jsonObject.toJSONString(), genKey);
         return encrypt;
     }

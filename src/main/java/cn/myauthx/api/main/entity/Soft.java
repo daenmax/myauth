@@ -58,11 +58,6 @@ public class Soft extends Model {
     private Integer bindDeviceCode;
 
     /**
-     * 0=不允许多地同时登录，1=允许多地同时登录
-     */
-    private Integer multipleLogin;
-
-    /**
      * 心跳有效时间
      */
     private Integer heartTime;

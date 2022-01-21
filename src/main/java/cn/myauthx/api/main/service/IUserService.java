@@ -22,7 +22,16 @@ public interface IUserService extends IService<User> {
      */
     Result register(User user, Soft softC);
 
-
+    /**
+     * 登录
+     * @param user
+     * @param softC
+     * @return
+     */
     Result login(User user, Soft softC);
+
+    Result heart(User user, Soft softC);
+
+    Result useCkey(User user,Soft soft);
 
 }

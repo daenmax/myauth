@@ -2,6 +2,10 @@ package cn.myauthx.api.base.annotation;
 
 import java.lang.annotation.*;
 
+/**
+ * 用户登录校验
+ * @author DaenMax
+ */
 //定义可以在方法和类上使用此注解
 @Target({ElementType.METHOD,ElementType.TYPE})
 //定义的这个注解是注解，会在class字节码文件中存在，在运行时可以通过反射获取到。

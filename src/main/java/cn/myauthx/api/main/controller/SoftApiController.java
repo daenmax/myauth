@@ -53,7 +53,6 @@ public class SoftApiController {
         retJson.put("Status",soft.getStatus());
         retJson.put("Type",soft.getType());
         retJson.put("BindDeviceCode",soft.getBindDeviceCode());
-        retJson.put("MultipleLogin",soft.getMultipleLogin());
         retJson.put("HeartTime",soft.getHeartTime());
         return Result.ok("初始化成功",retJson);
     }
@@ -113,9 +112,46 @@ public class SoftApiController {
         User user = jsonObject.getJSONObject("data").toJavaObject(User.class);
         String ip = IpUtil.getIpAddr(request);
         user.setLastIp(ip);
+        user.setLastTime(Integer.valueOf(MyUtils.getTimeStamp()));
         user.setFromVerId(version.getId());
         user.setFromVerKey(version.getVkey());
-        user.setLastTime(Integer.valueOf(MyUtils.getTimeStamp()));
         return userService.login(user,soft);
+    }
+    @SoftValidated
+    @VersionValidated
+    @DataDecrypt
+    @SignValidated
+    @UserLogin
+    @BanValidated(is_ip = true,is_device_code = true,is_user = true)
+    @PostMapping("heart")
+    public Result heart(HttpServletRequest request){
+        //不管有没有加密和解密，取提交的JSON都要通过下面这行去取
+        JSONObject jsonObject = (JSONObject) request.getAttribute("json");
+        Soft soft = (Soft) request.getAttribute("obj_soft");
+        User user = (User) request.getAttribute("obj_user");
+        user.setLastTime(Integer.valueOf(MyUtils.getTimeStamp()));
+        return userService.heart(user,soft);
+    }
+    @SoftValidated
+    @VersionValidated
+    @DataDecrypt
+    @SignValidated
+    @BanValidated(is_ip = true,is_device_code = true,is_user = false)
+    @PostMapping("/useCkey")
+    public Result useCkey(HttpServletRequest request){
+        //不管有没有加密和解密，取提交的JSON都要通过下面这行去取
+        JSONObject jsonObject = (JSONObject) request.getAttribute("json");
+        Soft soft = (Soft) request.getAttribute("obj_soft");
+        User user = jsonObject.getJSONObject("data").toJavaObject(User.class);
+        if(CheckUtils.isObjectEmpty(user)){
+            return Result.error("参数错误");
+        }
+        if(CheckUtils.isObjectEmpty(user.getUser())){
+            return Result.error("账号不能为空");
+        }
+        if(CheckUtils.isObjectEmpty(user.getCkey())){
+            return Result.error("卡密不能为空");
+        }
+        return userService.useCkey(user,soft);
     }
 }

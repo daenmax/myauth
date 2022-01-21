@@ -348,4 +348,104 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         }
         return null;
     }
+
+    @Override
+    public Result heart(User userA, Soft softC) {
+        redisUtil.set("user:" + userA.getFromSoftId() + ":" + userA.getUser(),userA);
+        JSONObject jsonObject = new JSONObject(true);
+        jsonObject.put("user",userA.getUser());
+        jsonObject.put("name",userA.getName());
+        jsonObject.put("qq",userA.getQq());
+        jsonObject.put("point",userA.getPoint());
+        jsonObject.put("ckey",userA.getCkey());
+        jsonObject.put("regTime",userA.getRegTime());
+        jsonObject.put("remark",userA.getRemark());
+        jsonObject.put("authTime",userA.getAuthTime());
+        jsonObject.put("token",userA.getToken());
+        return Result.ok("心跳成功",jsonObject);
+    }
+
+    @Override
+    public Result useCkey(User userC, Soft softC) {
+        LambdaQueryWrapper<User> userLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        userLambdaQueryWrapper.eq(User::getUser,userC.getUser());
+        userLambdaQueryWrapper.eq(User::getFromSoftId,softC.getId());
+        User userA = userMapper.selectOne(userLambdaQueryWrapper);
+        if(CheckUtils.isObjectEmpty(userA)){
+            return Result.error("账号不存在");
+        }
+        LambdaQueryWrapper<Ban> banLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        banLambdaQueryWrapper.eq(Ban::getValue,userA.getUser());
+        banLambdaQueryWrapper.eq(Ban::getType,3);
+        Ban ban = banMapper.selectOne(banLambdaQueryWrapper);
+        if(!CheckUtils.isObjectEmpty(ban)){
+            if(ban.getToTime() == -1){
+                String msg = "msg=被封禁" + "&type=user" + "&value=" + userA.getUser() + "&toTime=-1&time=" + ban.getAddTime()
+                        + "&why=" + ban.getWhy();
+                return Result.error(300,msg);
+            }else{
+                Integer seconds = ban.getToTime() - Integer.parseInt(MyUtils.getTimeStamp());
+                if(seconds > 0){
+                    String msg = "msg=被封禁" + "&type=user" + "&value=" + userA.getUser() + "&toTime=" + ban.getToTime() + "&time=" + ban.getAddTime()
+                            + "&why=" + ban.getWhy();
+                    return Result.error(300,msg);
+                }
+            }
+        }
+        LambdaQueryWrapper<Card> cardLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        cardLambdaQueryWrapper.eq(Card::getCkey,userC.getCkey());
+        Card card = cardMapper.selectOne(cardLambdaQueryWrapper);
+        if(CheckUtils.isObjectEmpty(card)){
+            return Result.error("卡密错误或者不存在");
+        }
+        if(card.getStatus().equals(CardEnums.STATUS_USED.getCode())){
+            return Result.error("卡密已被使用");
+        }
+        if(card.getStatus().equals(CardEnums.STATUS_DISABLE.getCode())){
+            return Result.error("卡密已被禁用");
+        }
+        if(!card.getFromSoftId().equals(softC.getId())){
+            return Result.error("此卡密不属于当前软件");
+        }
+        if(CheckUtils.isObjectEmpty(userA.getAuthTime())){
+            userA.setAuthTime(0);
+        }
+        if(CheckUtils.isObjectEmpty(userA.getPoint())){
+            userA.setPoint(0);
+        }
+        if(!userA.getAuthTime().equals(-1)){
+            if(card.getPoint().equals(0)){
+                return Result.error("已是永久授权，无需再使用卡密续费");
+            }
+            userA.setAuthTime(Integer.valueOf(userA.getAuthTime()) + card.getSeconds());
+        }
+        userA.setPoint(Integer.valueOf(userA.getPoint()) + card.getPoint());
+        User userR = (User) redisUtil.get("user:" + softC.getId() + ":" + userC.getUser());
+        if(!CheckUtils.isObjectEmpty(userR)){
+            userA.setLastTime(userR.getLastTime());
+        }
+        int num = userMapper.updateById(userA);
+        if(num > 0){
+            if(!CheckUtils.isObjectEmpty(userR)) {
+                redisUtil.set("user:" + userA.getFromSoftId() + ":" + userA.getUser(), userA);
+            }
+            card.setLetUser(userA.getUser());
+            card.setLetTime(Integer.valueOf(MyUtils.getTimeStamp()));
+            card.setStatus(CardEnums.STATUS_USED.getCode());
+            cardMapper.updateById(card);
+            JSONObject jsonObject = new JSONObject(true);
+            jsonObject.put("user",userA.getUser());
+            jsonObject.put("name",userA.getName());
+            jsonObject.put("qq",userA.getQq());
+            jsonObject.put("point",userA.getPoint());
+            jsonObject.put("ckey",userA.getCkey());
+            jsonObject.put("regTime",userA.getRegTime());
+            jsonObject.put("remark",userA.getRemark());
+            jsonObject.put("authTime",userA.getAuthTime());
+            jsonObject.put("token",userA.getToken());
+            return Result.ok("使用卡密成功",jsonObject);
+        }else{
+            return Result.error("使用卡密失败");
+        }
+    }
 }
