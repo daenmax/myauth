@@ -6,10 +6,7 @@ import cn.myauthx.api.main.enums.CardEnums;
 import cn.myauthx.api.main.enums.MsgEnums;
 import cn.myauthx.api.main.enums.SoftEnums;
 import cn.myauthx.api.main.enums.UserEnums;
-import cn.myauthx.api.main.mapper.BanMapper;
-import cn.myauthx.api.main.mapper.CardMapper;
-import cn.myauthx.api.main.mapper.MsgMapper;
-import cn.myauthx.api.main.mapper.UserMapper;
+import cn.myauthx.api.main.mapper.*;
 import cn.myauthx.api.main.service.IUserService;
 import cn.myauthx.api.util.CheckUtils;
 import cn.myauthx.api.util.MyUtils;
@@ -41,6 +38,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     private CardMapper cardMapper;
     @Autowired
     private MsgMapper msgMapper;
+    @Autowired
+    private PlogMapper plogMapper;
     @Value("${genKey}")
     private String genKey;
     /**
@@ -385,6 +384,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
      */
     @Override
     public Result useCkey(User userC, Soft softC) {
+        Plog plog = new Plog();
         LambdaQueryWrapper<User> userLambdaQueryWrapper = new LambdaQueryWrapper<>();
         userLambdaQueryWrapper.eq(User::getUser,userC.getUser());
         userLambdaQueryWrapper.eq(User::getFromSoftId,softC.getId());
@@ -431,13 +431,27 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         if(CheckUtils.isObjectEmpty(userA.getPoint())){
             userA.setPoint(0);
         }
-        if(!userA.getAuthTime().equals(-1)){
-            if(card.getPoint().equals(0)){
-                return Result.error("已是永久授权，无需再使用卡密续费");
+        //如果卡密包含授权时间
+        if(!card.getSeconds().equals(0)){
+            plog.setSeconds(card.getSeconds());
+            if(userA.getAuthTime().equals(-1)){
+                //已是永久授权
+            }else{
+                //不是永久授权
+                userA.setAuthTime(Integer.valueOf(userA.getAuthTime()) + card.getSeconds());
             }
-            userA.setAuthTime(Integer.valueOf(userA.getAuthTime()) + card.getSeconds());
         }
-        userA.setPoint(Integer.valueOf(userA.getPoint()) + card.getPoint());
+        plog.setAfterSeconds(userA.getAuthTime());
+        //如果卡密包含点数
+        if(!card.getSeconds().equals(0)){
+            plog.setPoint(card.getPoint());
+            userA.setPoint(Integer.valueOf(userA.getPoint()) + card.getPoint());
+        }
+        plog.setAfterPoint(userA.getPoint());
+        plog.setFromUser(userA.getUser());
+        plog.setAddTime(Integer.parseInt(MyUtils.getTimeStamp()));
+        plog.setFromSoftId(card.getFromSoftId());
+        plog.setRemark(card.getCkey());
         User userR = (User) redisUtil.get("user:" + softC.getId() + ":" + userC.getUser());
         if(!CheckUtils.isObjectEmpty(userR)){
             userA.setLastTime(userR.getLastTime());
@@ -447,6 +461,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
             if(!CheckUtils.isObjectEmpty(userR)) {
                 redisUtil.set("user:" + userA.getFromSoftId() + ":" + userA.getUser(), userA);
             }
+            plogMapper.insert(plog);
             card.setLetUser(userA.getUser());
             card.setLetTime(Integer.valueOf(MyUtils.getTimeStamp()));
             card.setStatus(CardEnums.STATUS_USED.getCode());

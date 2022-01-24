@@ -12,7 +12,6 @@ import cn.myauthx.api.util.IpUtil;
 import cn.myauthx.api.util.MyUtils;
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -212,6 +211,12 @@ public class SoftApiController {
         }
         return userService.getMsg(soft,version,keyword);
     }
+
+    /**
+     * 执行JS
+     * @param request
+     * @return
+     */
     @SoftValidated
     @VersionValidated
     @DataDecrypt
@@ -240,6 +245,11 @@ public class SoftApiController {
         return jsService.runJs(soft,func,c1,c2,c3,c4,c5,c6,c7,c8,c9,c10);
     }
 
+    /**
+     * 上报数据
+     * @param request
+     * @return
+     */
     @SoftValidated
     @VersionValidated
     @DataDecrypt
@@ -294,4 +304,16 @@ public class SoftApiController {
         }
         return eventService.letEvent(name,user,soft);
     }
+
+    /**
+     * 解绑
+     */
+
+    /**
+     * 修改密码
+     */
+
+    /**
+     * 修改资料
+     */
 }
