@@ -1,4 +1,4 @@
-# m
+# MyAuth
 
 #### 介绍
 一个授权管理系统，此仓库为后端代码
@@ -22,7 +22,7 @@
 2.  修改配置：src/main/resources/application-dev.yml
 3.  启动Redis、MySQL
 4.  运行MyAuthApplication.java启动类
-5.  访问http://localhost:8081/myauth/web/connect查看是否正常
+5.  访问测试地址，查看是否正常：http://localhost:8081/myauth/web/connect
 #### 接口
 ##### 软件接口
 
