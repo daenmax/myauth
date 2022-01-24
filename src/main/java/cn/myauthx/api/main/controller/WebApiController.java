@@ -30,7 +30,7 @@ public class WebApiController {
     private ISoftService softService;
 
     /**
-     * 检测连接
+     * 检查服务状态
      * @param request
      * @return
      */
