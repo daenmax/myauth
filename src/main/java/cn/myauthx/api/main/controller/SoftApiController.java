@@ -327,10 +327,33 @@ public class SoftApiController {
         user.setToken("");
         return userService.unbind(user,soft);
     }
+
     /**
      * 修改密码
+     * @param request
+     * @return
      */
-
+    @SoftValidated
+    @VersionValidated
+    @DataDecrypt
+    @SignValidated
+    @BanValidated(is_ip = true,is_device_code = true,is_user = false)
+    @PostMapping("editPass")
+    public Result editPass(HttpServletRequest request){
+        //不管有没有加密和解密，取提交的JSON都要通过下面这行去取
+        JSONObject jsonObject = (JSONObject) request.getAttribute("json");
+        Soft soft = (Soft) request.getAttribute("obj_soft");
+        String user = jsonObject.getJSONObject("data").getString("user");
+        String nowPass = jsonObject.getJSONObject("data").getString("nowPass");
+        String newPass = jsonObject.getJSONObject("data").getString("newPass");
+        if(CheckUtils.isObjectEmpty(user) || CheckUtils.isObjectEmpty(nowPass) || CheckUtils.isObjectEmpty(newPass)){
+            return Result.error("账号、旧密码、新密码不能为空");
+        }
+        if(nowPass.equals(newPass)){
+            return Result.error("旧密码和新密码不能相同");
+        }
+        return userService.editPass(user,nowPass,newPass,soft);
+    }
     /**
      * 修改资料
      */

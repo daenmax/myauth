@@ -63,4 +63,13 @@ public interface IUserService extends IService<User> {
      * @return
      */
     Result unbind(User user,Soft soft);
+
+    /**
+     * 修改密码
+     * @param user
+     * @param nowPass
+     * @param newPass
+     * @return
+     */
+    Result editPass(String user,String nowPass,String newPass,Soft soft);
 }

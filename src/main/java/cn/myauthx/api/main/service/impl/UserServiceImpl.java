@@ -208,8 +208,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
                     if(!CheckUtils.isObjectEmpty(userA.getDeviceCode())){
                         //已经有历史机器码记录
                         if(!userA.getDeviceCode().equals(userC.getDeviceCode())){
-                            return Result.error("绑定了机器码，请先换绑");
+                            return Result.error("此账号已绑定其他机器码，请先解绑");
                         }
+                    }else{
+                        //没有历史机器码记录
+                        userA.setDeviceCode(userC.getDeviceCode());
+                        userA.setDeviceInfo(userC.getDeviceInfo());
                     }
                 }else{
                     userA.setDeviceCode(userC.getDeviceCode());
@@ -244,8 +248,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
                     if(!CheckUtils.isObjectEmpty(userA.getDeviceCode())){
                         //已经有历史机器码记录
                         if(!userA.getDeviceCode().equals(userC.getDeviceCode())){
-                            return Result.error("绑定了机器码，请先换绑");
+                            return Result.error("此账号已绑定其他机器码，请先解绑");
                         }
+                    }else{
+                        //没有历史机器码记录
+                        userA.setDeviceCode(userC.getDeviceCode());
+                        userA.setDeviceInfo(userC.getDeviceInfo());
                     }
                 }else{
                     userA.setDeviceCode(userC.getDeviceCode());
@@ -280,8 +288,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
                         if(!CheckUtils.isObjectEmpty(userA.getDeviceCode())){
                             //已经有历史机器码记录
                             if(!userA.getDeviceCode().equals(userC.getDeviceCode())){
-                                return Result.error("绑定了机器码，请先换绑");
+                                return Result.error("此账号已绑定其他机器码，请先解绑");
                             }
+                        }else{
+                            //没有历史机器码记录
+                            userA.setDeviceCode(userC.getDeviceCode());
+                            userA.setDeviceInfo(userC.getDeviceInfo());
                         }
                     }else{
                         userA.setDeviceCode(userC.getDeviceCode());
@@ -322,8 +334,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
                         if(!CheckUtils.isObjectEmpty(userA.getDeviceCode())){
                             //已经有历史机器码记录
                             if(!userA.getDeviceCode().equals(userC.getDeviceCode())){
-                                return Result.error("绑定了机器码，请先换绑");
+                                return Result.error("此账号已绑定其他机器码，请先解绑");
                             }
+                        }else{
+                            //没有历史机器码记录
+                            userA.setDeviceCode(userC.getDeviceCode());
+                            userA.setDeviceInfo(userC.getDeviceInfo());
                         }
                     }else{
                         userA.setDeviceCode(userC.getDeviceCode());
@@ -560,5 +576,57 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         jsonObject.put("user",userA.getUser());
         redisUtil.del("user:" + softC.getId() + ":" + userA.getUser());
         return Result.ok("解绑成功",jsonObject);
+    }
+
+    /**
+     * 修改密码
+     * @param userS
+     * @param nowPass
+     * @param newPass
+     * @param softC
+     * @return
+     */
+    @Override
+    public Result editPass(String userS, String nowPass, String newPass,Soft softC) {
+        LambdaQueryWrapper<User> userLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        userLambdaQueryWrapper.eq(User::getUser,userS);
+        userLambdaQueryWrapper.eq(User::getFromSoftId,softC.getId());
+        User userA = userMapper.selectOne(userLambdaQueryWrapper);
+        if(CheckUtils.isObjectEmpty(userA)){
+            return Result.error("账号不存在");
+        }
+        LambdaQueryWrapper<Ban> banLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        banLambdaQueryWrapper.eq(Ban::getValue,userA.getUser());
+        banLambdaQueryWrapper.eq(Ban::getType,3);
+        Ban ban = banMapper.selectOne(banLambdaQueryWrapper);
+        if(!CheckUtils.isObjectEmpty(ban)){
+            if(ban.getToTime() == -1){
+                String msg = "msg=被封禁" + "&type=user" + "&value=" + userA.getUser() + "&toTime=-1&time=" + ban.getAddTime()
+                        + "&why=" + ban.getWhy();
+                return Result.error(300,msg);
+            }else{
+                Integer seconds = ban.getToTime() - Integer.parseInt(MyUtils.getTimeStamp());
+                if(seconds > 0){
+                    String msg = "msg=被封禁" + "&type=user" + "&value=" + userA.getUser() + "&toTime=" + ban.getToTime() + "&time=" + ban.getAddTime()
+                            + "&why=" + ban.getWhy();
+                    return Result.error(300,msg);
+                }
+            }
+        }
+        if(CheckUtils.isObjectEmpty(userA.getPass())){
+            return Result.error("账号不允许修改密码");
+        }
+        if(!userA.getPass().equals(nowPass)){
+            return Result.error("旧密码错误");
+        }
+        userA.setPass(newPass);
+        int num = userMapper.updateById(userA);
+        if(num == 0){
+            return Result.error("修改密码失败");
+        }
+        JSONObject jsonObject = new JSONObject(true);
+        jsonObject.put("user",userA.getUser());
+        redisUtil.del("user:" + softC.getId() + ":" + userA.getUser());
+        return Result.ok("修改密码成功，请重新登录",jsonObject);
     }
 }
