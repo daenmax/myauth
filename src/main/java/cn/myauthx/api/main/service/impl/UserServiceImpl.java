@@ -376,6 +376,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         return Result.ok("心跳成功",jsonObject);
     }
 
+
     /**
      * 使用卡密
      * @param userC
@@ -438,7 +439,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
                 //已是永久授权
             }else{
                 //不是永久授权
-                userA.setAuthTime(Integer.valueOf(userA.getAuthTime()) + card.getSeconds());
+                if(userA.getAuthTime() < Integer.parseInt(MyUtils.getTimeStamp())){
+                    //已经到期
+                    userA.setAuthTime(Integer.parseInt(MyUtils.getTimeStamp())+ card.getSeconds());
+                }else{
+                    //未到期，则续费
+                    userA.setAuthTime(Integer.valueOf(userA.getAuthTime()) + card.getSeconds());
+                }
+
             }
         }
         plog.setAfterSeconds(userA.getAuthTime());
@@ -534,5 +542,23 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
             jsonObject.put("msg",MyUtils.base64Encode(msg.getMsg()));
             return Result.ok("获取回复成功",jsonObject);
         }
+    }
+
+    /**
+     * 解绑
+     * @param userA
+     * @param softC
+     * @return
+     */
+    @Override
+    public Result unbind(User userA, Soft softC) {
+        int num = userMapper.updateById(userA);
+        if(num == 0){
+            return Result.error("解绑失败");
+        }
+        JSONObject jsonObject = new JSONObject(true);
+        jsonObject.put("user",userA.getUser());
+        redisUtil.del("user:" + softC.getId() + ":" + userA.getUser());
+        return Result.ok("解绑成功",jsonObject);
     }
 }

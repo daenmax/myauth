@@ -56,4 +56,11 @@ public interface IUserService extends IService<User> {
      */
     Result getMsg(Soft soft, Version version, String keyword);
 
+    /**
+     * 解绑
+     * @param user
+     * @param soft
+     * @return
+     */
+    Result unbind(User user,Soft soft);
 }

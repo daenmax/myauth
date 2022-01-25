@@ -307,8 +307,26 @@ public class SoftApiController {
 
     /**
      * 解绑
+     * @param request
+     * @return
      */
-
+    @SoftValidated
+    @VersionValidated
+    @DataDecrypt
+    @SignValidated
+    @UserLogin
+    @BanValidated(is_ip = true,is_device_code = true,is_user = true)
+    @PostMapping("unbind")
+    public Result unbind(HttpServletRequest request){
+        //不管有没有加密和解密，取提交的JSON都要通过下面这行去取
+        JSONObject jsonObject = (JSONObject) request.getAttribute("json");
+        Soft soft = (Soft) request.getAttribute("obj_soft");
+        User user = (User) request.getAttribute("obj_user");
+        user.setDeviceInfo("");
+        user.setDeviceCode("");
+        user.setToken("");
+        return userService.unbind(user,soft);
+    }
     /**
      * 修改密码
      */
