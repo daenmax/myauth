@@ -354,7 +354,35 @@ public class SoftApiController {
         }
         return userService.editPass(user,nowPass,newPass,soft);
     }
+
     /**
-     * 修改资料
+     * 修改资料：昵称和QQ
+     * @param request
+     * @return
      */
+    @SoftValidated
+    @VersionValidated
+    @DataDecrypt
+    @SignValidated
+    @UserLogin
+    @BanValidated(is_ip = true,is_device_code = true,is_user = true)
+    @PostMapping("editInfo")
+    public Result editInfo(HttpServletRequest request){
+        //不管有没有加密和解密，取提交的JSON都要通过下面这行去取
+        JSONObject jsonObject = (JSONObject) request.getAttribute("json");
+        Soft soft = (Soft) request.getAttribute("obj_soft");
+        User user = (User) request.getAttribute("obj_user");
+        String newName = jsonObject.getJSONObject("data").getString("newName");
+        String newQq = jsonObject.getJSONObject("data").getString("newQq");
+        if(CheckUtils.isObjectEmpty(newName) && CheckUtils.isObjectEmpty(newQq)){
+            return Result.error("新昵称和QQ不能都为空");
+        }
+        if(!CheckUtils.isObjectEmpty(user)){
+            user.setName(newName);
+        }
+        if(!CheckUtils.isObjectEmpty(newQq)){
+            user.setQq(newQq);
+        }
+        return userService.editInfo(user,soft);
+    }
 }

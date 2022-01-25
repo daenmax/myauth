@@ -72,4 +72,12 @@ public interface IUserService extends IService<User> {
      * @return
      */
     Result editPass(String user,String nowPass,String newPass,Soft soft);
+
+    /**
+     * 修改资料：QQ和昵称
+     * @param user
+     * @param soft
+     * @return
+     */
+    Result editInfo(User user,Soft soft);
 }

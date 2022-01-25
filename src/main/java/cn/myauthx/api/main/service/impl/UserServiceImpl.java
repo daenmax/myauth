@@ -388,7 +388,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         jsonObject.put("regTime",userA.getRegTime());
         jsonObject.put("remark",userA.getRemark());
         jsonObject.put("authTime",userA.getAuthTime());
-        jsonObject.put("token",userA.getToken());
         return Result.ok("心跳成功",jsonObject);
     }
 
@@ -499,7 +498,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
             jsonObject.put("regTime",userA.getRegTime());
             jsonObject.put("remark",userA.getRemark());
             jsonObject.put("authTime",userA.getAuthTime());
-            jsonObject.put("token",userA.getToken());
             return Result.ok("使用卡密成功",jsonObject);
         }else{
             return Result.error("使用卡密失败");
@@ -628,5 +626,34 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         jsonObject.put("user",userA.getUser());
         redisUtil.del("user:" + softC.getId() + ":" + userA.getUser());
         return Result.ok("修改密码成功，请重新登录",jsonObject);
+    }
+
+    /**
+     * 修改资料：QQ和昵称
+     *
+     * @param user
+     * @param soft
+     * @return
+     */
+    @Override
+    public Result editInfo(User user, Soft soft) {
+        User userR = (User) redisUtil.get("user:" + soft.getId() + ":" + user.getUser());
+        userR.setName(user.getName());
+        userR.setQq(user.getQq());
+        int num = userMapper.updateById(userR);
+        if(num == 0){
+            return Result.error("修改资料失败");
+        }
+        redisUtil.set("user:" + soft.getId() + ":" + user.getUser(),userR);
+        JSONObject jsonObject = new JSONObject(true);
+        jsonObject.put("user",userR.getUser());
+        jsonObject.put("name",userR.getName());
+        jsonObject.put("qq",userR.getQq());
+        jsonObject.put("point",userR.getPoint());
+        jsonObject.put("ckey",userR.getCkey());
+        jsonObject.put("regTime",userR.getRegTime());
+        jsonObject.put("remark",userR.getRemark());
+        jsonObject.put("authTime",userR.getAuthTime());
+        return Result.ok("修改资料成功",jsonObject);
     }
 }

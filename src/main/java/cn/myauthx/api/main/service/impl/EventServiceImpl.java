@@ -104,7 +104,6 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements
             jsonObject.put("regTime",user.getRegTime());
             jsonObject.put("remark",user.getRemark());
             jsonObject.put("authTime",user.getAuthTime());
-            jsonObject.put("token",user.getToken());
             return Result.ok("触发事件成功",jsonObject);
         }else{
             return Result.error("触发事件失败");
