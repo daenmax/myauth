@@ -92,6 +92,7 @@ public class MyInterceptor implements HandlerInterceptor {
                     response.getWriter().write(retStr);
                     return false;
                 }
+                request.setAttribute("obj_admin",admin);
             }
 
 

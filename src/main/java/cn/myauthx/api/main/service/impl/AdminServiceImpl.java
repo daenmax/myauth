@@ -68,4 +68,30 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin> implements
         jsonObject.put("token",admin.getToken());
         return Result.ok("登录成功",jsonObject);
     }
+
+    /**
+     * 修改密码
+     *
+     * @param nowPass
+     * @param newPass
+     * @return
+     */
+    @Override
+    public Result editPass(String nowPass, String newPass,Admin admin) {
+        if(!nowPass.equals(admin.getPass())){
+            return Result.error("旧密码错误");
+        }
+        if(nowPass.equals(newPass)){
+            return Result.error("新密码与旧密码不能一样");
+        }
+        String token = admin.getToken();
+        admin.setToken("");
+        admin.setPass(newPass);
+        int num = adminMapper.updateById(admin);
+        if(num < 1){
+            return Result.error("修改密码失败");
+        }
+        redisUtil.del("admin:" + token);
+        return Result.ok("密码修改成功，请重新登录");
+    }
 }

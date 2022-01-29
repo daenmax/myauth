@@ -3,6 +3,7 @@ package cn.myauthx.api.main.controller;
 import cn.myauthx.api.base.annotation.AdminLogin;
 import cn.myauthx.api.base.annotation.OpenApi;
 import cn.myauthx.api.base.vo.Result;
+import cn.myauthx.api.main.entity.Admin;
 import cn.myauthx.api.main.entity.MyPage;
 import cn.myauthx.api.main.entity.Soft;
 import cn.myauthx.api.main.service.IAdminService;
@@ -188,6 +189,25 @@ public class WebApiController {
             return Result.error("id和skey不能全部为空");
         }
         return softService.getSoft(soft);
+    }
+
+    /**
+     *
+     * @param request
+     * @return
+     */
+    @OpenApi
+    @AdminLogin
+    @PostMapping("editPass")
+    public Result editPass(HttpServletRequest request){
+        JSONObject jsonObject = (JSONObject) request.getAttribute("json");
+        String nowPass = jsonObject.getString("nowPass");
+        String newPass = jsonObject.getString("newPass");
+        Admin admin = (Admin) request.getAttribute("obj_admin");
+        if(CheckUtils.isObjectEmpty(nowPass) || CheckUtils.isObjectEmpty(newPass)){
+            return Result.error("新密码和旧密码均不能为空");
+        }
+        return adminService.editPass(nowPass,newPass,admin);
     }
 
 }

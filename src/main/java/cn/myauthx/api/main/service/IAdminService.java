@@ -20,4 +20,12 @@ public interface IAdminService extends IService<Admin> {
      * @return
      */
     Result login(String user,String pass,String ip);
+
+    /**
+     * 修改密码
+     * @param nowPass
+     * @param newPass
+     * @return
+     */
+    Result editPass(String nowPass,String newPass,Admin admin);
 }
