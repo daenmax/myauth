@@ -6,6 +6,7 @@ import cn.myauthx.api.base.vo.Result;
 import cn.myauthx.api.main.entity.MyPage;
 import cn.myauthx.api.main.entity.Soft;
 import cn.myauthx.api.main.service.IAdminService;
+import cn.myauthx.api.main.service.IConfigService;
 import cn.myauthx.api.main.service.ISoftService;
 import cn.myauthx.api.util.CheckUtils;
 import cn.myauthx.api.util.IpUtil;
@@ -28,7 +29,8 @@ public class WebApiController {
     private IAdminService adminService;
     @Resource
     private ISoftService softService;
-
+    @Resource
+    private IConfigService configService;
     /**
      * 检查服务状态
      * @param request
@@ -42,6 +44,18 @@ public class WebApiController {
         retJson.put("ua",request.getHeader("user-agent"));
         return Result.ok("服务器正常",retJson);
     }
+
+    /**
+     * 获取web信息
+     * @param request
+     * @return
+     */
+    @OpenApi
+    @GetMapping("/getWebInfo")
+    public Result getWebInfo(HttpServletRequest request){
+        return configService.getWebInfo();
+    }
+
     /**
      * 登录
      * @param request

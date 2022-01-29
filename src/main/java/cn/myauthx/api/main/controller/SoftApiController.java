@@ -375,7 +375,7 @@ public class SoftApiController {
         String newName = jsonObject.getJSONObject("data").getString("newName");
         String newQq = jsonObject.getJSONObject("data").getString("newQq");
         if(CheckUtils.isObjectEmpty(newName) && CheckUtils.isObjectEmpty(newQq)){
-            return Result.error("新昵称和QQ不能都为空");
+            return Result.error("新昵称和新QQ不能都为空");
         }
         if(!CheckUtils.isObjectEmpty(user)){
             user.setName(newName);

@@ -26,6 +26,14 @@ public class Config extends Model {
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
+
+
+    private String seoTitle;
+
+    private String seoKeywords;
+
+    private String seoDescription;
+
     /**
      * 钉钉机器人
      */
@@ -34,23 +42,10 @@ public class Config extends Model {
     /**
      * 0=关闭通知，1=开启通知
      */
-    private String botMsg;
+    private Integer dingbotMsg;
 
     /**
-     * 添加软件扣除点数
+     * 开放接口key
      */
-    private BigDecimal softPrice;
-
-    /**
-     * 0=维护，1=正常
-     */
-    private String webStatus;
-
-    private String seoTitle;
-
-    private String seoKeywords;
-
-    private String seoDescription;
-
-
+    private String openApiKey;
 }

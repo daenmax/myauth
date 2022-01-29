@@ -1,13 +1,8 @@
 package cn.myauthx.api.base.config;
 
-import cn.myauthx.api.main.entity.Admin;
-import cn.myauthx.api.main.entity.Ban;
-import cn.myauthx.api.main.entity.Soft;
-import cn.myauthx.api.main.entity.Version;
-import cn.myauthx.api.main.service.IAdminService;
-import cn.myauthx.api.main.service.IBanService;
-import cn.myauthx.api.main.service.ISoftService;
-import cn.myauthx.api.main.service.IVersionService;
+import cn.myauthx.api.main.entity.*;
+import cn.myauthx.api.main.service.*;
+import cn.myauthx.api.util.CheckUtils;
 import cn.myauthx.api.util.MyUtils;
 import cn.myauthx.api.util.RedisUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -35,9 +30,24 @@ public class InitConfig  implements ApplicationRunner {
     private IVersionService versionService;
     @Resource
     private IBanService banService;
-
+    @Resource
+    private IConfigService configService;
     @Override
     public void run(ApplicationArguments args) throws Exception {
+        log.info("[config]初始化配置表...");
+        Config config = configService.getById(1);
+        if(CheckUtils.isObjectEmpty(config)){
+            Config config1 = new Config();
+            config1.setId(1);
+            config1.setSeoTitle("MyAuth");
+            config1.setSeoKeywords("MyAuth授权管理系统;免费授权系统");
+            config1.setSeoDescription("一款稳定 高效 免费的授权管理系统");
+            config1.setOpenApiKey(MyUtils.getUUID(false));
+            config = config1;
+            configService.save(config1);
+        }
+        redisUtil.set("config" ,config);
+        log.info("[config]配置表初始化完毕");
         log.info("[soft]开始读取...");
         List<Soft> softList = softService.list();
         log.info("[soft]读取到的数量->" + softList.size());
