@@ -80,3 +80,4 @@ spring:
       min-idle:
 # 加密token的秘钥，长度必须为16位，不支持中文
 genKey: myauthdaen666888
+log-file-path: D:/idea-workspace/myauth/log

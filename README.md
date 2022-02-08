@@ -16,13 +16,18 @@
 - MySQL 8.0.12
 
 
-#### 安装教程
-
+#### 使用教程
+##### 1.安装
 1.  克隆仓库到本地
-2.  修改配置：src/main/resources/application-dev.yml
+2.  修改配置：application-dev.yml和application-prod.yml
 3.  启动Redis、MySQL
 4.  运行MyAuthApplication.java启动类
 5.  访问测试地址，查看是否正常：http://localhost:8081/myauth/web/connect
+
+##### 2.打包
+修改application.yml里的环境 
+![IDEA打包教程](https://images.gitee.com/uploads/images/2022/0208/094816_5322dd06_5370510.png)
+
 #### 接口
 ##### 软件接口
 
@@ -60,7 +65,7 @@
 ##### 开放接口
 
 - [ ] 获取在线人数
-
+- [ ] 查询授权
 - [ ] 获取用户总数
 
 ##### 其他功能
