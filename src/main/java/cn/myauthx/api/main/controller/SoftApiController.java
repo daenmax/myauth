@@ -86,6 +86,27 @@ public class SoftApiController {
     }
 
     /**
+     * 获取最新的一个版本
+     * @param request
+     * @return
+     */
+    @SoftValidated
+    @DataDecrypt
+    @SignValidated
+    @BanValidated(is_ip = true,is_device_code = true,is_user = false)
+    @PostMapping("/getNewVersion")
+    public Result getNewVersion(HttpServletRequest request){
+        //不管有没有加密和解密，取提交的JSON都要通过下面这行去取
+        JSONObject jsonObject = (JSONObject) request.getAttribute("json");
+        Soft soft = (Soft) request.getAttribute("obj_soft");
+        String vkey = jsonObject.getString("vkey");
+        if(CheckUtils.isObjectEmpty(vkey)){
+            return Result.error("缺少vkey参数");
+        }
+        return versionService.getNewVersion(soft);
+    }
+
+    /**
      * 注册
      * @param request
      * @return
@@ -206,10 +227,11 @@ public class SoftApiController {
         Soft soft = (Soft) request.getAttribute("obj_soft");
         Version version = (Version) request.getAttribute("obj_version");
         String keyword = jsonObject.getJSONObject("data").getString("keyword");
+        String ver = jsonObject.getJSONObject("data").getString("ver");
         if(CheckUtils.isObjectEmpty(keyword)){
             return Result.error("keyword不能为空");
         }
-        return userService.getMsg(soft,version,keyword);
+        return userService.getMsg(soft,version,keyword,ver);
     }
 
     /**

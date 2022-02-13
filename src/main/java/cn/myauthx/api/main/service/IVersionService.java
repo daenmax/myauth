@@ -21,4 +21,11 @@ public interface IVersionService extends IService<Version> {
      * @return
      */
     Result checkUpdate(Version versionC, Soft soft);
+
+    /**
+     * 获取最新的一个版本
+     * @param soft
+     * @return
+     */
+    Result getNewVersion(Soft soft);
 }

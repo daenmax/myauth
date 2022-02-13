@@ -71,4 +71,32 @@ public class VersionServiceImpl extends ServiceImpl<VersionMapper, Version> impl
         jsonObject.put("list",jsonArray);
         return Result.ok(msg,jsonObject);
     }
+
+    /**
+     * 获取最新的一个版本
+     *
+     * @param soft
+     * @return
+     */
+    @Override
+    public Result getNewVersion(Soft soft) {
+        LambdaQueryWrapper<Version> versionLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        versionLambdaQueryWrapper.eq(Version::getFromSoftId,soft.getId());
+        versionLambdaQueryWrapper.orderBy(true,false,Version::getVer);
+        List<Version> versionList = versionMapper.selectList(versionLambdaQueryWrapper);
+        if(versionList.size() <= 0){
+            return Result.error("该软件没有任何版本");
+        }
+        JSONArray jsonArray = new JSONArray();
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("ver",versionList.get(0).getVer());
+        jsonObject.put("updLog",versionList.get(0).getUpdLog());
+        jsonObject.put("updTime",versionList.get(0).getUpdTime());
+        jsonObject.put("updType",versionList.get(0).getUpdType());
+        jsonObject.put("status",versionList.get(0).getStatus());
+        jsonArray.add(jsonObject);
+        JSONObject jsonObject1 = new JSONObject();
+        jsonObject1.put("list",jsonArray);
+        return Result.ok("获取成功",jsonObject1);
+    }
 }

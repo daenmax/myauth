@@ -18,6 +18,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * <p>
  *  服务实现类
@@ -40,6 +42,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     private MsgMapper msgMapper;
     @Autowired
     private PlogMapper plogMapper;
+    @Autowired
+    private VersionMapper versionMapper;
     @Value("${genKey}")
     private String genKey;
     /**
@@ -63,6 +67,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
             user.setUser(userC.getUser());
             user.setPass(userC.getPass());
             user.setName(userC.getName());
+            user.setCkey(userC.getCkey());
             user.setQq(userC.getQq());
             user.setLastIp(userC.getLastIp());
             user.setRegTime(Integer.valueOf(MyUtils.getTimeStamp()));
@@ -91,6 +96,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
                 User user = new User();
                 user.setUser(userC.getUser());
                 user.setName(userC.getName());
+                user.setCkey(userC.getCkey());
                 user.setQq(userC.getQq());
                 user.setPass(userC.getUser());
                 user.setLastIp(userC.getLastIp());
@@ -131,6 +137,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
                 User user = new User();
                 user.setUser(userC.getUser());
                 user.setName(userC.getName());
+                user.setCkey(userC.getCkey());
                 user.setQq(userC.getQq());
                 user.setCkey(card.getCkey());
                 user.setLastIp(userC.getLastIp());
@@ -512,21 +519,42 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
      * @return
      */
     @Override
-    public Result getMsg(Soft soft, Version version, String keyword) {
+    public Result getMsg(Soft soft, Version version, String keyword,String ver) {
+        Version version1 = new Version();
+        if(!CheckUtils.isObjectEmpty(ver)){
+            LambdaQueryWrapper<Version> versionLambdaQueryWrapper = new LambdaQueryWrapper<>();
+            versionLambdaQueryWrapper.eq(Version::getFromSoftId,soft.getId());
+            versionLambdaQueryWrapper.eq(Version::getVer,ver);
+            version1 = versionMapper.selectOne(versionLambdaQueryWrapper);
+            if(CheckUtils.isObjectEmpty(version1)){
+                return Result.error("ver错误");
+            }else{
+
+            }
+        }
+
         LambdaQueryWrapper<Msg> msgLambdaQueryWrapper = new LambdaQueryWrapper<>();
         msgLambdaQueryWrapper.eq(Msg::getFromSoftId,soft.getId());
         msgLambdaQueryWrapper.eq(Msg::getKeyword,keyword);
-        msgLambdaQueryWrapper.eq(Msg::getFromVerId,version.getId());
+        if(CheckUtils.isObjectEmpty(ver)){
+            msgLambdaQueryWrapper.eq(Msg::getFromVerId,version.getId());
+        }else{
+            msgLambdaQueryWrapper.eq(Msg::getFromVerId,version1.getId());
+        }
+
+
         Msg msg = msgMapper.selectOne(msgLambdaQueryWrapper);
         JSONObject jsonObject = new JSONObject(true);
         if(CheckUtils.isObjectEmpty(msg)){
             LambdaQueryWrapper<Msg> msgLambdaQueryWrapper2 = new LambdaQueryWrapper<>();
             msgLambdaQueryWrapper2.eq(Msg::getFromSoftId,soft.getId());
             msgLambdaQueryWrapper2.eq(Msg::getKeyword,keyword);
-            msg = msgMapper.selectOne(msgLambdaQueryWrapper2);
-            if(CheckUtils.isObjectEmpty(msg)){
+            List<Msg> msgList = msgMapper.selectList(msgLambdaQueryWrapper2);
+
+            if(msgList.size()==0){
                 return Result.error("回复不存在");
             }else {
+                msg = msgList.get(0);
                 if(CheckUtils.isObjectEmpty(msg.getFromVerId())){
                     if(msg.getStatus().equals(MsgEnums.STATUS_DISABLE.getCode())){
                         return Result.error("回复已被禁用");
