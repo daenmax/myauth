@@ -161,13 +161,10 @@ public class SoftServiceImpl extends ServiceImpl<SoftMapper, Soft> implements IS
      */
     @Override
     public Result getSoft(Soft soft) {
-        Soft newSoft = new Soft();
-        newSoft.setId(soft.getId());
-        newSoft.setSkey(soft.getSkey());
         LambdaQueryWrapper<Soft> softLambdaQueryWrapper = new LambdaQueryWrapper<>();
         softLambdaQueryWrapper.eq(!CheckUtils.isObjectEmpty(soft.getId()),Soft::getId,soft.getId());
         softLambdaQueryWrapper.eq(!CheckUtils.isObjectEmpty(soft.getSkey()),Soft::getSkey,soft.getSkey());
-        newSoft = softMapper.selectOne(softLambdaQueryWrapper);
+        Soft newSoft = softMapper.selectOne(softLambdaQueryWrapper);
         if(CheckUtils.isObjectEmpty(newSoft)){
             return Result.error("查询失败，未找到");
         }

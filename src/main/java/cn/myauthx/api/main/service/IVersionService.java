@@ -1,6 +1,7 @@
 package cn.myauthx.api.main.service;
 
 import cn.myauthx.api.base.vo.Result;
+import cn.myauthx.api.main.entity.MyPage;
 import cn.myauthx.api.main.entity.Soft;
 import cn.myauthx.api.main.entity.Version;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -28,4 +29,41 @@ public interface IVersionService extends IService<Version> {
      * @return
      */
     Result getNewVersion(Soft soft);
+
+    /**
+     * 获取版本列表
+     * @param skey
+     * @param versionC
+     * @param myPage
+     * @return
+     */
+    Result getVersionList(String skey,Version versionC, MyPage myPage);
+
+    /**
+     * 获取版本，通过id或者vkey
+     * @param version
+     * @return
+     */
+    Result getVersion(Version version);
+
+    /**
+     * 修改版本
+     * @param version
+     * @return
+     */
+    Result updVersion(Version version);
+
+    /**
+     * 添加版本
+     * @param version
+     * @return
+     */
+    Result addVersion(Version version);
+
+    /**
+     * 删除版本，会同步删除用户、数据、回复、日志
+     * @param version
+     * @return
+     */
+    Result delVersion(Version version);
 }

@@ -1,15 +1,17 @@
 package cn.myauthx.api.main.service.impl;
 
 import cn.myauthx.api.base.vo.Result;
-import cn.myauthx.api.main.entity.Soft;
-import cn.myauthx.api.main.entity.Version;
-import cn.myauthx.api.main.mapper.VersionMapper;
+import cn.myauthx.api.main.entity.*;
+import cn.myauthx.api.main.mapper.*;
 import cn.myauthx.api.main.service.IVersionService;
 import cn.myauthx.api.util.CheckUtils;
+import cn.myauthx.api.util.MyUtils;
 import cn.myauthx.api.util.RedisUtil;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,6 +31,16 @@ import java.util.List;
 public class VersionServiceImpl extends ServiceImpl<VersionMapper, Version> implements IVersionService {
     @Autowired
     private VersionMapper versionMapper;
+    @Autowired
+    private SoftMapper softMapper;
+    @Autowired
+    private UserMapper userMapper;
+    @Autowired
+    private DataMapper dataMapper;
+    @Autowired
+    private MsgMapper msgMapper;
+    @Autowired
+    private PlogMapper plogMapper;
     @Autowired
     private RedisUtil redisUtil;
 
@@ -98,5 +110,136 @@ public class VersionServiceImpl extends ServiceImpl<VersionMapper, Version> impl
         JSONObject jsonObject1 = new JSONObject();
         jsonObject1.put("list",jsonArray);
         return Result.ok("获取成功",jsonObject1);
+    }
+
+    /**
+     * 获取版本列表
+     * @param skey
+     * @param versionC
+     * @param myPage
+     * @return
+     */
+    @Override
+    public Result getVersionList(String skey,Version versionC, MyPage myPage) {
+        Soft soft = (Soft) redisUtil.get("soft:" + skey);
+        if(CheckUtils.isObjectEmpty(soft)){
+            return Result.error("skey错误或者软件不存在");
+        }
+        versionC.setFromSoftId(soft.getId());
+        Page<Version> page = new Page<>(myPage.getPageIndex(),myPage.getPageSize(),true);
+        IPage<Version> versionPage = versionMapper.selectPage(page, getQwVersion(versionC));
+        return Result.ok("获取成功",versionPage);
+    }
+
+    /**
+     * 获取软件查询条件构造器
+     * @param version
+     * @return
+     */
+    public LambdaQueryWrapper<Version> getQwVersion(Version version){
+        LambdaQueryWrapper<Version> LambdaQueryWrapper = new LambdaQueryWrapper<>();
+        LambdaQueryWrapper.eq(!CheckUtils.isObjectEmpty(version.getFromSoftId()),Version::getFromSoftId,version.getFromSoftId());
+        LambdaQueryWrapper.eq(!CheckUtils.isObjectEmpty(version.getVer()),Version::getVer,version.getVer());
+        LambdaQueryWrapper.eq(!CheckUtils.isObjectEmpty(version.getVkey()),Version::getVkey,version.getVkey());
+        LambdaQueryWrapper.eq(!CheckUtils.isObjectEmpty(version.getUpdType()),Version::getUpdType,version.getUpdType());
+        LambdaQueryWrapper.eq(!CheckUtils.isObjectEmpty(version.getStatus()),Version::getStatus,version.getStatus());
+        return LambdaQueryWrapper;
+    }
+
+    /**
+     * 获取版本，通过id或者vkey
+     *
+     * @param version
+     * @return
+     */
+    @Override
+    public Result getVersion(Version version) {
+        LambdaQueryWrapper<Version> versionLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        versionLambdaQueryWrapper.eq(!CheckUtils.isObjectEmpty(version.getId()),Version::getId,version.getId());
+        versionLambdaQueryWrapper.eq(!CheckUtils.isObjectEmpty(version.getVkey()),Version::getVkey,version.getVkey());
+        Version newVersion = versionMapper.selectOne(versionLambdaQueryWrapper);
+        if(CheckUtils.isObjectEmpty(newVersion)){
+            return Result.error("查询失败，未找到");
+        }
+        return Result.ok("查询成功",newVersion);
+    }
+
+    /**
+     * 修改版本
+     *
+     * @param version
+     * @return
+     */
+    @Override
+    public Result updVersion(Version version) {
+        int num = versionMapper.updateById(version);
+        if(num <= 0){
+            return Result.error("修改失败");
+        }
+        Version newVersion = versionMapper.selectById(version.getId());
+        redisUtil.set("version:" + newVersion.getVkey(),newVersion);
+        return Result.ok("修改成功");
+    }
+
+    /**
+     * 添加版本
+     *
+     * @param version
+     * @return
+     */
+    @Override
+    public Result addVersion(Version version) {
+        Soft soft = softMapper.selectById(version.getFromSoftId());
+        if(CheckUtils.isObjectEmpty(soft)){
+            return Result.error("fromSoftId错误");
+        }
+        LambdaQueryWrapper<Version> versionLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        versionLambdaQueryWrapper.eq(Version::getFromSoftId,version.getFromSoftId());
+        versionLambdaQueryWrapper.eq(Version::getVer,version.getVer());
+        Version version1 = versionMapper.selectOne(versionLambdaQueryWrapper);
+        if(!CheckUtils.isObjectEmpty(version1)){
+            return Result.error("版本号已存在");
+        }
+        version.setUpdTime(Integer.valueOf(MyUtils.getTimeStamp()));
+        version.setVkey(MyUtils.getUUID(true));
+        int num = versionMapper.insert(version);
+        if(num <= 0){
+            return Result.error("添加失败");
+        }
+        redisUtil.set("version:" + version.getVkey(),version);
+        return Result.ok("添加成功");
+    }
+
+    /**
+     * 删除版本，会同步删除用户、数据、回复、日志
+     *
+     * @param versionC
+     * @return
+     */
+    @Override
+    public Result delVersion(Version versionC) {
+        Version version = versionMapper.selectById(versionC.getId());
+        if(CheckUtils.isObjectEmpty(version)){
+            return Result.error("删除失败，id错误");
+        }
+        //删除用户表
+        LambdaQueryWrapper<User> userLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        userLambdaQueryWrapper.eq(User::getFromVerId,version.getId());
+        userMapper.delete(userLambdaQueryWrapper);
+        //删除数据表
+        LambdaQueryWrapper<Data> dataLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        dataLambdaQueryWrapper.eq(Data::getFromVerId,version.getId());
+        dataMapper.delete(dataLambdaQueryWrapper);
+        //删除回复表
+        LambdaQueryWrapper<Msg> msgLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        msgLambdaQueryWrapper.eq(Msg::getFromVerId,version.getId());
+        msgMapper.delete(msgLambdaQueryWrapper);
+        //删除日志表
+        LambdaQueryWrapper<Plog> plogLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        plogLambdaQueryWrapper.eq(Plog::getFromVerId,version.getId());
+        plogMapper.delete(plogLambdaQueryWrapper);
+
+        redisUtil.del("version:" + version.getVkey());
+        return Result.ok("删除成功");
     }
 }
