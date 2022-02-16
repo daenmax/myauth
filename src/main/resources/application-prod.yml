@@ -8,7 +8,7 @@ spring:
   datasource:
     url: jdbc:mysql://localhost:3306/myauth?serverTimezone=Asia/Shanghai
     username: myauth
-    password: BYibaajJWzMHSthB
+    password: S4Ty6TKe2eYXTcWG
     type: com.alibaba.druid.pool.DruidDataSource
     druid:
       #2.连接池配置
