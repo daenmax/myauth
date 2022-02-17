@@ -3,6 +3,7 @@ package cn.myauthx.api.main.controller.web;
 import cn.myauthx.api.base.annotation.AdminLogin;
 import cn.myauthx.api.base.annotation.OpenApi;
 import cn.myauthx.api.base.vo.Result;
+import cn.myauthx.api.main.entity.Msg;
 import cn.myauthx.api.main.entity.MyPage;
 import cn.myauthx.api.main.entity.Soft;
 import cn.myauthx.api.main.entity.Version;
@@ -41,15 +42,16 @@ public class VersionController {
         JSONObject jsonObject = (JSONObject) request.getAttribute("json");
         Version version = jsonObject.toJavaObject(Version.class);
         MyPage myPage = jsonObject.toJavaObject(MyPage.class);
-        String skey = jsonObject.getString("skey");
+        if(CheckUtils.isObjectEmpty(version) || CheckUtils.isObjectEmpty(myPage)){
+            return Result.error("参数错误");
+        }
         if(CheckUtils.isObjectEmpty(myPage.getPageIndex()) || CheckUtils.isObjectEmpty(myPage.getPageSize())){
             return Result.error("页码和尺寸参数不能为空");
         }
-
-        if(CheckUtils.isObjectEmpty(skey)){
-            return Result.error("skey参数不能为空");
+        if(CheckUtils.isObjectEmpty(version.getFromSoftId())){
+            return Result.error("fromSoftId参数不能为空");
         }
-        return versionService.getVersionList(skey,version,myPage);
+        return versionService.getVersionList(version,myPage);
     }
 
     /**
@@ -137,6 +139,48 @@ public class VersionController {
             return Result.error("id不能为空");
         }
         return versionService.delVersion(version);
+    }
+
+    /**
+     * 获取版本列表_全部_简要
+     * @param request
+     * @return
+     */
+    @OpenApi
+    @AdminLogin
+    @PostMapping("getVersionListEx")
+    public Result getVersionListEx(HttpServletRequest request){
+        JSONObject jsonObject = (JSONObject) request.getAttribute("json");
+        Version version = jsonObject.toJavaObject(Version.class);
+        if(CheckUtils.isObjectEmpty(version)){
+            return Result.error("参数错误");
+        }
+        if(CheckUtils.isObjectEmpty(version.getFromSoftId())){
+            return Result.error("fromSoftId参数不能为空");
+        }
+        return versionService.getVersionListEx(version);
+    }
+    /**
+     * 添加版本_同时添加回复
+     * @param request
+     * @return
+     */
+    @OpenApi
+    @AdminLogin
+    @PostMapping("addVersionAndMsg")
+    public Result addVersionAndMsg(HttpServletRequest request){
+        JSONObject jsonObject = (JSONObject) request.getAttribute("json");
+        Version version = jsonObject.toJavaObject(Version.class);
+        Msg msg = jsonObject.toJavaObject(Msg.class);
+        if(CheckUtils.isObjectEmpty(version) || CheckUtils.isObjectEmpty(msg)){
+            return Result.error("参数错误");
+        }
+        if(CheckUtils.isObjectEmpty(version.getVer()) || CheckUtils.isObjectEmpty(version.getFromSoftId()) || CheckUtils.isObjectEmpty(version.getUpdLog())
+                || CheckUtils.isObjectEmpty(version.getUpdType()) || CheckUtils.isObjectEmpty(version.getStatus())
+                || CheckUtils.isObjectEmpty(msg.getKeyword()) || CheckUtils.isObjectEmpty(msg.getMsg())){
+            return Result.error("参数不全");
+        }
+        return versionService.addVersionAndMsg(version,msg);
     }
 
 }

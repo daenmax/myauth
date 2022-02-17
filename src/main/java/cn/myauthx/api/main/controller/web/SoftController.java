@@ -139,4 +139,18 @@ public class SoftController {
         }
         return softService.getSoft(soft);
     }
+
+    /**
+     * 获取软件列表
+     * @param request
+     * @return
+     */
+    @OpenApi
+    @AdminLogin
+    @PostMapping("getSoftListEx")
+    public Result getSoftListEx(HttpServletRequest request){
+        JSONObject jsonObject = (JSONObject) request.getAttribute("json");
+        Soft soft = jsonObject.toJavaObject(Soft.class);
+        return softService.getSoftListEx(soft);
+    }
 }

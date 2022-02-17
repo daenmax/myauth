@@ -7,6 +7,8 @@ import cn.myauthx.api.main.service.ISoftService;
 import cn.myauthx.api.util.CheckUtils;
 import cn.myauthx.api.util.MyUtils;
 import cn.myauthx.api.util.RedisUtil;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -15,6 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -173,7 +177,7 @@ public class SoftServiceImpl extends ServiceImpl<SoftMapper, Soft> implements IS
 
 
     /**
-     * 获取软件查询条件构造器
+     * 获取查询条件构造器
      * @param soft
      * @return
      */
@@ -189,7 +193,23 @@ public class SoftServiceImpl extends ServiceImpl<SoftMapper, Soft> implements IS
         LambdaQueryWrapper.eq(!CheckUtils.isObjectEmpty(soft.getGenStatus()),Soft::getGenStatus,soft.getGenStatus());
         LambdaQueryWrapper.eq(!CheckUtils.isObjectEmpty(soft.getBindDeviceCode()),Soft::getBindDeviceCode,soft.getBindDeviceCode());
         LambdaQueryWrapper.eq(!CheckUtils.isObjectEmpty(soft.getHeartTime()),Soft::getHeartTime,soft.getHeartTime());
-        LambdaQueryWrapper.eq(!CheckUtils.isObjectEmpty(soft.getRegister()),Soft::getType,soft.getRegister());
+        LambdaQueryWrapper.eq(!CheckUtils.isObjectEmpty(soft.getRegister()),Soft::getRegister,soft.getRegister());
         return LambdaQueryWrapper;
+    }
+
+    /**
+     * 获取软件列表_全部_简要
+     * @param softC
+     * @return
+     */
+    @Override
+    public Result getSoftListEx(Soft softC) {
+        LambdaQueryWrapper<Soft> softLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        softLambdaQueryWrapper.select(Soft::getId,Soft::getName,Soft::getSkey);
+        if(!CheckUtils.isObjectEmpty(softC.getName())){
+            softLambdaQueryWrapper.like(Soft::getName,softC.getName());
+        }
+        List<Map<String, Object>> maps = softMapper.selectMaps(softLambdaQueryWrapper);
+        return Result.ok("获取成功",maps);
     }
 }
