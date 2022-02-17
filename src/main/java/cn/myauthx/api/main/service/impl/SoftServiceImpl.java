@@ -177,7 +177,7 @@ public class SoftServiceImpl extends ServiceImpl<SoftMapper, Soft> implements IS
 
 
     /**
-     * 获取软件查询条件构造器
+     * 获取查询条件构造器
      * @param soft
      * @return
      */

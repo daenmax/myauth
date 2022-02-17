@@ -31,15 +31,15 @@ import javax.annotation.Resource;
  */
 @Service
 public class MsgServiceImpl extends ServiceImpl<MsgMapper, Msg> implements IMsgService {
-    @Autowired
+    @Resource
     private MsgMapper msgMapper;
-    @Autowired
+    @Resource
     private SoftMapper softMapper;
     @Resource
     private VersionMapper versionMapper;
 
     /**
-     * 获取软件查询条件构造器
+     * 获取查询条件构造器
      *
      * @param msg
      * @return

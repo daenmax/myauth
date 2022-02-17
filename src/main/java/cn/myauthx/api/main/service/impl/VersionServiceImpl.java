@@ -127,7 +127,7 @@ public class VersionServiceImpl extends ServiceImpl<VersionMapper, Version> impl
     }
 
     /**
-     * 获取软件查询条件构造器
+     * 获取查询条件构造器
      * @param version
      * @return
      */
