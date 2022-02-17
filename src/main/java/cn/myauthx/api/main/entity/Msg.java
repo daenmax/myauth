@@ -1,8 +1,6 @@
 package cn.myauthx.api.main.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -42,6 +40,7 @@ public class Msg extends Model {
     /**
      * 所属软件版本，留空则全版本可用
      */
+    @TableField(updateStrategy = FieldStrategy.IGNORED)
     private Integer fromVerId;
 
 

@@ -1,6 +1,7 @@
 package cn.myauthx.api.main.service;
 
 import cn.myauthx.api.base.vo.Result;
+import cn.myauthx.api.main.entity.Msg;
 import cn.myauthx.api.main.entity.MyPage;
 import cn.myauthx.api.main.entity.Soft;
 import cn.myauthx.api.main.entity.Version;
@@ -32,12 +33,11 @@ public interface IVersionService extends IService<Version> {
 
     /**
      * 获取版本列表
-     * @param skey
      * @param versionC
      * @param myPage
      * @return
      */
-    Result getVersionList(String skey,Version versionC, MyPage myPage);
+    Result getVersionList(Version versionC, MyPage myPage);
 
     /**
      * 获取版本，通过id或者vkey
@@ -59,6 +59,12 @@ public interface IVersionService extends IService<Version> {
      * @return
      */
     Result addVersion(Version version);
+    /**
+     * 添加版本_同时添加回复
+     * @param version
+     * @return
+     */
+    Result addVersionAndMsg(Version version, Msg msg);
 
     /**
      * 删除版本，会同步删除用户、数据、回复、日志
@@ -66,4 +72,11 @@ public interface IVersionService extends IService<Version> {
      * @return
      */
     Result delVersion(Version version);
+
+    /**
+     * 获取版本列表_全部_简要
+     * @param versionC
+     * @return
+     */
+    Result getVersionListEx(Version versionC);
 }

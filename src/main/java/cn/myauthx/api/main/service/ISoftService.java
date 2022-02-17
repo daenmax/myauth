@@ -50,4 +50,10 @@ public interface ISoftService extends IService<Soft> {
      */
     Result getSoft(Soft soft);
 
+    /**
+     * 获取软件列表_全部_简要
+     * @param soft
+     * @return
+     */
+    Result getSoftListEx(Soft soft);
 }

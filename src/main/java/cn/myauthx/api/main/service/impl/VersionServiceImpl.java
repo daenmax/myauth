@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -114,18 +115,12 @@ public class VersionServiceImpl extends ServiceImpl<VersionMapper, Version> impl
 
     /**
      * 获取版本列表
-     * @param skey
      * @param versionC
      * @param myPage
      * @return
      */
     @Override
-    public Result getVersionList(String skey,Version versionC, MyPage myPage) {
-        Soft soft = (Soft) redisUtil.get("soft:" + skey);
-        if(CheckUtils.isObjectEmpty(soft)){
-            return Result.error("skey错误或者软件不存在");
-        }
-        versionC.setFromSoftId(soft.getId());
+    public Result getVersionList(Version versionC, MyPage myPage) {
         Page<Version> page = new Page<>(myPage.getPageIndex(),myPage.getPageSize(),true);
         IPage<Version> versionPage = versionMapper.selectPage(page, getQwVersion(versionC));
         return Result.ok("获取成功",versionPage);
@@ -211,6 +206,45 @@ public class VersionServiceImpl extends ServiceImpl<VersionMapper, Version> impl
     }
 
     /**
+     * 添加版本_同时添加回复
+     *
+     * @param version
+     * @param msg
+     * @return
+     */
+    @Override
+    public Result addVersionAndMsg(Version version, Msg msg) {
+        Soft soft = softMapper.selectById(version.getFromSoftId());
+        if(CheckUtils.isObjectEmpty(soft)){
+            return Result.error("fromSoftId错误");
+        }
+        LambdaQueryWrapper<Version> versionLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        versionLambdaQueryWrapper.eq(Version::getFromSoftId,version.getFromSoftId());
+        versionLambdaQueryWrapper.eq(Version::getVer,version.getVer());
+        Version version1 = versionMapper.selectOne(versionLambdaQueryWrapper);
+        if(!CheckUtils.isObjectEmpty(version1)){
+            return Result.error("版本号已存在");
+        }
+        version.setUpdTime(Integer.valueOf(MyUtils.getTimeStamp()));
+        version.setVkey(MyUtils.getUUID(true));
+        int num = versionMapper.insert(version);
+        if(num <= 0){
+            return Result.error("添加失败");
+        }
+        LambdaQueryWrapper<Version> newVersionLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        newVersionLambdaQueryWrapper.eq(Version::getFromSoftId,version.getFromSoftId());
+        newVersionLambdaQueryWrapper.eq(Version::getVer,version.getVer());
+        Version newVersion = versionMapper.selectOne(newVersionLambdaQueryWrapper);
+
+        msg.setFromSoftId(newVersion.getFromSoftId());
+        msg.setFromVerId(newVersion.getId());
+        msg.setStatus(1);
+        msgMapper.insert(msg);
+        redisUtil.set("version:" + version.getVkey(),version);
+        return Result.ok("添加成功");
+    }
+
+    /**
      * 删除版本，会同步删除用户、数据、回复、日志
      *
      * @param versionC
@@ -222,6 +256,8 @@ public class VersionServiceImpl extends ServiceImpl<VersionMapper, Version> impl
         if(CheckUtils.isObjectEmpty(version)){
             return Result.error("删除失败，id错误");
         }
+        //删除版本表
+        versionMapper.deleteById(version);
         //删除用户表
         LambdaQueryWrapper<User> userLambdaQueryWrapper = new LambdaQueryWrapper<>();
         userLambdaQueryWrapper.eq(User::getFromVerId,version.getId());
@@ -241,5 +277,23 @@ public class VersionServiceImpl extends ServiceImpl<VersionMapper, Version> impl
 
         redisUtil.del("version:" + version.getVkey());
         return Result.ok("删除成功");
+    }
+
+    /**
+     * 获取版本列表_全部_简要
+     *
+     * @param versionC
+     * @return
+     */
+    @Override
+    public Result getVersionListEx(Version versionC) {
+        LambdaQueryWrapper<Version> versionLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        versionLambdaQueryWrapper.eq(Version::getFromSoftId,versionC.getFromSoftId());
+        versionLambdaQueryWrapper.select(Version::getId,Version::getVer,Version::getVkey);
+        if(!CheckUtils.isObjectEmpty(versionC.getVer())){
+            versionLambdaQueryWrapper.like(Version::getVer,versionC.getVer());
+        }
+        List<Map<String, Object>> maps = versionMapper.selectMaps(versionLambdaQueryWrapper);
+        return Result.ok("获取成功",maps);
     }
 }
