@@ -62,6 +62,9 @@ public class SoftServiceImpl extends ServiceImpl<SoftMapper, Soft> implements IS
     @Override
     public Result getSoftList(Soft soft, MyPage myPage) {
         Page<Soft> page = new Page<>(myPage.getPageIndex(),myPage.getPageSize(),true);
+        if(!CheckUtils.isObjectEmpty(myPage.getOrders())){
+            page.setOrders(myPage.getOrders());
+        }
         IPage<Soft> softPage = softMapper.selectPage(page, getQwSoft(soft));
         return Result.ok("获取成功",softPage);
     }
@@ -81,6 +84,7 @@ public class SoftServiceImpl extends ServiceImpl<SoftMapper, Soft> implements IS
             return Result.error("添加失败");
         }
         redisUtil.set("soft:" + soft.getSkey(),soft);
+        redisUtil.set("id:soft:" + soft.getId(),soft);
         return Result.ok("添加成功");
     }
 
@@ -98,6 +102,7 @@ public class SoftServiceImpl extends ServiceImpl<SoftMapper, Soft> implements IS
         }
         Soft newSoft = softMapper.selectById(soft.getId());
         redisUtil.set("soft:" + newSoft.getSkey(),newSoft);
+        redisUtil.set("id:soft:" + newSoft.getId(),newSoft);
         return Result.ok("修改成功");
     }
 
@@ -154,6 +159,7 @@ public class SoftServiceImpl extends ServiceImpl<SoftMapper, Soft> implements IS
         plogLambdaQueryWrapper.eq(Plog::getFromSoftId,soft.getId());
         plogMapper.delete(plogLambdaQueryWrapper);
         redisUtil.del("soft:" + soft.getSkey());
+        redisUtil.del("id:soft:" + soft.getId());
         return Result.ok("删除成功");
     }
 

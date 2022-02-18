@@ -2,6 +2,7 @@ package cn.myauthx.api.main.entity;
 
 import cn.myauthx.api.base.po.baseEntity;
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
@@ -65,5 +66,10 @@ public class Card extends Model {
      */
     private Integer fromSoftId;
 
+    /**
+     * 所属软件名称
+     */
+    @TableField(exist = false)
+    private String fromSoftName;
 
 }

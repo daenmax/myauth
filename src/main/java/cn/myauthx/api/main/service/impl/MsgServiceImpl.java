@@ -10,6 +10,8 @@ import cn.myauthx.api.main.mapper.SoftMapper;
 import cn.myauthx.api.main.mapper.VersionMapper;
 import cn.myauthx.api.main.service.IMsgService;
 import cn.myauthx.api.util.CheckUtils;
+import cn.myauthx.api.util.RedisUtil;
+import cn.myauthx.api.util.UnderlineToCamelUtils;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
@@ -37,6 +39,8 @@ public class MsgServiceImpl extends ServiceImpl<MsgMapper, Msg> implements IMsgS
     private SoftMapper softMapper;
     @Resource
     private VersionMapper versionMapper;
+    @Resource
+    private RedisUtil redisUtil;
 
     /**
      * 获取查询条件构造器
@@ -63,7 +67,23 @@ public class MsgServiceImpl extends ServiceImpl<MsgMapper, Msg> implements IMsgS
     @Override
     public Result getMsgList(Msg msg, MyPage myPage) {
         Page<Msg> page = new Page<>(myPage.getPageIndex(), myPage.getPageSize(), true);
+        if(!CheckUtils.isObjectEmpty(myPage.getOrders())){
+            for (int i = 0; i < myPage.getOrders().size(); i++) {
+                myPage.getOrders().get(i).setColumn(UnderlineToCamelUtils.camelToUnderline(myPage.getOrders().get(i).getColumn()));
+            }
+            page.setOrders(myPage.getOrders());
+        }
         IPage<Msg> msgPage = msgMapper.selectPage(page, getQwMsg(msg));
+        for (int i = 0; i < msgPage.getRecords().size(); i++) {
+            Soft obj = (Soft) redisUtil.get("id:soft:" + msgPage.getRecords().get(i).getFromSoftId());
+            if(!CheckUtils.isObjectEmpty(obj)){
+                msgPage.getRecords().get(i).setFromSoftName(obj.getName());
+            }
+            Version obj2 = (Version) redisUtil.get("id:version:" + msgPage.getRecords().get(i).getFromVerId());
+            if(!CheckUtils.isObjectEmpty(obj2)){
+                msgPage.getRecords().get(i).setFromVer(obj2.getVer());
+            }
+        }
         return Result.ok("获取成功", msgPage);
     }
 

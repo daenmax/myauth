@@ -7,18 +7,19 @@ import cn.myauthx.api.main.service.IVersionService;
 import cn.myauthx.api.util.CheckUtils;
 import cn.myauthx.api.util.MyUtils;
 import cn.myauthx.api.util.RedisUtil;
+import cn.myauthx.api.util.UnderlineToCamelUtils;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * <p>
@@ -122,7 +123,19 @@ public class VersionServiceImpl extends ServiceImpl<VersionMapper, Version> impl
     @Override
     public Result getVersionList(Version versionC, MyPage myPage) {
         Page<Version> page = new Page<>(myPage.getPageIndex(),myPage.getPageSize(),true);
+        if(!CheckUtils.isObjectEmpty(myPage.getOrders())){
+            for (int i = 0; i < myPage.getOrders().size(); i++) {
+                myPage.getOrders().get(i).setColumn(UnderlineToCamelUtils.camelToUnderline(myPage.getOrders().get(i).getColumn()));
+            }
+            page.setOrders(myPage.getOrders());
+        }
         IPage<Version> versionPage = versionMapper.selectPage(page, getQwVersion(versionC));
+        for (int i = 0; i < versionPage.getRecords().size(); i++) {
+            Soft obj = (Soft) redisUtil.get("id:soft:" + versionPage.getRecords().get(i).getFromSoftId());
+            if(!CheckUtils.isObjectEmpty(obj)){
+                versionPage.getRecords().get(i).setFromSoftName(obj.getName());
+            }
+        }
         return Result.ok("获取成功",versionPage);
     }
 
@@ -173,6 +186,7 @@ public class VersionServiceImpl extends ServiceImpl<VersionMapper, Version> impl
         }
         Version newVersion = versionMapper.selectById(version.getId());
         redisUtil.set("version:" + newVersion.getVkey(),newVersion);
+        redisUtil.set("id:version:" + newVersion.getId(),newVersion);
         return Result.ok("修改成功");
     }
 
@@ -202,6 +216,7 @@ public class VersionServiceImpl extends ServiceImpl<VersionMapper, Version> impl
             return Result.error("添加失败");
         }
         redisUtil.set("version:" + version.getVkey(),version);
+        redisUtil.set("id:version:" + version.getId(),version);
         return Result.ok("添加成功");
     }
 
@@ -241,6 +256,7 @@ public class VersionServiceImpl extends ServiceImpl<VersionMapper, Version> impl
         msg.setStatus(1);
         msgMapper.insert(msg);
         redisUtil.set("version:" + version.getVkey(),version);
+        redisUtil.set("id:version:" + version.getId(),version);
         return Result.ok("添加成功");
     }
 
@@ -276,6 +292,7 @@ public class VersionServiceImpl extends ServiceImpl<VersionMapper, Version> impl
         plogMapper.delete(plogLambdaQueryWrapper);
 
         redisUtil.del("version:" + version.getVkey());
+        redisUtil.del("id:version:" + version.getId());
         return Result.ok("删除成功");
     }
 
