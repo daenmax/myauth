@@ -7,6 +7,7 @@ import cn.myauthx.api.main.service.ISoftService;
 import cn.myauthx.api.util.CheckUtils;
 import cn.myauthx.api.util.MyUtils;
 import cn.myauthx.api.util.RedisUtil;
+import cn.myauthx.api.util.UnderlineToCamelUtils;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -63,6 +64,9 @@ public class SoftServiceImpl extends ServiceImpl<SoftMapper, Soft> implements IS
     public Result getSoftList(Soft soft, MyPage myPage) {
         Page<Soft> page = new Page<>(myPage.getPageIndex(),myPage.getPageSize(),true);
         if(!CheckUtils.isObjectEmpty(myPage.getOrders())){
+            for (int i = 0; i < myPage.getOrders().size(); i++) {
+                myPage.getOrders().get(i).setColumn(UnderlineToCamelUtils.camelToUnderline(myPage.getOrders().get(i).getColumn()));
+            }
             page.setOrders(myPage.getOrders());
         }
         IPage<Soft> softPage = softMapper.selectPage(page, getQwSoft(soft));
