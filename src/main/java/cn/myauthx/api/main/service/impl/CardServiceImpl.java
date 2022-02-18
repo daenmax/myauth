@@ -15,12 +15,15 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * <p>
@@ -162,16 +165,11 @@ public class CardServiceImpl extends ServiceImpl<CardMapper, Card> implements IC
     @Override
     public Result delCard(String ids) {
         String[] idArray = ids.split(",");
+        List<String> strings = Arrays.asList(idArray);
         if(idArray.length == 0){
             return Result.error("ids参数格式可能错误");
         }
-        int okCount = 0;
-        for (String id : idArray) {
-            if(!CheckUtils.isObjectEmpty(id)){
-                int delete = cardMapper.deleteById(id);
-                okCount = okCount + delete;
-            }
-        }
+        int okCount = cardMapper.deleteBatchIds(strings);
         return Result.ok("成功删除 " + okCount + " 张卡密");
     }
 
@@ -187,21 +185,9 @@ public class CardServiceImpl extends ServiceImpl<CardMapper, Card> implements IC
         if(idArray.length == 0){
             return Result.error("ids参数格式可能错误");
         }
-        int okCount = 0;
-        for (String id : idArray) {
-            if(!CheckUtils.isObjectEmpty(id)){
-                Card card = cardMapper.selectById(id);
-                if(!CheckUtils.isObjectEmpty(card)){
-                    if(card.getStatus().equals(CardEnums.STATUS_NOTUSEd.getCode())){
-                        Card card1 = new Card();
-                        card1.setId(card.getId());
-                        card1.setStatus(CardEnums.STATUS_DISABLE.getCode());
-                        int update = cardMapper.updateById(card1);
-                        okCount = okCount + update;
-                    }
-                }
-            }
-        }
+        LambdaUpdateWrapper<Card> wrapper = new LambdaUpdateWrapper();
+        wrapper.set(Card::getStatus,CardEnums.STATUS_DISABLE.getCode()).in(Card::getId,Arrays.asList(idArray)).eq(Card::getStatus,CardEnums.STATUS_NOTUSEd.getCode());
+        int okCount = cardMapper.update(null,wrapper);
         return Result.ok("成功禁用 " + okCount + " 张卡密");
     }
 
@@ -217,21 +203,9 @@ public class CardServiceImpl extends ServiceImpl<CardMapper, Card> implements IC
         if(idArray.length == 0){
             return Result.error("ids参数格式可能错误");
         }
-        int okCount = 0;
-        for (String id : idArray) {
-            if(!CheckUtils.isObjectEmpty(id)){
-                Card card = cardMapper.selectById(id);
-                if(!CheckUtils.isObjectEmpty(card)){
-                    if(card.getStatus().equals(CardEnums.STATUS_DISABLE.getCode())){
-                        Card card1 = new Card();
-                        card1.setId(card.getId());
-                        card1.setStatus(CardEnums.STATUS_NOTUSEd.getCode());
-                        int update = cardMapper.updateById(card1);
-                        okCount = okCount + update;
-                    }
-                }
-            }
-        }
+        LambdaUpdateWrapper<Card> wrapper = new LambdaUpdateWrapper();
+        wrapper.set(Card::getStatus,CardEnums.STATUS_NOTUSEd.getCode()).in(Card::getId,Arrays.asList(idArray)).eq(Card::getStatus,CardEnums.STATUS_DISABLE.getCode());
+        int okCount = cardMapper.update(null,wrapper);
         return Result.ok("成功解禁 " + okCount + " 张卡密");
     }
 }
