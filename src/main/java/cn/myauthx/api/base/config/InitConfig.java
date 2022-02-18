@@ -53,6 +53,7 @@ public class InitConfig  implements ApplicationRunner {
         log.info("[soft]读取到的数量->" + softList.size());
         for (Soft soft : softList) {
             redisUtil.set("soft:" + soft.getSkey(),soft);
+            redisUtil.set("id:soft:" + soft.getId(),soft);
             log.info("[soft]添加到Redis->" + soft.toString());
             log.info("[version][" + soft.getName() + "]开始读取版本列表...");
             LambdaQueryWrapper<Version> versionLambdaQueryWrapper = new LambdaQueryWrapper<>();
@@ -61,6 +62,7 @@ public class InitConfig  implements ApplicationRunner {
             log.info("[version][" + soft.getName() + "]读取到的版本数量->" + versionList.size());
             for (Version version : versionList) {
                 redisUtil.set("version:" + version.getVkey(),version);
+                redisUtil.set("id:version:" + version.getId(),version);
                 log.info("[version][" + soft.getName() + "]添加到Redis->" + version.getVer());
             }
             log.info("[version][" + soft.getName() + "]添加到Redis完成");

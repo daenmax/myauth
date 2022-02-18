@@ -38,10 +38,22 @@ public class Msg extends Model {
     private Integer fromSoftId;
 
     /**
+     * 所属软件名称
+     */
+    @TableField(exist = false)
+    private String fromSoftName;
+
+    /**
      * 所属软件版本，留空则全版本可用
      */
     @TableField(updateStrategy = FieldStrategy.IGNORED)
     private Integer fromVerId;
+
+    /**
+     * 所属版本号
+     */
+    @TableField(exist = false)
+    private String fromVer;
 
 
 }

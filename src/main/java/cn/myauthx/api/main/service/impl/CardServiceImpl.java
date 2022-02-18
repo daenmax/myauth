@@ -11,6 +11,7 @@ import cn.myauthx.api.main.mapper.SoftMapper;
 import cn.myauthx.api.main.service.ICardService;
 import cn.myauthx.api.util.CheckUtils;
 import cn.myauthx.api.util.MyUtils;
+import cn.myauthx.api.util.RedisUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -39,6 +40,8 @@ public class CardServiceImpl extends ServiceImpl<CardMapper, Card> implements IC
     private CardMapper cardMapper;
     @Resource
     private SoftMapper softMapper;
+    @Resource
+    private RedisUtil redisUtil;
     /**
      * 获取查询条件构造器
      *
@@ -68,7 +71,14 @@ public class CardServiceImpl extends ServiceImpl<CardMapper, Card> implements IC
     @Override
     public Result getCardList(Card card, MyPage myPage) {
         Page<Card> page = new Page<>(myPage.getPageIndex(), myPage.getPageSize(), true);
+        if(!CheckUtils.isObjectEmpty(myPage.getOrders())){
+            page.setOrders(myPage.getOrders());
+        }
         IPage<Card> msgPage = cardMapper.selectPage(page, getQwCard(card));
+        for (int i = 0; i < msgPage.getRecords().size(); i++) {
+            Soft obj = (Soft) redisUtil.get("id:soft:" + msgPage.getRecords().get(i).getFromSoftId());
+            msgPage.getRecords().get(i).setFromSoftName(obj.getName());
+        }
         return Result.ok("获取成功", msgPage);
     }
 

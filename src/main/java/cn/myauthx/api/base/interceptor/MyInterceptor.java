@@ -73,7 +73,7 @@ public class MyInterceptor implements HandlerInterceptor {
                 Admin admin = adminMapper.selectOne(adminLambdaQueryWrapper);
                 if(CheckUtils.isObjectEmpty(admin)){
                     log.info("接收->" + jsonObject.toJSONString());
-                    String retStr = Result.error("非法请求").toJsonString();
+                    String retStr = Result.error("token无效，请重新登录").toJsonString();
                     log.info("响应->" + retStr);
                     response.getWriter().write(retStr);
                     return false;
@@ -87,7 +87,7 @@ public class MyInterceptor implements HandlerInterceptor {
                 }
                 if(admin.getLastTime() + AdminEnums.TOKEN_VALIDITY.getCode() < Integer.parseInt(MyUtils.getTimeStamp())){
                     log.info("接收->" + jsonObject.toJSONString());
-                    String retStr = Result.error("登录失效，请重新登录").toJsonString();
+                    String retStr = Result.error("登录状态失效，请重新登录").toJsonString();
                     log.info("响应->" + retStr);
                     response.getWriter().write(retStr);
                     return false;
