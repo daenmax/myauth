@@ -11,6 +11,7 @@ import cn.myauthx.api.main.mapper.VersionMapper;
 import cn.myauthx.api.main.service.IMsgService;
 import cn.myauthx.api.util.CheckUtils;
 import cn.myauthx.api.util.RedisUtil;
+import cn.myauthx.api.util.UnderlineToCamelUtils;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
@@ -67,6 +68,9 @@ public class MsgServiceImpl extends ServiceImpl<MsgMapper, Msg> implements IMsgS
     public Result getMsgList(Msg msg, MyPage myPage) {
         Page<Msg> page = new Page<>(myPage.getPageIndex(), myPage.getPageSize(), true);
         if(!CheckUtils.isObjectEmpty(myPage.getOrders())){
+            for (int i = 0; i < myPage.getOrders().size(); i++) {
+                myPage.getOrders().get(i).setColumn(UnderlineToCamelUtils.camelToUnderline(myPage.getOrders().get(i).getColumn()));
+            }
             page.setOrders(myPage.getOrders());
         }
         IPage<Msg> msgPage = msgMapper.selectPage(page, getQwMsg(msg));

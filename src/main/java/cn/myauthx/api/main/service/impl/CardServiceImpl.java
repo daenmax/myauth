@@ -140,7 +140,7 @@ public class CardServiceImpl extends ServiceImpl<CardMapper, Card> implements IC
         if(CheckUtils.isObjectEmpty(prefix)){
             prefixStr = "";
         }else{
-            prefixStr = prefix + "-";
+            prefixStr = prefix;
         }
         Integer timeStamp = Integer.valueOf(MyUtils.getTimeStamp());
         int okCount = 0;
