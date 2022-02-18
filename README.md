@@ -3,7 +3,7 @@
 #### 介绍
     一个授权管理系统，使用springboot、mybatis-plus、redis、mysql等。
 此仓库为后端代码<br>
-![logo](https://img2022.cnblogs.com/blog/2461447/202202/2461447-20220218214526521-1971310232.png)
+![logo](https://images.gitee.com/uploads/images/2022/0218/215303_dbbda392_5370510.png)
 
 #### 前端
 - [@TianYe](https://gitee.com/fieldtianye)
