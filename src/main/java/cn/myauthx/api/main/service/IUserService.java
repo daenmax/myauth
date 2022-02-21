@@ -1,6 +1,7 @@
 package cn.myauthx.api.main.service;
 
 import cn.myauthx.api.base.vo.Result;
+import cn.myauthx.api.main.entity.MyPage;
 import cn.myauthx.api.main.entity.Soft;
 import cn.myauthx.api.main.entity.User;
 import cn.myauthx.api.main.entity.Version;
@@ -80,4 +81,40 @@ public interface IUserService extends IService<User> {
      * @return
      */
     Result editInfo(User user,Soft soft);
+
+    /**
+     * 获取用户列表
+     * @param user
+     * @param myPage
+     * @return
+     */
+    Result getUserList(User user, MyPage myPage);
+
+    /**
+     * 查询用户
+     * @param user
+     * @return
+     */
+    Result getUser(User user);
+
+    /**
+     * 修改用户
+     * @param user
+     * @return
+     */
+    Result updUser(User user);
+
+    /**
+     * 添加用户
+     * @param user
+     * @return
+     */
+    Result addUser(User user);
+
+    /**
+     * 删除用户，支持批量
+     * @param ids 多个用英文逗号隔开
+     * @return
+     */
+    Result delUser(String ids);
 }
