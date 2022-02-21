@@ -37,7 +37,7 @@ public class Result<T> implements Serializable {
     /**
      * 返回数据对象 data
      */
-    private T result;
+    private Object result;
 
     /**
      * 13位时间戳
@@ -165,7 +165,7 @@ public class Result<T> implements Serializable {
      * @return
      */
     public String toJsonString(){
-        JSONObject jsonObject = new JSONObject();
+        JSONObject jsonObject = new JSONObject(true);
         jsonObject.put("code",this.code);
         jsonObject.put("success",this.success);
         jsonObject.put("msg",this.msg);

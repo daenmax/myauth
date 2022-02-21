@@ -128,6 +128,14 @@ public class VersionServiceImpl extends ServiceImpl<VersionMapper, Version> impl
                 myPage.getOrders().get(i).setColumn(UnderlineToCamelUtils.camelToUnderline(myPage.getOrders().get(i).getColumn()));
             }
             page.setOrders(myPage.getOrders());
+        }else{
+            OrderItem orderItem = new OrderItem();
+            orderItem.setColumn("UPD_TIME");
+            orderItem.setAsc(false);
+            List<OrderItem> orderItems = new ArrayList<>();
+            orderItems.add(orderItem);
+            myPage.setOrders(orderItems);
+            page.setOrders(myPage.getOrders());
         }
         IPage<Version> versionPage = versionMapper.selectPage(page, getQwVersion(versionC));
         for (int i = 0; i < versionPage.getRecords().size(); i++) {
