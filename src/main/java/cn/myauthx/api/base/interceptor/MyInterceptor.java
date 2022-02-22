@@ -63,7 +63,7 @@ public class MyInterceptor implements HandlerInterceptor {
                 String token = request.getHeader("token");
                 if(CheckUtils.isObjectEmpty(token)){
                     log.info("接收->" + jsonObject.toJSONString());
-                    String retStr = Result.error("非法请求").toJsonString();
+                    String retStr = Result.error(401,"非法请求").toJsonString();
                     log.info("响应->" + retStr);
                     response.getWriter().write(retStr);
                     return false;
@@ -73,21 +73,21 @@ public class MyInterceptor implements HandlerInterceptor {
                 Admin admin = adminMapper.selectOne(adminLambdaQueryWrapper);
                 if(CheckUtils.isObjectEmpty(admin)){
                     log.info("接收->" + jsonObject.toJSONString());
-                    String retStr = Result.error("token无效，请重新登录").toJsonString();
+                    String retStr = Result.error(402,"token无效，请重新登录").toJsonString();
                     log.info("响应->" + retStr);
                     response.getWriter().write(retStr);
                     return false;
                 }
                 if(admin.getStatus().equals(AdminEnums.STATUS_DISABLE.getCode())){
                     log.info("接收->" + jsonObject.toJSONString());
-                    String retStr = Result.error("账号已被禁用").toJsonString();
+                    String retStr = Result.error(405,"账号已被禁用").toJsonString();
                     log.info("响应->" + retStr);
                     response.getWriter().write(retStr);
                     return false;
                 }
                 if(admin.getLastTime() + AdminEnums.TOKEN_VALIDITY.getCode() < Integer.parseInt(MyUtils.getTimeStamp())){
                     log.info("接收->" + jsonObject.toJSONString());
-                    String retStr = Result.error("登录状态失效，请重新登录").toJsonString();
+                    String retStr = Result.error(403,"登录状态失效，请重新登录").toJsonString();
                     log.info("响应->" + retStr);
                     response.getWriter().write(retStr);
                     return false;
@@ -417,6 +417,7 @@ public class MyInterceptor implements HandlerInterceptor {
             //取出在ResponseBodyAdvice中设置的body
             Result result = (Result) request.getSession().getAttribute("body");
             log.info("响应->" + result.toJsonString());
+
         }
 
     }

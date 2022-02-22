@@ -11,13 +11,17 @@ import cn.myauthx.api.main.service.IUserService;
 import cn.myauthx.api.util.CheckUtils;
 import cn.myauthx.api.util.MyUtils;
 import cn.myauthx.api.util.RedisUtil;
+import cn.myauthx.api.util.UnderlineToCamelUtils;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -38,6 +42,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     private BanMapper banMapper;
     @Autowired
     private CardMapper cardMapper;
+    @Autowired
+    private SoftMapper softMapper;
     @Autowired
     private MsgMapper msgMapper;
     @Autowired
@@ -683,5 +689,132 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         jsonObject.put("remark",userR.getRemark());
         jsonObject.put("authTime",userR.getAuthTime());
         return Result.ok("修改资料成功",jsonObject);
+    }
+
+    /**
+     * 获取用户列表
+     *
+     * @param user
+     * @param myPage
+     * @return
+     */
+    @Override
+    public Result getUserList(User user, MyPage myPage) {
+        Page<User> page = new Page<>(myPage.getPageIndex(), myPage.getPageSize(), true);
+        if(!CheckUtils.isObjectEmpty(myPage.getOrders())){
+            for (int i = 0; i < myPage.getOrders().size(); i++) {
+                myPage.getOrders().get(i).setColumn(UnderlineToCamelUtils.camelToUnderline(myPage.getOrders().get(i).getColumn()));
+            }
+            page.setOrders(myPage.getOrders());
+        }
+        IPage<User> msgPage = userMapper.selectPage(page, getQwUser(user));
+        for (int i = 0; i < msgPage.getRecords().size(); i++) {
+            Soft obj = (Soft) redisUtil.get("id:soft:" + msgPage.getRecords().get(i).getFromSoftId());
+            msgPage.getRecords().get(i).setFromSoftName(obj.getName());
+        }
+        return Result.ok("获取成功", msgPage);
+    }
+    /**
+     * 获取查询条件构造器
+     *
+     * @param user
+     * @return
+     */
+    public LambdaQueryWrapper<User> getQwUser(User user) {
+        LambdaQueryWrapper<User> LambdaQueryWrapper = new LambdaQueryWrapper<>();
+        LambdaQueryWrapper.like(!CheckUtils.isObjectEmpty(user.getUser()), User::getUser, user.getUser());
+        LambdaQueryWrapper.like(!CheckUtils.isObjectEmpty(user.getName()), User::getName, user.getName());
+        LambdaQueryWrapper.eq(!CheckUtils.isObjectEmpty(user.getPoint()), User::getPoint, user.getPoint());
+        LambdaQueryWrapper.like(!CheckUtils.isObjectEmpty(user.getQq()), User::getQq, user.getQq());
+        LambdaQueryWrapper.like(!CheckUtils.isObjectEmpty(user.getLastIp()), User::getLastIp, user.getLastIp());
+        LambdaQueryWrapper.like(!CheckUtils.isObjectEmpty(user.getLastTime()), User::getLastTime, user.getLastTime());
+        LambdaQueryWrapper.like(!CheckUtils.isObjectEmpty(user.getAuthTime()), User::getAuthTime, user.getAuthTime());
+        LambdaQueryWrapper.eq(!CheckUtils.isObjectEmpty(user.getFromSoftId()), User::getFromSoftId, user.getFromSoftId());
+        LambdaQueryWrapper.eq(!CheckUtils.isObjectEmpty(user.getFromVerId()), User::getFromVerId, user.getFromVerId());
+        LambdaQueryWrapper.like(!CheckUtils.isObjectEmpty(user.getRemark()), User::getRemark, user.getRemark());
+        LambdaQueryWrapper.like(!CheckUtils.isObjectEmpty(user.getDeviceInfo()), User::getDeviceInfo, user.getDeviceInfo());
+        LambdaQueryWrapper.like(!CheckUtils.isObjectEmpty(user.getDeviceCode()), User::getDeviceCode, user.getDeviceCode());
+        LambdaQueryWrapper.like(!CheckUtils.isObjectEmpty(user.getCkey()), User::getCkey, user.getCkey());
+        return LambdaQueryWrapper;
+    }
+
+    /**
+     * 查询用户
+     *
+     * @param user
+     * @return
+     */
+    @Override
+    public Result getUser(User user) {
+        User newUser = userMapper.selectById(user.getId());
+        if(CheckUtils.isObjectEmpty(newUser)){
+            return Result.error("查询失败，未找到");
+        }
+        return Result.ok("查询成功",newUser);
+    }
+
+    /**
+     * 修改用户
+     *
+     * @param user
+     * @return
+     */
+    @Override
+    public Result updUser(User user) {
+        User newUser = userMapper.selectById(user.getId());
+        if(CheckUtils.isObjectEmpty(newUser)){
+            return Result.error("用户ID错误");
+        }
+        int num = userMapper.updateById(user);
+        if (num <= 0) {
+            return Result.error("修改失败");
+        }
+        redisUtil.del("user:" + newUser.getFromSoftId() + ":" + newUser.getUser());
+        return Result.ok("修改成功");
+    }
+
+    /**
+     * 添加用户
+     *
+     * @param user
+     * @return
+     */
+    @Override
+    public Result addUser(User user) {
+        Soft soft = softMapper.selectById(user.getFromSoftId());
+        if(CheckUtils.isObjectEmpty(soft)){
+            return Result.error("fromSoftId错误");
+        }
+        user.setFromSoftKey(soft.getSkey());
+        LambdaQueryWrapper<User> userLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        userLambdaQueryWrapper.eq(User::getUser,user.getUser());
+        userLambdaQueryWrapper.eq(User::getFromSoftId,user.getFromSoftId());
+        User user1 = userMapper.selectOne(userLambdaQueryWrapper);
+        if(!CheckUtils.isObjectEmpty(user1)){
+            return Result.error("账号已存在");
+        }
+        user.setRegTime(Integer.valueOf(MyUtils.getTimeStamp()));
+        int num = userMapper.insert(user);
+        if(num <= 0){
+            return Result.error("添加失败");
+        }
+        return Result.ok("添加成功");
+    }
+
+    /**
+     * 删除用户，支持批量
+     *
+     * @param ids 多个用英文逗号隔开
+     * @return
+     */
+    @Override
+    public Result delUser(String ids) {
+        String[] idArray = ids.split(",");
+        List<String> strings = Arrays.asList(idArray);
+        if(idArray.length == 0){
+            return Result.error("ids参数格式可能错误");
+        }
+        int okCount = userMapper.deleteBatchIds(strings);
+        return Result.ok("成功删除 " + okCount + " 个用户");
     }
 }
