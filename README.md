@@ -5,6 +5,10 @@
 此仓库为后端代码<br>
 ![logo](https://images.gitee.com/uploads/images/2022/0218/215303_dbbda392_5370510.png)
 
+* 我的QQ：[1330166564](https://wpa.qq.com/msgrd?v=3&uin=1330166564&site=qq&menu=yes)
+* 官方Q群：[1016357430](https://jq.qq.com/?_wv=1027&k=eaectWIr)
+* 官方网站：[https://www.myauthx.cn/](https://www.myauthx.cn/)
+
 #### 前端
 - [@TianYe](https://gitee.com/fieldtianye)
 项目地址https://gitee.com/fieldtianye/my-auth-web
