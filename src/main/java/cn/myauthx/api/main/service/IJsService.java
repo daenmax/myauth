@@ -74,4 +74,22 @@ public interface IJsService extends IService<Js> {
      */
     Result delJs(Js js);
 
+    /**
+     * 运行Js，网页接口用
+     *
+     * @param js
+     * @param c1
+     * @param c2
+     * @param c3
+     * @param c4
+     * @param c5
+     * @param c6
+     * @param c7
+     * @param c8
+     * @param c9
+     * @param c10
+     * @return
+     */
+    Result runJsWeb(Js js, String c1, String c2, String c3, String c4, String c5, String c6, String c7, String c8, String c9, String c10);
+
 }

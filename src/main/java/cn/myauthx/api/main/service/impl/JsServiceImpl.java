@@ -199,4 +199,33 @@ public class JsServiceImpl extends ServiceImpl<JsMapper, Js> implements IJsServi
         }
         return Result.ok("删除成功");
     }
+
+    /**
+     * 运行Js，网页接口用
+     *
+     * @param jsC
+     * @param c1
+     * @param c2
+     * @param c3
+     * @param c4
+     * @param c5
+     * @param c6
+     * @param c7
+     * @param c8
+     * @param c9
+     * @param c10
+     * @return
+     */
+    @Override
+    public Result runJsWeb(Js jsC, String c1, String c2, String c3, String c4, String c5, String c6, String c7, String c8, String c9, String c10) {
+        Js js = jsMapper.selectById(jsC.getId());
+        if (CheckUtils.isObjectEmpty(js)) {
+            return Result.error("函数ID错误");
+        }
+        String ret = MyUtils.runJs(js.getJsContent(), js.getJsFun(), c1, c2, c3, c4, c5, c6, c7, c8, c9, c10);
+        JSONObject jsonObject = new JSONObject(true);
+        jsonObject.put("func", js.getJsFun());
+        jsonObject.put("ret", ret);
+        return Result.ok("函数执行成功", jsonObject);
+    }
 }
