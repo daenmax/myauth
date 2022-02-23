@@ -9,7 +9,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
  * <p>
- *  服务类
+ * 服务类
  * </p>
  *
  * @author DaenMax
@@ -18,6 +18,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 public interface IUserService extends IService<User> {
     /**
      * 注册
+     *
      * @param user
      * @param softC
      * @return
@@ -26,6 +27,7 @@ public interface IUserService extends IService<User> {
 
     /**
      * 登录
+     *
      * @param user
      * @param softC
      * @return
@@ -34,6 +36,7 @@ public interface IUserService extends IService<User> {
 
     /**
      * 心跳
+     *
      * @param user
      * @param softC
      * @return
@@ -42,14 +45,16 @@ public interface IUserService extends IService<User> {
 
     /**
      * 使用卡密
+     *
      * @param user
      * @param soft
      * @return
      */
-    Result useCkey(User user,Soft soft);
+    Result useCkey(User user, Soft soft);
 
     /**
      * 获取回复
+     *
      * @param soft
      * @param version
      * @param keyword
@@ -59,31 +64,35 @@ public interface IUserService extends IService<User> {
 
     /**
      * 解绑
+     *
      * @param user
      * @param soft
      * @return
      */
-    Result unbind(User user,Soft soft);
+    Result unbind(User user, Soft soft);
 
     /**
      * 修改密码
+     *
      * @param user
      * @param nowPass
      * @param newPass
      * @return
      */
-    Result editPass(String user,String nowPass,String newPass,Soft soft);
+    Result editPass(String user, String nowPass, String newPass, Soft soft);
 
     /**
      * 修改资料：QQ和昵称
+     *
      * @param user
      * @param soft
      * @return
      */
-    Result editInfo(User user,Soft soft);
+    Result editInfo(User user, Soft soft);
 
     /**
      * 获取用户列表
+     *
      * @param user
      * @param myPage
      * @return
@@ -92,6 +101,7 @@ public interface IUserService extends IService<User> {
 
     /**
      * 查询用户
+     *
      * @param user
      * @return
      */
@@ -99,6 +109,7 @@ public interface IUserService extends IService<User> {
 
     /**
      * 修改用户
+     *
      * @param user
      * @return
      */
@@ -106,6 +117,7 @@ public interface IUserService extends IService<User> {
 
     /**
      * 添加用户
+     *
      * @param user
      * @return
      */
@@ -113,6 +125,7 @@ public interface IUserService extends IService<User> {
 
     /**
      * 删除用户，支持批量
+     *
      * @param ids 多个用英文逗号隔开
      * @return
      */

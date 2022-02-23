@@ -7,7 +7,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
  * <p>
- *  服务类
+ * 服务类
  * </p>
  *
  * @author DaenMax
@@ -16,6 +16,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 public interface IMsgService extends IService<Msg> {
     /**
      * 获取回复列表
+     *
      * @param msg
      * @param myPage
      * @return
@@ -24,6 +25,7 @@ public interface IMsgService extends IService<Msg> {
 
     /**
      * 获取回复，根据ID
+     *
      * @param msg
      * @return
      */
@@ -31,6 +33,7 @@ public interface IMsgService extends IService<Msg> {
 
     /**
      * 修改回复
+     *
      * @param msg
      * @return
      */
@@ -38,6 +41,7 @@ public interface IMsgService extends IService<Msg> {
 
     /**
      * 添加回复
+     *
      * @param msg
      * @return
      */
@@ -45,6 +49,7 @@ public interface IMsgService extends IService<Msg> {
 
     /**
      * 删除回复
+     *
      * @param msg
      * @return
      */

@@ -7,7 +7,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
  * <p>
- *  服务类
+ * 服务类
  * </p>
  *
  * @author DaenMax
@@ -16,14 +16,16 @@ import com.baomidou.mybatisplus.extension.service.IService;
 public interface ICardService extends IService<Card> {
     /**
      * 获取卡密列表
+     *
      * @param card
      * @param myPage
      * @return
      */
-    Result getCardList(Card card , MyPage myPage);
+    Result getCardList(Card card, MyPage myPage);
 
     /**
      * 查询卡密，根据id或者ckey
+     *
      * @param card
      * @return
      */
@@ -31,6 +33,7 @@ public interface ICardService extends IService<Card> {
 
     /**
      * 修改卡密
+     *
      * @param card
      * @return
      */
@@ -38,15 +41,17 @@ public interface ICardService extends IService<Card> {
 
     /**
      * 生成卡密
+     *
      * @param prefix 前缀
-     * @param count 张数
+     * @param count  张数
      * @param card
      * @return
      */
-    Result addCard(String prefix,Integer count,Card card);
+    Result addCard(String prefix, Integer count, Card card);
 
     /**
      * 删除卡密，支持批量
+     *
      * @param ids 多个用英文逗号隔开
      * @return
      */
@@ -54,6 +59,7 @@ public interface ICardService extends IService<Card> {
 
     /**
      * 禁用卡密，支持批量
+     *
      * @param ids 多个用英文逗号隔开
      * @return
      */
@@ -61,6 +67,7 @@ public interface ICardService extends IService<Card> {
 
     /**
      * 解禁卡密，支持批量
+     *
      * @param ids 多个用英文逗号隔开
      * @return
      */

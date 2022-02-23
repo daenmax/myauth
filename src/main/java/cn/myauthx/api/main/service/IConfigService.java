@@ -6,7 +6,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
  * <p>
- *  服务类
+ * 服务类
  * </p>
  *
  * @author DaenMax
@@ -15,6 +15,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 public interface IConfigService extends IService<Config> {
     /**
      * 获取web信息，redis
+     *
      * @return
      */
     Result getWebInfo();

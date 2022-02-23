@@ -17,15 +17,16 @@ import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 @Slf4j
 public class MyInterceptor implements HandlerInterceptor {
-    @Autowired
+    @Resource
     private AdminMapper adminMapper;
-    @Autowired
+    @Resource
     private UserMapper userMapper;
-    @Autowired
+    @Resource
     private RedisUtil redisUtil;
     @Value("${genKey}")
     private String genKey;

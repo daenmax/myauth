@@ -5,7 +5,6 @@ import cn.myauthx.api.main.entity.*;
 import cn.myauthx.api.main.enums.CardEnums;
 import cn.myauthx.api.main.enums.MsgEnums;
 import cn.myauthx.api.main.enums.SoftEnums;
-import cn.myauthx.api.main.enums.UserEnums;
 import cn.myauthx.api.main.mapper.*;
 import cn.myauthx.api.main.service.IUserService;
 import cn.myauthx.api.util.CheckUtils;
@@ -17,16 +16,16 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.Arrays;
 import java.util.List;
 
 /**
  * <p>
- *  服务实现类
+ * 服务实现类
  * </p>
  *
  * @author DaenMax
@@ -34,26 +33,28 @@ import java.util.List;
  */
 @Service
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IUserService {
-    @Autowired
+    @Resource
     private RedisUtil redisUtil;
-    @Autowired
+    @Resource
     private UserMapper userMapper;
-    @Autowired
+    @Resource
     private BanMapper banMapper;
-    @Autowired
+    @Resource
     private CardMapper cardMapper;
-    @Autowired
+    @Resource
     private SoftMapper softMapper;
-    @Autowired
+    @Resource
     private MsgMapper msgMapper;
-    @Autowired
+    @Resource
     private PlogMapper plogMapper;
-    @Autowired
+    @Resource
     private VersionMapper versionMapper;
     @Value("${genKey}")
     private String genKey;
+
     /**
      * 注册
+     *
      * @param userC
      * @param softC
      * @return
@@ -61,13 +62,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     @Override
     public Result register(User userC, Soft softC) {
         LambdaQueryWrapper<User> userLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        userLambdaQueryWrapper.eq(User::getUser,userC.getUser());
-        userLambdaQueryWrapper.eq(User::getFromSoftId,softC.getId());
+        userLambdaQueryWrapper.eq(User::getUser, userC.getUser());
+        userLambdaQueryWrapper.eq(User::getFromSoftId, softC.getId());
         User userA = userMapper.selectOne(userLambdaQueryWrapper);
-        if(!CheckUtils.isObjectEmpty(userA)){
+        if (!CheckUtils.isObjectEmpty(userA)) {
             return Result.error("账号已存在");
         }
-        if(softC.getType().equals(SoftEnums.TYPE_FREE.getCode())){
+        if (softC.getType().equals(SoftEnums.TYPE_FREE.getCode())) {
             //免费模式
             User user = new User();
             user.setUser(userC.getUser());
@@ -83,20 +84,20 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
             user.setDeviceInfo(userC.getDeviceInfo());
             user.setDeviceCode(userC.getDeviceCode());
             int num = userMapper.insert(user);
-            if(num > 0){
+            if (num > 0) {
                 JSONObject jsonObject = new JSONObject();
-                jsonObject.put("user",user.getUser());
-                jsonObject.put("authTime",-1);
-                jsonObject.put("point",0);
-                return Result.ok("注册成功",jsonObject);
-            }else{
+                jsonObject.put("user", user.getUser());
+                jsonObject.put("authTime", -1);
+                jsonObject.put("point", 0);
+                return Result.ok("注册成功", jsonObject);
+            } else {
                 return Result.error("注册失败");
             }
-        }else{
+        } else {
             //收费模式
-            if(CheckUtils.isObjectEmpty(userC.getCkey())){
+            if (CheckUtils.isObjectEmpty(userC.getCkey())) {
                 //账号+密码
-                if(CheckUtils.isObjectEmpty(userC.getPass())){
+                if (CheckUtils.isObjectEmpty(userC.getPass())) {
                     return Result.error("卡密为空时，密码不能为空");
                 }
                 User user = new User();
@@ -114,30 +115,30 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
                 user.setDeviceInfo(userC.getDeviceInfo());
                 user.setDeviceCode(userC.getDeviceCode());
                 int num = userMapper.insert(user);
-                if(num > 0){
+                if (num > 0) {
                     JSONObject jsonObject = new JSONObject();
-                    jsonObject.put("user",user.getUser());
-                    jsonObject.put("authTime",user.getAuthTime());
-                    jsonObject.put("point",0);
-                    return Result.ok("注册成功",jsonObject);
-                }else{
+                    jsonObject.put("user", user.getUser());
+                    jsonObject.put("authTime", user.getAuthTime());
+                    jsonObject.put("point", 0);
+                    return Result.ok("注册成功", jsonObject);
+                } else {
                     return Result.error("注册失败");
                 }
-            }else {
+            } else {
                 //账号+卡密
                 LambdaQueryWrapper<Card> cardLambdaQueryWrapper = new LambdaQueryWrapper<>();
-                cardLambdaQueryWrapper.eq(Card::getCkey,userC.getCkey());
+                cardLambdaQueryWrapper.eq(Card::getCkey, userC.getCkey());
                 Card card = cardMapper.selectOne(cardLambdaQueryWrapper);
-                if(CheckUtils.isObjectEmpty(card)){
+                if (CheckUtils.isObjectEmpty(card)) {
                     return Result.error("卡密错误或者不存在");
                 }
-                if(card.getStatus().equals(CardEnums.STATUS_USED.getCode())){
+                if (card.getStatus().equals(CardEnums.STATUS_USED.getCode())) {
                     return Result.error("卡密已被使用");
                 }
-                if(card.getStatus().equals(CardEnums.STATUS_DISABLE.getCode())){
+                if (card.getStatus().equals(CardEnums.STATUS_DISABLE.getCode())) {
                     return Result.error("卡密已被禁用");
                 }
-                if(!card.getFromSoftId().equals(softC.getId())){
+                if (!card.getFromSoftId().equals(softC.getId())) {
                     return Result.error("此卡密不属于当前软件");
                 }
                 User user = new User();
@@ -156,17 +157,17 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
                 user.setDeviceInfo(userC.getDeviceInfo());
                 user.setDeviceCode(userC.getDeviceCode());
                 int num = userMapper.insert(user);
-                if(num > 0){
+                if (num > 0) {
                     card.setLetUser(user.getUser());
                     card.setLetTime(Integer.valueOf(MyUtils.getTimeStamp()));
                     card.setStatus(CardEnums.STATUS_USED.getCode());
                     cardMapper.updateById(card);
                     JSONObject jsonObject = new JSONObject();
-                    jsonObject.put("user",user.getUser());
-                    jsonObject.put("authTime",user.getAuthTime());
-                    jsonObject.put("point",user.getPoint());
-                    return Result.ok("注册成功",jsonObject);
-                }else{
+                    jsonObject.put("user", user.getUser());
+                    jsonObject.put("authTime", user.getAuthTime());
+                    jsonObject.put("point", user.getPoint());
+                    return Result.ok("注册成功", jsonObject);
+                } else {
                     return Result.error("注册失败");
                 }
             }
@@ -175,6 +176,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
 
     /**
      * 登录
+     *
      * @param userC
      * @param softC
      * @return
@@ -182,27 +184,27 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     @Override
     public Result login(User userC, Soft softC) {
         LambdaQueryWrapper<User> userLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        userLambdaQueryWrapper.eq(User::getUser,userC.getUser());
-        userLambdaQueryWrapper.eq(User::getFromSoftId,softC.getId());
+        userLambdaQueryWrapper.eq(User::getUser, userC.getUser());
+        userLambdaQueryWrapper.eq(User::getFromSoftId, softC.getId());
         User userA = userMapper.selectOne(userLambdaQueryWrapper);
-        if(CheckUtils.isObjectEmpty(userA)){
+        if (CheckUtils.isObjectEmpty(userA)) {
             return Result.error("账号不存在");
         }
         LambdaQueryWrapper<Ban> banLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        banLambdaQueryWrapper.eq(Ban::getValue,userA.getUser());
-        banLambdaQueryWrapper.eq(Ban::getType,3);
+        banLambdaQueryWrapper.eq(Ban::getValue, userA.getUser());
+        banLambdaQueryWrapper.eq(Ban::getType, 3);
         Ban ban = banMapper.selectOne(banLambdaQueryWrapper);
-        if(!CheckUtils.isObjectEmpty(ban)){
-            if(ban.getToTime() == -1){
+        if (!CheckUtils.isObjectEmpty(ban)) {
+            if (ban.getToTime() == -1) {
                 String msg = "msg=被封禁" + "&type=user" + "&value=" + userA.getUser() + "&toTime=-1&time=" + ban.getAddTime()
                         + "&why=" + ban.getWhy();
-                return Result.error(300,msg);
-            }else{
+                return Result.error(300, msg);
+            } else {
                 Integer seconds = ban.getToTime() - Integer.parseInt(MyUtils.getTimeStamp());
-                if(seconds > 0){
+                if (seconds > 0) {
                     String msg = "msg=被封禁" + "&type=user" + "&value=" + userA.getUser() + "&toTime=" + ban.getToTime() + "&time=" + ban.getAddTime()
                             + "&why=" + ban.getWhy();
-                    return Result.error(300,msg);
+                    return Result.error(300, msg);
                 }
             }
         }
@@ -212,169 +214,169 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         userA.setLastIp(userC.getLastIp());
         userA.setLastTime(Integer.valueOf(MyUtils.getTimeStamp()));
         JSONObject jsonObject = new JSONObject(true);
-        if(softC.getType().equals(SoftEnums.TYPE_FREE.getCode())) {
+        if (softC.getType().equals(SoftEnums.TYPE_FREE.getCode())) {
             //免费模式
-            if(CheckUtils.isObjectEmpty(userA.getPass())){
+            if (CheckUtils.isObjectEmpty(userA.getPass())) {
                 //密码为空
-                if(softC.getBindDeviceCode().equals(SoftEnums.BIND_ABLE.getCode())){
+                if (softC.getBindDeviceCode().equals(SoftEnums.BIND_ABLE.getCode())) {
                     //绑定机器码
-                    if(!CheckUtils.isObjectEmpty(userA.getDeviceCode())){
+                    if (!CheckUtils.isObjectEmpty(userA.getDeviceCode())) {
                         //已经有历史机器码记录
-                        if(!userA.getDeviceCode().equals(userC.getDeviceCode())){
+                        if (!userA.getDeviceCode().equals(userC.getDeviceCode())) {
                             return Result.error("此账号已绑定其他机器码，请先解绑");
                         }
-                    }else{
+                    } else {
                         //没有历史机器码记录
                         userA.setDeviceCode(userC.getDeviceCode());
                         userA.setDeviceInfo(userC.getDeviceInfo());
                     }
-                }else{
+                } else {
                     userA.setDeviceCode(userC.getDeviceCode());
                     userA.setDeviceInfo(userC.getDeviceInfo());
                 }
-                String token = MyUtils.encUserToken(userA.getUser(),String.valueOf(userA.getLastTime()),String.valueOf(softC.getId()),genKey);
+                String token = MyUtils.encUserToken(userA.getUser(), String.valueOf(userA.getLastTime()), String.valueOf(softC.getId()), genKey);
                 userA.setToken(token);
                 int num = userMapper.updateById(userA);
-                if(num > 0){
-                    redisUtil.set("user:" + userA.getFromSoftId() + ":" + userA.getUser(),userA);
-                    jsonObject.put("user",userA.getUser());
-                    jsonObject.put("name",userA.getName());
-                    jsonObject.put("qq",userA.getQq());
-                    jsonObject.put("point",userA.getPoint());
-                    jsonObject.put("ckey",userA.getCkey());
-                    jsonObject.put("regTime",userA.getRegTime());
-                    jsonObject.put("remark",userA.getRemark());
-                    jsonObject.put("authTime",userA.getAuthTime());
-                    jsonObject.put("token",userA.getToken());
-                    return Result.ok("登录成功",jsonObject);
+                if (num > 0) {
+                    redisUtil.set("user:" + userA.getFromSoftId() + ":" + userA.getUser(), userA);
+                    jsonObject.put("user", userA.getUser());
+                    jsonObject.put("name", userA.getName());
+                    jsonObject.put("qq", userA.getQq());
+                    jsonObject.put("point", userA.getPoint());
+                    jsonObject.put("ckey", userA.getCkey());
+                    jsonObject.put("regTime", userA.getRegTime());
+                    jsonObject.put("remark", userA.getRemark());
+                    jsonObject.put("authTime", userA.getAuthTime());
+                    jsonObject.put("token", userA.getToken());
+                    return Result.ok("登录成功", jsonObject);
                 }
-            }else{
+            } else {
                 //密码不为空
-                if(CheckUtils.isObjectEmpty(userC.getPass())){
+                if (CheckUtils.isObjectEmpty(userC.getPass())) {
                     return Result.error("密码不能为空");
                 }
-                if(!userA.getPass().equals(userC.getPass())){
+                if (!userA.getPass().equals(userC.getPass())) {
                     return Result.error("密码错误");
                 }
-                if(softC.getBindDeviceCode().equals(SoftEnums.BIND_ABLE.getCode())){
+                if (softC.getBindDeviceCode().equals(SoftEnums.BIND_ABLE.getCode())) {
                     //绑定机器码
-                    if(!CheckUtils.isObjectEmpty(userA.getDeviceCode())){
+                    if (!CheckUtils.isObjectEmpty(userA.getDeviceCode())) {
                         //已经有历史机器码记录
-                        if(!userA.getDeviceCode().equals(userC.getDeviceCode())){
+                        if (!userA.getDeviceCode().equals(userC.getDeviceCode())) {
                             return Result.error("此账号已绑定其他机器码，请先解绑");
                         }
-                    }else{
+                    } else {
                         //没有历史机器码记录
                         userA.setDeviceCode(userC.getDeviceCode());
                         userA.setDeviceInfo(userC.getDeviceInfo());
                     }
-                }else{
+                } else {
                     userA.setDeviceCode(userC.getDeviceCode());
                     userA.setDeviceInfo(userC.getDeviceInfo());
                 }
-                String token = MyUtils.encUserToken(userA.getUser(),String.valueOf(userA.getLastTime()),String.valueOf(softC.getId()),genKey);
+                String token = MyUtils.encUserToken(userA.getUser(), String.valueOf(userA.getLastTime()), String.valueOf(softC.getId()), genKey);
                 userA.setToken(token);
                 int num = userMapper.updateById(userA);
-                if(num > 0){
-                    redisUtil.set("user:" + userA.getFromSoftId() + ":" + userA.getUser(),userA);
-                    jsonObject.put("user",userA.getUser());
-                    jsonObject.put("name",userA.getName());
-                    jsonObject.put("qq",userA.getQq());
-                    jsonObject.put("point",userA.getPoint());
-                    jsonObject.put("ckey",userA.getCkey());
-                    jsonObject.put("regTime",userA.getRegTime());
-                    jsonObject.put("remark",userA.getRemark());
-                    jsonObject.put("authTime",userA.getAuthTime());
-                    jsonObject.put("token",userA.getToken());
-                    return Result.ok("登录成功",jsonObject);
+                if (num > 0) {
+                    redisUtil.set("user:" + userA.getFromSoftId() + ":" + userA.getUser(), userA);
+                    jsonObject.put("user", userA.getUser());
+                    jsonObject.put("name", userA.getName());
+                    jsonObject.put("qq", userA.getQq());
+                    jsonObject.put("point", userA.getPoint());
+                    jsonObject.put("ckey", userA.getCkey());
+                    jsonObject.put("regTime", userA.getRegTime());
+                    jsonObject.put("remark", userA.getRemark());
+                    jsonObject.put("authTime", userA.getAuthTime());
+                    jsonObject.put("token", userA.getToken());
+                    return Result.ok("登录成功", jsonObject);
                 }
             }
 
-        }else{
+        } else {
             //收费模式
-            if(CheckUtils.isObjectEmpty(userA.getPass())){
+            if (CheckUtils.isObjectEmpty(userA.getPass())) {
                 //密码为空
-                if(Integer.parseInt(MyUtils.getTimeStamp()) > userA.getAuthTime()){
+                if (Integer.parseInt(MyUtils.getTimeStamp()) > userA.getAuthTime()) {
                     //授权未到期
-                    if(softC.getBindDeviceCode().equals(SoftEnums.BIND_ABLE.getCode())){
+                    if (softC.getBindDeviceCode().equals(SoftEnums.BIND_ABLE.getCode())) {
                         //绑定机器码
-                        if(!CheckUtils.isObjectEmpty(userA.getDeviceCode())){
+                        if (!CheckUtils.isObjectEmpty(userA.getDeviceCode())) {
                             //已经有历史机器码记录
-                            if(!userA.getDeviceCode().equals(userC.getDeviceCode())){
+                            if (!userA.getDeviceCode().equals(userC.getDeviceCode())) {
                                 return Result.error("此账号已绑定其他机器码，请先解绑");
                             }
-                        }else{
+                        } else {
                             //没有历史机器码记录
                             userA.setDeviceCode(userC.getDeviceCode());
                             userA.setDeviceInfo(userC.getDeviceInfo());
                         }
-                    }else{
+                    } else {
                         userA.setDeviceCode(userC.getDeviceCode());
                         userA.setDeviceInfo(userC.getDeviceInfo());
                     }
-                    String token = MyUtils.encUserToken(userA.getUser(),String.valueOf(userA.getLastTime()),String.valueOf(softC.getId()),genKey);
+                    String token = MyUtils.encUserToken(userA.getUser(), String.valueOf(userA.getLastTime()), String.valueOf(softC.getId()), genKey);
                     userA.setToken(token);
                     int num = userMapper.updateById(userA);
-                    if(num > 0){
-                        redisUtil.set("user:" + userA.getFromSoftId() + ":" + userA.getUser(),userA);
-                        jsonObject.put("user",userA.getUser());
-                        jsonObject.put("name",userA.getName());
-                        jsonObject.put("qq",userA.getQq());
-                        jsonObject.put("point",userA.getPoint());
-                        jsonObject.put("ckey",userA.getCkey());
-                        jsonObject.put("regTime",userA.getRegTime());
-                        jsonObject.put("remark",userA.getRemark());
-                        jsonObject.put("authTime",userA.getAuthTime());
-                        jsonObject.put("token",userA.getToken());
-                        return Result.ok("登录成功",jsonObject);
+                    if (num > 0) {
+                        redisUtil.set("user:" + userA.getFromSoftId() + ":" + userA.getUser(), userA);
+                        jsonObject.put("user", userA.getUser());
+                        jsonObject.put("name", userA.getName());
+                        jsonObject.put("qq", userA.getQq());
+                        jsonObject.put("point", userA.getPoint());
+                        jsonObject.put("ckey", userA.getCkey());
+                        jsonObject.put("regTime", userA.getRegTime());
+                        jsonObject.put("remark", userA.getRemark());
+                        jsonObject.put("authTime", userA.getAuthTime());
+                        jsonObject.put("token", userA.getToken());
+                        return Result.ok("登录成功", jsonObject);
                     }
-                }else{
+                } else {
                     //授权已到期
                     return Result.error("授权已到期");
                 }
-            }else{
+            } else {
                 //密码不为空
-                if(CheckUtils.isObjectEmpty(userC.getPass())){
+                if (CheckUtils.isObjectEmpty(userC.getPass())) {
                     return Result.error("密码不能为空");
                 }
-                if(!userA.getPass().equals(userC.getPass())){
+                if (!userA.getPass().equals(userC.getPass())) {
                     return Result.error("密码错误");
                 }
-                if(Integer.parseInt(MyUtils.getTimeStamp()) < userA.getAuthTime()){
+                if (Integer.parseInt(MyUtils.getTimeStamp()) < userA.getAuthTime()) {
                     //授权未到期
-                    if(softC.getBindDeviceCode().equals(SoftEnums.BIND_ABLE.getCode())){
+                    if (softC.getBindDeviceCode().equals(SoftEnums.BIND_ABLE.getCode())) {
                         //绑定机器码
-                        if(!CheckUtils.isObjectEmpty(userA.getDeviceCode())){
+                        if (!CheckUtils.isObjectEmpty(userA.getDeviceCode())) {
                             //已经有历史机器码记录
-                            if(!userA.getDeviceCode().equals(userC.getDeviceCode())){
+                            if (!userA.getDeviceCode().equals(userC.getDeviceCode())) {
                                 return Result.error("此账号已绑定其他机器码，请先解绑");
                             }
-                        }else{
+                        } else {
                             //没有历史机器码记录
                             userA.setDeviceCode(userC.getDeviceCode());
                             userA.setDeviceInfo(userC.getDeviceInfo());
                         }
-                    }else{
+                    } else {
                         userA.setDeviceCode(userC.getDeviceCode());
                         userA.setDeviceInfo(userC.getDeviceInfo());
                     }
-                    String token = MyUtils.encUserToken(userA.getUser(),String.valueOf(userA.getLastTime()),String.valueOf(softC.getId()),genKey);
+                    String token = MyUtils.encUserToken(userA.getUser(), String.valueOf(userA.getLastTime()), String.valueOf(softC.getId()), genKey);
                     userA.setToken(token);
                     int num = userMapper.updateById(userA);
-                    if(num > 0){
-                        redisUtil.set("user:" + userA.getFromSoftId() + ":" + userA.getUser(),userA);
-                        jsonObject.put("user",userA.getUser());
-                        jsonObject.put("name",userA.getName());
-                        jsonObject.put("qq",userA.getQq());
-                        jsonObject.put("point",userA.getPoint());
-                        jsonObject.put("ckey",userA.getCkey());
-                        jsonObject.put("regTime",userA.getRegTime());
-                        jsonObject.put("remark",userA.getRemark());
-                        jsonObject.put("authTime",userA.getAuthTime());
-                        jsonObject.put("token",userA.getToken());
-                        return Result.ok("登录成功",jsonObject);
+                    if (num > 0) {
+                        redisUtil.set("user:" + userA.getFromSoftId() + ":" + userA.getUser(), userA);
+                        jsonObject.put("user", userA.getUser());
+                        jsonObject.put("name", userA.getName());
+                        jsonObject.put("qq", userA.getQq());
+                        jsonObject.put("point", userA.getPoint());
+                        jsonObject.put("ckey", userA.getCkey());
+                        jsonObject.put("regTime", userA.getRegTime());
+                        jsonObject.put("remark", userA.getRemark());
+                        jsonObject.put("authTime", userA.getAuthTime());
+                        jsonObject.put("token", userA.getToken());
+                        return Result.ok("登录成功", jsonObject);
                     }
-                }else{
+                } else {
                     //授权已到期
                     return Result.error("授权已到期");
                 }
@@ -385,28 +387,30 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
 
     /**
      * 心跳
+     *
      * @param userA
      * @param softC
      * @return
      */
     @Override
     public Result heart(User userA, Soft softC) {
-        redisUtil.set("user:" + userA.getFromSoftId() + ":" + userA.getUser(),userA);
+        redisUtil.set("user:" + userA.getFromSoftId() + ":" + userA.getUser(), userA);
         JSONObject jsonObject = new JSONObject(true);
-        jsonObject.put("user",userA.getUser());
-        jsonObject.put("name",userA.getName());
-        jsonObject.put("qq",userA.getQq());
-        jsonObject.put("point",userA.getPoint());
-        jsonObject.put("ckey",userA.getCkey());
-        jsonObject.put("regTime",userA.getRegTime());
-        jsonObject.put("remark",userA.getRemark());
-        jsonObject.put("authTime",userA.getAuthTime());
-        return Result.ok("心跳成功",jsonObject);
+        jsonObject.put("user", userA.getUser());
+        jsonObject.put("name", userA.getName());
+        jsonObject.put("qq", userA.getQq());
+        jsonObject.put("point", userA.getPoint());
+        jsonObject.put("ckey", userA.getCkey());
+        jsonObject.put("regTime", userA.getRegTime());
+        jsonObject.put("remark", userA.getRemark());
+        jsonObject.put("authTime", userA.getAuthTime());
+        return Result.ok("心跳成功", jsonObject);
     }
 
 
     /**
      * 使用卡密
+     *
      * @param userC
      * @param softC
      * @return
@@ -415,62 +419,62 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     public Result useCkey(User userC, Soft softC) {
         Plog plog = new Plog();
         LambdaQueryWrapper<User> userLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        userLambdaQueryWrapper.eq(User::getUser,userC.getUser());
-        userLambdaQueryWrapper.eq(User::getFromSoftId,softC.getId());
+        userLambdaQueryWrapper.eq(User::getUser, userC.getUser());
+        userLambdaQueryWrapper.eq(User::getFromSoftId, softC.getId());
         User userA = userMapper.selectOne(userLambdaQueryWrapper);
-        if(CheckUtils.isObjectEmpty(userA)){
+        if (CheckUtils.isObjectEmpty(userA)) {
             return Result.error("账号不存在");
         }
         LambdaQueryWrapper<Ban> banLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        banLambdaQueryWrapper.eq(Ban::getValue,userA.getUser());
-        banLambdaQueryWrapper.eq(Ban::getType,3);
+        banLambdaQueryWrapper.eq(Ban::getValue, userA.getUser());
+        banLambdaQueryWrapper.eq(Ban::getType, 3);
         Ban ban = banMapper.selectOne(banLambdaQueryWrapper);
-        if(!CheckUtils.isObjectEmpty(ban)){
-            if(ban.getToTime() == -1){
+        if (!CheckUtils.isObjectEmpty(ban)) {
+            if (ban.getToTime() == -1) {
                 String msg = "msg=被封禁" + "&type=user" + "&value=" + userA.getUser() + "&toTime=-1&time=" + ban.getAddTime()
                         + "&why=" + ban.getWhy();
-                return Result.error(300,msg);
-            }else{
+                return Result.error(300, msg);
+            } else {
                 Integer seconds = ban.getToTime() - Integer.parseInt(MyUtils.getTimeStamp());
-                if(seconds > 0){
+                if (seconds > 0) {
                     String msg = "msg=被封禁" + "&type=user" + "&value=" + userA.getUser() + "&toTime=" + ban.getToTime() + "&time=" + ban.getAddTime()
                             + "&why=" + ban.getWhy();
-                    return Result.error(300,msg);
+                    return Result.error(300, msg);
                 }
             }
         }
         LambdaQueryWrapper<Card> cardLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        cardLambdaQueryWrapper.eq(Card::getCkey,userC.getCkey());
+        cardLambdaQueryWrapper.eq(Card::getCkey, userC.getCkey());
         Card card = cardMapper.selectOne(cardLambdaQueryWrapper);
-        if(CheckUtils.isObjectEmpty(card)){
+        if (CheckUtils.isObjectEmpty(card)) {
             return Result.error("卡密错误或者不存在");
         }
-        if(card.getStatus().equals(CardEnums.STATUS_USED.getCode())){
+        if (card.getStatus().equals(CardEnums.STATUS_USED.getCode())) {
             return Result.error("卡密已被使用");
         }
-        if(card.getStatus().equals(CardEnums.STATUS_DISABLE.getCode())){
+        if (card.getStatus().equals(CardEnums.STATUS_DISABLE.getCode())) {
             return Result.error("卡密已被禁用");
         }
-        if(!card.getFromSoftId().equals(softC.getId())){
+        if (!card.getFromSoftId().equals(softC.getId())) {
             return Result.error("此卡密不属于当前软件");
         }
-        if(CheckUtils.isObjectEmpty(userA.getAuthTime())){
+        if (CheckUtils.isObjectEmpty(userA.getAuthTime())) {
             userA.setAuthTime(0);
         }
-        if(CheckUtils.isObjectEmpty(userA.getPoint())){
+        if (CheckUtils.isObjectEmpty(userA.getPoint())) {
             userA.setPoint(0);
         }
         //如果卡密包含授权时间
-        if(!card.getSeconds().equals(0)){
+        if (!card.getSeconds().equals(0)) {
             plog.setSeconds(card.getSeconds());
-            if(userA.getAuthTime().equals(-1)){
+            if (userA.getAuthTime().equals(-1)) {
                 //已是永久授权
-            }else{
+            } else {
                 //不是永久授权
-                if(userA.getAuthTime() < Integer.parseInt(MyUtils.getTimeStamp())){
+                if (userA.getAuthTime() < Integer.parseInt(MyUtils.getTimeStamp())) {
                     //已经到期
-                    userA.setAuthTime(Integer.parseInt(MyUtils.getTimeStamp())+ card.getSeconds());
-                }else{
+                    userA.setAuthTime(Integer.parseInt(MyUtils.getTimeStamp()) + card.getSeconds());
+                } else {
                     //未到期，则续费
                     userA.setAuthTime(Integer.valueOf(userA.getAuthTime()) + card.getSeconds());
                 }
@@ -479,7 +483,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         }
         plog.setAfterSeconds(userA.getAuthTime());
         //如果卡密包含点数
-        if(!card.getSeconds().equals(0)){
+        if (!card.getSeconds().equals(0)) {
             plog.setPoint(card.getPoint());
             userA.setPoint(Integer.valueOf(userA.getPoint()) + card.getPoint());
         }
@@ -489,12 +493,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         plog.setFromSoftId(card.getFromSoftId());
         plog.setRemark(card.getCkey());
         User userR = (User) redisUtil.get("user:" + softC.getId() + ":" + userC.getUser());
-        if(!CheckUtils.isObjectEmpty(userR)){
+        if (!CheckUtils.isObjectEmpty(userR)) {
             userA.setLastTime(userR.getLastTime());
         }
         int num = userMapper.updateById(userA);
-        if(num > 0){
-            if(!CheckUtils.isObjectEmpty(userR)) {
+        if (num > 0) {
+            if (!CheckUtils.isObjectEmpty(userR)) {
                 redisUtil.set("user:" + userA.getFromSoftId() + ":" + userA.getUser(), userA);
             }
             plogMapper.insert(plog);
@@ -503,97 +507,99 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
             card.setStatus(CardEnums.STATUS_USED.getCode());
             cardMapper.updateById(card);
             JSONObject jsonObject = new JSONObject(true);
-            jsonObject.put("user",userA.getUser());
-            jsonObject.put("name",userA.getName());
-            jsonObject.put("qq",userA.getQq());
-            jsonObject.put("point",userA.getPoint());
-            jsonObject.put("ckey",userA.getCkey());
-            jsonObject.put("regTime",userA.getRegTime());
-            jsonObject.put("remark",userA.getRemark());
-            jsonObject.put("authTime",userA.getAuthTime());
-            return Result.ok("使用卡密成功",jsonObject);
-        }else{
+            jsonObject.put("user", userA.getUser());
+            jsonObject.put("name", userA.getName());
+            jsonObject.put("qq", userA.getQq());
+            jsonObject.put("point", userA.getPoint());
+            jsonObject.put("ckey", userA.getCkey());
+            jsonObject.put("regTime", userA.getRegTime());
+            jsonObject.put("remark", userA.getRemark());
+            jsonObject.put("authTime", userA.getAuthTime());
+            return Result.ok("使用卡密成功", jsonObject);
+        } else {
             return Result.error("使用卡密失败");
         }
     }
 
     /**
      * 获取回复
+     *
      * @param soft
      * @param version
      * @param keyword
      * @return
      */
     @Override
-    public Result getMsg(Soft soft, Version version, String keyword,String ver) {
+    public Result getMsg(Soft soft, Version version, String keyword, String ver) {
         Version version1 = new Version();
-        if(!CheckUtils.isObjectEmpty(ver)){
+        if (!CheckUtils.isObjectEmpty(ver)) {
             LambdaQueryWrapper<Version> versionLambdaQueryWrapper = new LambdaQueryWrapper<>();
-            versionLambdaQueryWrapper.eq(Version::getFromSoftId,soft.getId());
-            versionLambdaQueryWrapper.eq(Version::getVer,ver);
+            versionLambdaQueryWrapper.eq(Version::getFromSoftId, soft.getId());
+            versionLambdaQueryWrapper.eq(Version::getVer, ver);
             version1 = versionMapper.selectOne(versionLambdaQueryWrapper);
-            if(CheckUtils.isObjectEmpty(version1)){
+            if (CheckUtils.isObjectEmpty(version1)) {
                 return Result.error("ver错误");
-            }else{
+            } else {
 
             }
         }
 
         LambdaQueryWrapper<Msg> msgLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        msgLambdaQueryWrapper.eq(Msg::getFromSoftId,soft.getId());
-        msgLambdaQueryWrapper.eq(Msg::getKeyword,keyword);
-        if(CheckUtils.isObjectEmpty(ver)){
-            msgLambdaQueryWrapper.eq(Msg::getFromVerId,version.getId());
-        }else{
-            msgLambdaQueryWrapper.eq(Msg::getFromVerId,version1.getId());
+        msgLambdaQueryWrapper.eq(Msg::getFromSoftId, soft.getId());
+        msgLambdaQueryWrapper.eq(Msg::getKeyword, keyword);
+        if (CheckUtils.isObjectEmpty(ver)) {
+            msgLambdaQueryWrapper.eq(Msg::getFromVerId, version.getId());
+        } else {
+            msgLambdaQueryWrapper.eq(Msg::getFromVerId, version1.getId());
         }
 
 
         Msg msg = msgMapper.selectOne(msgLambdaQueryWrapper);
         JSONObject jsonObject = new JSONObject(true);
-        if(CheckUtils.isObjectEmpty(msg)){
+        if (CheckUtils.isObjectEmpty(msg)) {
             LambdaQueryWrapper<Msg> msgLambdaQueryWrapper2 = new LambdaQueryWrapper<>();
-            msgLambdaQueryWrapper2.eq(Msg::getFromSoftId,soft.getId());
-            msgLambdaQueryWrapper2.eq(Msg::getKeyword,keyword);
+            msgLambdaQueryWrapper2.eq(Msg::getFromSoftId, soft.getId());
+            msgLambdaQueryWrapper2.eq(Msg::getKeyword, keyword);
             List<Msg> msgList = msgMapper.selectList(msgLambdaQueryWrapper2);
 
-            if(msgList.size()==0){
+            if (msgList.size() == 0) {
                 return Result.error("回复不存在");
-            }else {
+            } else {
                 msg = msgList.get(0);
-                if(CheckUtils.isObjectEmpty(msg.getFromVerId())){
-                    if(msg.getStatus().equals(MsgEnums.STATUS_DISABLE.getCode())){
+                if (CheckUtils.isObjectEmpty(msg.getFromVerId())) {
+                    if (msg.getStatus().equals(MsgEnums.STATUS_DISABLE.getCode())) {
                         return Result.error("回复已被禁用");
                     }
-                    jsonObject.put("keyword",msg.getKeyword());
-                    jsonObject.put("msg",MyUtils.base64Encode(msg.getMsg()));
-                    return Result.ok("获取回复成功",jsonObject);
-                }else{
-                    if(msg.getFromVerId().equals(version.getId())){
-                        if(msg.getStatus().equals(MsgEnums.STATUS_DISABLE.getCode())){
+                    jsonObject.put("keyword", msg.getKeyword());
+                    jsonObject.put("msg", MyUtils.base64Encode(msg.getMsg()));
+                    return Result.ok("获取回复成功", jsonObject);
+                } else {
+                    if (msg.getFromVerId().equals(version.getId())) {
+                        if (msg.getStatus().equals(MsgEnums.STATUS_DISABLE.getCode())) {
                             return Result.error("回复已被禁用");
                         }
-                        jsonObject.put("keyword",msg.getKeyword());
+                        jsonObject.put("keyword", msg.getKeyword());
                         jsonObject.put("msg", MyUtils.base64Encode(msg.getMsg()));
-                        return Result.ok("获取回复成功",jsonObject);
-                    }else{
+                        return Result.ok("获取回复成功", jsonObject);
+                    } else {
                         return Result.error("该回复在当前版本不能使用");
                     }
                 }
 
             }
-        }else{
-            if(msg.getStatus().equals(MsgEnums.STATUS_DISABLE.getCode())){
+        } else {
+            if (msg.getStatus().equals(MsgEnums.STATUS_DISABLE.getCode())) {
                 return Result.error("回复已被禁用");
             }
-            jsonObject.put("keyword",msg.getKeyword());
-            jsonObject.put("msg",MyUtils.base64Encode(msg.getMsg()));
-            return Result.ok("获取回复成功",jsonObject);
+            jsonObject.put("keyword", msg.getKeyword());
+            jsonObject.put("msg", MyUtils.base64Encode(msg.getMsg()));
+            return Result.ok("获取回复成功", jsonObject);
         }
     }
 
     /**
      * 解绑
+     *
      * @param userA
      * @param softC
      * @return
@@ -601,17 +607,18 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     @Override
     public Result unbind(User userA, Soft softC) {
         int num = userMapper.updateById(userA);
-        if(num == 0){
+        if (num == 0) {
             return Result.error("解绑失败");
         }
         JSONObject jsonObject = new JSONObject(true);
-        jsonObject.put("user",userA.getUser());
+        jsonObject.put("user", userA.getUser());
         redisUtil.del("user:" + softC.getId() + ":" + userA.getUser());
-        return Result.ok("解绑成功",jsonObject);
+        return Result.ok("解绑成功", jsonObject);
     }
 
     /**
      * 修改密码
+     *
      * @param userS
      * @param nowPass
      * @param newPass
@@ -619,47 +626,47 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
      * @return
      */
     @Override
-    public Result editPass(String userS, String nowPass, String newPass,Soft softC) {
+    public Result editPass(String userS, String nowPass, String newPass, Soft softC) {
         LambdaQueryWrapper<User> userLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        userLambdaQueryWrapper.eq(User::getUser,userS);
-        userLambdaQueryWrapper.eq(User::getFromSoftId,softC.getId());
+        userLambdaQueryWrapper.eq(User::getUser, userS);
+        userLambdaQueryWrapper.eq(User::getFromSoftId, softC.getId());
         User userA = userMapper.selectOne(userLambdaQueryWrapper);
-        if(CheckUtils.isObjectEmpty(userA)){
+        if (CheckUtils.isObjectEmpty(userA)) {
             return Result.error("账号不存在");
         }
         LambdaQueryWrapper<Ban> banLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        banLambdaQueryWrapper.eq(Ban::getValue,userA.getUser());
-        banLambdaQueryWrapper.eq(Ban::getType,3);
+        banLambdaQueryWrapper.eq(Ban::getValue, userA.getUser());
+        banLambdaQueryWrapper.eq(Ban::getType, 3);
         Ban ban = banMapper.selectOne(banLambdaQueryWrapper);
-        if(!CheckUtils.isObjectEmpty(ban)){
-            if(ban.getToTime() == -1){
+        if (!CheckUtils.isObjectEmpty(ban)) {
+            if (ban.getToTime() == -1) {
                 String msg = "msg=被封禁" + "&type=user" + "&value=" + userA.getUser() + "&toTime=-1&time=" + ban.getAddTime()
                         + "&why=" + ban.getWhy();
-                return Result.error(300,msg);
-            }else{
+                return Result.error(300, msg);
+            } else {
                 Integer seconds = ban.getToTime() - Integer.parseInt(MyUtils.getTimeStamp());
-                if(seconds > 0){
+                if (seconds > 0) {
                     String msg = "msg=被封禁" + "&type=user" + "&value=" + userA.getUser() + "&toTime=" + ban.getToTime() + "&time=" + ban.getAddTime()
                             + "&why=" + ban.getWhy();
-                    return Result.error(300,msg);
+                    return Result.error(300, msg);
                 }
             }
         }
-        if(CheckUtils.isObjectEmpty(userA.getPass())){
+        if (CheckUtils.isObjectEmpty(userA.getPass())) {
             return Result.error("账号不允许修改密码");
         }
-        if(!userA.getPass().equals(nowPass)){
+        if (!userA.getPass().equals(nowPass)) {
             return Result.error("旧密码错误");
         }
         userA.setPass(newPass);
         int num = userMapper.updateById(userA);
-        if(num == 0){
+        if (num == 0) {
             return Result.error("修改密码失败");
         }
         JSONObject jsonObject = new JSONObject(true);
-        jsonObject.put("user",userA.getUser());
+        jsonObject.put("user", userA.getUser());
         redisUtil.del("user:" + softC.getId() + ":" + userA.getUser());
-        return Result.ok("修改密码成功，请重新登录",jsonObject);
+        return Result.ok("修改密码成功，请重新登录", jsonObject);
     }
 
     /**
@@ -675,20 +682,20 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         userR.setName(user.getName());
         userR.setQq(user.getQq());
         int num = userMapper.updateById(userR);
-        if(num == 0){
+        if (num == 0) {
             return Result.error("修改资料失败");
         }
-        redisUtil.set("user:" + soft.getId() + ":" + user.getUser(),userR);
+        redisUtil.set("user:" + soft.getId() + ":" + user.getUser(), userR);
         JSONObject jsonObject = new JSONObject(true);
-        jsonObject.put("user",userR.getUser());
-        jsonObject.put("name",userR.getName());
-        jsonObject.put("qq",userR.getQq());
-        jsonObject.put("point",userR.getPoint());
-        jsonObject.put("ckey",userR.getCkey());
-        jsonObject.put("regTime",userR.getRegTime());
-        jsonObject.put("remark",userR.getRemark());
-        jsonObject.put("authTime",userR.getAuthTime());
-        return Result.ok("修改资料成功",jsonObject);
+        jsonObject.put("user", userR.getUser());
+        jsonObject.put("name", userR.getName());
+        jsonObject.put("qq", userR.getQq());
+        jsonObject.put("point", userR.getPoint());
+        jsonObject.put("ckey", userR.getCkey());
+        jsonObject.put("regTime", userR.getRegTime());
+        jsonObject.put("remark", userR.getRemark());
+        jsonObject.put("authTime", userR.getAuthTime());
+        return Result.ok("修改资料成功", jsonObject);
     }
 
     /**
@@ -701,7 +708,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     @Override
     public Result getUserList(User user, MyPage myPage) {
         Page<User> page = new Page<>(myPage.getPageIndex(), myPage.getPageSize(), true);
-        if(!CheckUtils.isObjectEmpty(myPage.getOrders())){
+        if (!CheckUtils.isObjectEmpty(myPage.getOrders())) {
             for (int i = 0; i < myPage.getOrders().size(); i++) {
                 myPage.getOrders().get(i).setColumn(UnderlineToCamelUtils.camelToUnderline(myPage.getOrders().get(i).getColumn()));
             }
@@ -714,6 +721,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         }
         return Result.ok("获取成功", msgPage);
     }
+
     /**
      * 获取查询条件构造器
      *
@@ -747,10 +755,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     @Override
     public Result getUser(User user) {
         User newUser = userMapper.selectById(user.getId());
-        if(CheckUtils.isObjectEmpty(newUser)){
+        if (CheckUtils.isObjectEmpty(newUser)) {
             return Result.error("查询失败，未找到");
         }
-        return Result.ok("查询成功",newUser);
+        return Result.ok("查询成功", newUser);
     }
 
     /**
@@ -762,7 +770,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     @Override
     public Result updUser(User user) {
         User newUser = userMapper.selectById(user.getId());
-        if(CheckUtils.isObjectEmpty(newUser)){
+        if (CheckUtils.isObjectEmpty(newUser)) {
             return Result.error("用户ID错误");
         }
         int num = userMapper.updateById(user);
@@ -782,20 +790,20 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     @Override
     public Result addUser(User user) {
         Soft soft = softMapper.selectById(user.getFromSoftId());
-        if(CheckUtils.isObjectEmpty(soft)){
+        if (CheckUtils.isObjectEmpty(soft)) {
             return Result.error("fromSoftId错误");
         }
         user.setFromSoftKey(soft.getSkey());
         LambdaQueryWrapper<User> userLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        userLambdaQueryWrapper.eq(User::getUser,user.getUser());
-        userLambdaQueryWrapper.eq(User::getFromSoftId,user.getFromSoftId());
+        userLambdaQueryWrapper.eq(User::getUser, user.getUser());
+        userLambdaQueryWrapper.eq(User::getFromSoftId, user.getFromSoftId());
         User user1 = userMapper.selectOne(userLambdaQueryWrapper);
-        if(!CheckUtils.isObjectEmpty(user1)){
-            return Result.error("账号已存在");
+        if (!CheckUtils.isObjectEmpty(user1)) {
+            return Result.error("账号在当前软件中已存在");
         }
         user.setRegTime(Integer.valueOf(MyUtils.getTimeStamp()));
         int num = userMapper.insert(user);
-        if(num <= 0){
+        if (num <= 0) {
             return Result.error("添加失败");
         }
         return Result.ok("添加成功");
@@ -811,7 +819,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     public Result delUser(String ids) {
         String[] idArray = ids.split(",");
         List<String> strings = Arrays.asList(idArray);
-        if(idArray.length == 0){
+        if (idArray.length == 0) {
             return Result.error("ids参数格式可能错误");
         }
         int okCount = userMapper.deleteBatchIds(strings);

@@ -6,21 +6,18 @@ import cn.myauthx.api.main.enums.AdminEnums;
 import cn.myauthx.api.main.mapper.AdminMapper;
 import cn.myauthx.api.main.service.IAdminService;
 import cn.myauthx.api.util.CheckUtils;
-import cn.myauthx.api.util.IpUtil;
 import cn.myauthx.api.util.MyUtils;
 import cn.myauthx.api.util.RedisUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 
 /**
  * <p>
- *  服务实现类
+ * 服务实现类
  * </p>
  *
  * @author DaenMax
@@ -28,9 +25,8 @@ import javax.annotation.Resource;
  */
 @Service
 public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin> implements IAdminService {
-    @Autowired
+    @Resource
     private AdminMapper adminMapper;
-
     @Resource
     private RedisUtil redisUtil;
 
@@ -42,17 +38,17 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin> implements
      * @return
      */
     @Override
-    public Result login(String user, String pass,String ip) {
+    public Result login(String user, String pass, String ip) {
         LambdaQueryWrapper<Admin> adminLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        adminLambdaQueryWrapper.eq(Admin::getUser,user);
+        adminLambdaQueryWrapper.eq(Admin::getUser, user);
         Admin admin = adminMapper.selectOne(adminLambdaQueryWrapper);
-        if(CheckUtils.isObjectEmpty(admin)){
+        if (CheckUtils.isObjectEmpty(admin)) {
             return Result.error("用户不存在");
         }
-        if(!admin.getPass().equals(pass)){
+        if (!admin.getPass().equals(pass)) {
             return Result.error("密码错误");
         }
-        if(AdminEnums.STATUS_DISABLE.getCode().equals(admin.getStatus())){
+        if (AdminEnums.STATUS_DISABLE.getCode().equals(admin.getStatus())) {
             return Result.error("账号被禁用");
         }
         admin.setLastIp(ip);
@@ -60,13 +56,13 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin> implements
         String token = MyUtils.getUUID(false);
         admin.setToken(token);
         adminMapper.updateById(admin);
-        redisUtil.set("admin:" + token,admin,AdminEnums.TOKEN_VALIDITY.getCode());
+        redisUtil.set("admin:" + token, admin, AdminEnums.TOKEN_VALIDITY.getCode());
         JSONObject jsonObject = new JSONObject(true);
-        jsonObject.put("user",admin.getUser());
-        jsonObject.put("qq",admin.getQq());
-        jsonObject.put("regTime",admin.getRegTime());
-        jsonObject.put("token",admin.getToken());
-        return Result.ok("登录成功",jsonObject);
+        jsonObject.put("user", admin.getUser());
+        jsonObject.put("qq", admin.getQq());
+        jsonObject.put("regTime", admin.getRegTime());
+        jsonObject.put("token", admin.getToken());
+        return Result.ok("登录成功", jsonObject);
     }
 
     /**
@@ -77,18 +73,18 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin> implements
      * @return
      */
     @Override
-    public Result editPass(String nowPass, String newPass,Admin admin) {
-        if(!nowPass.equals(admin.getPass())){
+    public Result editPass(String nowPass, String newPass, Admin admin) {
+        if (!nowPass.equals(admin.getPass())) {
             return Result.error("旧密码错误");
         }
-        if(nowPass.equals(newPass)){
+        if (nowPass.equals(newPass)) {
             return Result.error("新密码与旧密码不能一样");
         }
         String token = admin.getToken();
         admin.setToken("");
         admin.setPass(newPass);
         int num = adminMapper.updateById(admin);
-        if(num < 1){
+        if (num < 1) {
             return Result.error("修改密码失败");
         }
         redisUtil.del("admin:" + token);
