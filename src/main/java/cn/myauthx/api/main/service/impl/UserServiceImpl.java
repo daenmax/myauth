@@ -5,6 +5,7 @@ import cn.myauthx.api.main.entity.*;
 import cn.myauthx.api.main.enums.CardEnums;
 import cn.myauthx.api.main.enums.MsgEnums;
 import cn.myauthx.api.main.enums.SoftEnums;
+import cn.myauthx.api.main.enums.UserEnums;
 import cn.myauthx.api.main.mapper.*;
 import cn.myauthx.api.main.service.IUserService;
 import cn.myauthx.api.util.CheckUtils;
@@ -238,7 +239,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
                 userA.setToken(token);
                 int num = userMapper.updateById(userA);
                 if (num > 0) {
-                    redisUtil.set("user:" + userA.getFromSoftId() + ":" + userA.getUser(), userA);
+                    redisUtil.set("user:" + userA.getFromSoftId() + ":" + userA.getUser(), userA, UserEnums.TOKEN_VALIDITY.getCode());
                     jsonObject.put("user", userA.getUser());
                     jsonObject.put("name", userA.getName());
                     jsonObject.put("qq", userA.getQq());
@@ -278,7 +279,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
                 userA.setToken(token);
                 int num = userMapper.updateById(userA);
                 if (num > 0) {
-                    redisUtil.set("user:" + userA.getFromSoftId() + ":" + userA.getUser(), userA);
+                    redisUtil.set("user:" + userA.getFromSoftId() + ":" + userA.getUser(), userA,UserEnums.TOKEN_VALIDITY.getCode());
                     jsonObject.put("user", userA.getUser());
                     jsonObject.put("name", userA.getName());
                     jsonObject.put("qq", userA.getQq());
@@ -318,7 +319,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
                     userA.setToken(token);
                     int num = userMapper.updateById(userA);
                     if (num > 0) {
-                        redisUtil.set("user:" + userA.getFromSoftId() + ":" + userA.getUser(), userA);
+                        redisUtil.set("user:" + userA.getFromSoftId() + ":" + userA.getUser(), userA,UserEnums.TOKEN_VALIDITY.getCode());
                         jsonObject.put("user", userA.getUser());
                         jsonObject.put("name", userA.getName());
                         jsonObject.put("qq", userA.getQq());
@@ -364,7 +365,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
                     userA.setToken(token);
                     int num = userMapper.updateById(userA);
                     if (num > 0) {
-                        redisUtil.set("user:" + userA.getFromSoftId() + ":" + userA.getUser(), userA);
+                        redisUtil.set("user:" + userA.getFromSoftId() + ":" + userA.getUser(), userA,UserEnums.TOKEN_VALIDITY.getCode());
                         jsonObject.put("user", userA.getUser());
                         jsonObject.put("name", userA.getName());
                         jsonObject.put("qq", userA.getQq());
@@ -394,7 +395,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
      */
     @Override
     public Result heart(User userA, Soft softC) {
-        redisUtil.set("user:" + userA.getFromSoftId() + ":" + userA.getUser(), userA);
+        redisUtil.set("user:" + userA.getFromSoftId() + ":" + userA.getUser(), userA,UserEnums.TOKEN_VALIDITY.getCode());
         JSONObject jsonObject = new JSONObject(true);
         jsonObject.put("user", userA.getUser());
         jsonObject.put("name", userA.getName());
@@ -499,7 +500,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         int num = userMapper.updateById(userA);
         if (num > 0) {
             if (!CheckUtils.isObjectEmpty(userR)) {
-                redisUtil.set("user:" + userA.getFromSoftId() + ":" + userA.getUser(), userA);
+                redisUtil.set("user:" + userA.getFromSoftId() + ":" + userA.getUser(), userA,UserEnums.TOKEN_VALIDITY.getCode());
             }
             plogMapper.insert(plog);
             card.setLetUser(userA.getUser());
@@ -685,7 +686,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         if (num == 0) {
             return Result.error("修改资料失败");
         }
-        redisUtil.set("user:" + soft.getId() + ":" + user.getUser(), userR);
+        redisUtil.set("user:" + soft.getId() + ":" + user.getUser(), userR,UserEnums.TOKEN_VALIDITY.getCode());
         JSONObject jsonObject = new JSONObject(true);
         jsonObject.put("user", userR.getUser());
         jsonObject.put("name", userR.getName());

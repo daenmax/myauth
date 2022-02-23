@@ -6,6 +6,7 @@ import cn.myauthx.api.main.entity.Plog;
 import cn.myauthx.api.main.entity.Soft;
 import cn.myauthx.api.main.entity.User;
 import cn.myauthx.api.main.enums.EventEnums;
+import cn.myauthx.api.main.enums.UserEnums;
 import cn.myauthx.api.main.mapper.EventMapper;
 import cn.myauthx.api.main.mapper.PlogMapper;
 import cn.myauthx.api.main.mapper.UserMapper;
@@ -95,7 +96,7 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements
         plog.setFromSoftId(event.getFromSoftId());
         int num = userMapper.updateById(user);
         if (num > 0) {
-            redisUtil.set("user:" + user.getFromSoftId() + ":" + user.getUser(), user);
+            redisUtil.set("user:" + user.getFromSoftId() + ":" + user.getUser(), user, UserEnums.TOKEN_VALIDITY.getCode());
             plogMapper.insert(plog);
             JSONObject jsonObject = new JSONObject(true);
             jsonObject.put("user", user.getUser());

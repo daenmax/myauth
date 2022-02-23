@@ -144,7 +144,7 @@ public class JsServiceImpl extends ServiceImpl<JsMapper, Js> implements IJsServi
         jsLambdaQueryWrapper.eq(Js::getJsFun,js.getJsFun());
         List<Js> jsList = jsMapper.selectList(jsLambdaQueryWrapper);
         if(jsList.size()>0){
-            return Result.error("函数名在当前软件中已存在");
+            return Result.error("函数名称在当前软件中已存在");
         }
         js.setFromSoftId(null);
         int num = jsMapper.updateById(js);
@@ -171,7 +171,7 @@ public class JsServiceImpl extends ServiceImpl<JsMapper, Js> implements IJsServi
         jsLambdaQueryWrapper.eq(Js::getJsFun, js.getJsFun());
         Js js1 = jsMapper.selectOne(jsLambdaQueryWrapper);
         if (!CheckUtils.isObjectEmpty(js1)) {
-            return Result.error("函数名在当前软件中已存在");
+            return Result.error("函数名称在当前软件中已存在");
         }
         js.setAddTime(Integer.valueOf(MyUtils.getTimeStamp()));
         int num = jsMapper.insert(js);
