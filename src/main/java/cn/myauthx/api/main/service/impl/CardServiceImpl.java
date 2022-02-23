@@ -2,7 +2,6 @@ package cn.myauthx.api.main.service.impl;
 
 import cn.myauthx.api.base.vo.Result;
 import cn.myauthx.api.main.entity.Card;
-import cn.myauthx.api.main.entity.Msg;
 import cn.myauthx.api.main.entity.MyPage;
 import cn.myauthx.api.main.entity.Soft;
 import cn.myauthx.api.main.enums.CardEnums;
@@ -14,9 +13,7 @@ import cn.myauthx.api.util.MyUtils;
 import cn.myauthx.api.util.RedisUtil;
 import cn.myauthx.api.util.UnderlineToCamelUtils;
 import com.alibaba.fastjson.JSONObject;
-import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -29,7 +26,7 @@ import java.util.List;
 
 /**
  * <p>
- *  服务实现类
+ * 服务实现类
  * </p>
  *
  * @author DaenMax
@@ -43,6 +40,7 @@ public class CardServiceImpl extends ServiceImpl<CardMapper, Card> implements IC
     private SoftMapper softMapper;
     @Resource
     private RedisUtil redisUtil;
+
     /**
      * 获取查询条件构造器
      *
@@ -72,7 +70,7 @@ public class CardServiceImpl extends ServiceImpl<CardMapper, Card> implements IC
     @Override
     public Result getCardList(Card card, MyPage myPage) {
         Page<Card> page = new Page<>(myPage.getPageIndex(), myPage.getPageSize(), true);
-        if(!CheckUtils.isObjectEmpty(myPage.getOrders())){
+        if (!CheckUtils.isObjectEmpty(myPage.getOrders())) {
             for (int i = 0; i < myPage.getOrders().size(); i++) {
                 myPage.getOrders().get(i).setColumn(UnderlineToCamelUtils.camelToUnderline(myPage.getOrders().get(i).getColumn()));
             }
@@ -95,13 +93,13 @@ public class CardServiceImpl extends ServiceImpl<CardMapper, Card> implements IC
     @Override
     public Result getCard(Card card) {
         LambdaQueryWrapper<Card> cardLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        cardLambdaQueryWrapper.eq(!CheckUtils.isObjectEmpty(card.getId()), Card::getId,card.getId());
-        cardLambdaQueryWrapper.eq(!CheckUtils.isObjectEmpty(card.getCkey()),Card::getCkey,card.getCkey());
+        cardLambdaQueryWrapper.eq(!CheckUtils.isObjectEmpty(card.getId()), Card::getId, card.getId());
+        cardLambdaQueryWrapper.eq(!CheckUtils.isObjectEmpty(card.getCkey()), Card::getCkey, card.getCkey());
         Card newCard = cardMapper.selectOne(cardLambdaQueryWrapper);
-        if(CheckUtils.isObjectEmpty(newCard)){
+        if (CheckUtils.isObjectEmpty(newCard)) {
             return Result.error("查询失败，未找到");
         }
-        return Result.ok("查询成功",newCard);
+        return Result.ok("查询成功", newCard);
     }
 
     /**
@@ -113,10 +111,10 @@ public class CardServiceImpl extends ServiceImpl<CardMapper, Card> implements IC
     @Override
     public Result updCard(Card card) {
         Card newCard = cardMapper.selectById(card.getId());
-        if(CheckUtils.isObjectEmpty(newCard)){
+        if (CheckUtils.isObjectEmpty(newCard)) {
             return Result.error("卡密ID错误");
         }
-        if(newCard.getStatus() == 1){
+        if (newCard.getStatus() == 1) {
             return Result.error("卡密已被使用，无法修改");
         }
         int num = cardMapper.updateById(card);
@@ -141,9 +139,9 @@ public class CardServiceImpl extends ServiceImpl<CardMapper, Card> implements IC
             return Result.error("fromSoftId错误");
         }
         String prefixStr = null;
-        if(CheckUtils.isObjectEmpty(prefix)){
+        if (CheckUtils.isObjectEmpty(prefix)) {
             prefixStr = "";
-        }else{
+        } else {
             prefixStr = prefix;
         }
         Integer timeStamp = Integer.valueOf(MyUtils.getTimeStamp());
@@ -152,8 +150,8 @@ public class CardServiceImpl extends ServiceImpl<CardMapper, Card> implements IC
         for (Integer i = 0; i < count; i++) {
             String ckey = prefixStr + MyUtils.getUUID(false);
             outStr = outStr + ckey;
-            if(i != count - 1){
-                outStr = outStr +  "\r\n";
+            if (i != count - 1) {
+                outStr = outStr + "\r\n";
             }
             Card newCard = new Card();
             newCard.setCkey(ckey);
@@ -166,8 +164,8 @@ public class CardServiceImpl extends ServiceImpl<CardMapper, Card> implements IC
             okCount = okCount + insert;
         }
         JSONObject jsonObject = new JSONObject(true);
-        jsonObject.put("ckeyStr",outStr);
-        return Result.ok("成功生成 " + okCount + " 张卡密",jsonObject);
+        jsonObject.put("ckeyStr", outStr);
+        return Result.ok("成功生成 " + okCount + " 张卡密", jsonObject);
     }
 
     /**
@@ -180,7 +178,7 @@ public class CardServiceImpl extends ServiceImpl<CardMapper, Card> implements IC
     public Result delCard(String ids) {
         String[] idArray = ids.split(",");
         List<String> strings = Arrays.asList(idArray);
-        if(idArray.length == 0){
+        if (idArray.length == 0) {
             return Result.error("ids参数格式可能错误");
         }
         int okCount = cardMapper.deleteBatchIds(strings);
@@ -196,12 +194,12 @@ public class CardServiceImpl extends ServiceImpl<CardMapper, Card> implements IC
     @Override
     public Result banCard(String ids) {
         String[] idArray = ids.split(",");
-        if(idArray.length == 0){
+        if (idArray.length == 0) {
             return Result.error("ids参数格式可能错误");
         }
         LambdaUpdateWrapper<Card> wrapper = new LambdaUpdateWrapper();
-        wrapper.set(Card::getStatus,CardEnums.STATUS_DISABLE.getCode()).in(Card::getId,Arrays.asList(idArray)).eq(Card::getStatus,CardEnums.STATUS_NOTUSEd.getCode());
-        int okCount = cardMapper.update(null,wrapper);
+        wrapper.set(Card::getStatus, CardEnums.STATUS_DISABLE.getCode()).in(Card::getId, Arrays.asList(idArray)).eq(Card::getStatus, CardEnums.STATUS_NOTUSEd.getCode());
+        int okCount = cardMapper.update(null, wrapper);
         return Result.ok("成功禁用 " + okCount + " 张卡密");
     }
 
@@ -214,12 +212,12 @@ public class CardServiceImpl extends ServiceImpl<CardMapper, Card> implements IC
     @Override
     public Result unBanCard(String ids) {
         String[] idArray = ids.split(",");
-        if(idArray.length == 0){
+        if (idArray.length == 0) {
             return Result.error("ids参数格式可能错误");
         }
         LambdaUpdateWrapper<Card> wrapper = new LambdaUpdateWrapper();
-        wrapper.set(Card::getStatus,CardEnums.STATUS_NOTUSEd.getCode()).in(Card::getId,Arrays.asList(idArray)).eq(Card::getStatus,CardEnums.STATUS_DISABLE.getCode());
-        int okCount = cardMapper.update(null,wrapper);
+        wrapper.set(Card::getStatus, CardEnums.STATUS_NOTUSEd.getCode()).in(Card::getId, Arrays.asList(idArray)).eq(Card::getStatus, CardEnums.STATUS_DISABLE.getCode());
+        int okCount = cardMapper.update(null, wrapper);
         return Result.ok("成功解禁 " + okCount + " 张卡密");
     }
 }

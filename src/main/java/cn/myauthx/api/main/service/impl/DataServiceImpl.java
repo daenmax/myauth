@@ -9,12 +9,13 @@ import cn.myauthx.api.main.service.IDataService;
 import cn.myauthx.api.util.MyUtils;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
 
 /**
  * <p>
- *  服务实现类
+ * 服务实现类
  * </p>
  *
  * @author DaenMax
@@ -22,10 +23,23 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class DataServiceImpl extends ServiceImpl<DataMapper, Data> implements IDataService {
-    @Autowired
+    @Resource
     private DataMapper dataMapper;
+
+    /**
+     * 上报数据
+     *
+     * @param type
+     * @param content
+     * @param ip
+     * @param device_info
+     * @param device_code
+     * @param soft
+     * @param version
+     * @return
+     */
     @Override
-    public Result upData(String type, String content, String ip,String device_info, String device_code,  Soft soft, Version version) {
+    public Result upData(String type, String content, String ip, String device_info, String device_code, Soft soft, Version version) {
         Data data = new Data();
         data.setType(type);
         data.setContent(content);
@@ -37,9 +51,9 @@ public class DataServiceImpl extends ServiceImpl<DataMapper, Data> implements ID
         data.setDeviceCode(device_code);
         int num = dataMapper.insert(data);
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("ip",ip);
-        if(num > 0){
-            return Result.ok("上报成功",jsonObject);
+        jsonObject.put("ip", ip);
+        if (num > 0) {
+            return Result.ok("上报成功", jsonObject);
         }
         return Result.error("上报失败");
     }

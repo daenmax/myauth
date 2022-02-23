@@ -9,7 +9,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
  * <p>
- *  服务类
+ * 服务类
  * </p>
  *
  * @author DaenMax
@@ -18,6 +18,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 public interface IVersionService extends IService<Version> {
     /**
      * 检测版本更新，根据vkey
+     *
      * @param versionC
      * @param soft
      * @return
@@ -26,6 +27,7 @@ public interface IVersionService extends IService<Version> {
 
     /**
      * 获取最新的一个版本
+     *
      * @param soft
      * @return
      */
@@ -33,6 +35,7 @@ public interface IVersionService extends IService<Version> {
 
     /**
      * 获取版本列表
+     *
      * @param versionC
      * @param myPage
      * @return
@@ -41,6 +44,7 @@ public interface IVersionService extends IService<Version> {
 
     /**
      * 获取版本，通过id或者vkey
+     *
      * @param version
      * @return
      */
@@ -48,6 +52,7 @@ public interface IVersionService extends IService<Version> {
 
     /**
      * 修改版本
+     *
      * @param version
      * @return
      */
@@ -55,12 +60,15 @@ public interface IVersionService extends IService<Version> {
 
     /**
      * 添加版本
+     *
      * @param version
      * @return
      */
     Result addVersion(Version version);
+
     /**
      * 添加版本_同时添加回复
+     *
      * @param version
      * @return
      */
@@ -68,6 +76,7 @@ public interface IVersionService extends IService<Version> {
 
     /**
      * 删除版本，会同步删除用户、数据、回复、日志
+     *
      * @param version
      * @return
      */
@@ -75,6 +84,7 @@ public interface IVersionService extends IService<Version> {
 
     /**
      * 获取版本列表_全部_简要
+     *
      * @param versionC
      * @return
      */

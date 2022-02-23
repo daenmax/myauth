@@ -7,7 +7,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
  * <p>
- *  服务类
+ * 服务类
  * </p>
  *
  * @author DaenMax
@@ -16,6 +16,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 public interface ISoftService extends IService<Soft> {
     /**
      * 获取软件列表
+     *
      * @param soft
      * @param myPage
      * @return
@@ -24,6 +25,7 @@ public interface ISoftService extends IService<Soft> {
 
     /**
      * 添加软件
+     *
      * @param soft
      * @return
      */
@@ -31,6 +33,7 @@ public interface ISoftService extends IService<Soft> {
 
     /**
      * 修改软件
+     *
      * @param soft
      * @return
      */
@@ -38,6 +41,7 @@ public interface ISoftService extends IService<Soft> {
 
     /**
      * 删除软件，会同步删除版本、卡密、用户、事件、数据、封禁、JS、回复、日志
+     *
      * @param soft
      * @return
      */
@@ -45,6 +49,7 @@ public interface ISoftService extends IService<Soft> {
 
     /**
      * 获取软件，通过id或者skey
+     *
      * @param soft
      * @return
      */
@@ -52,6 +57,7 @@ public interface ISoftService extends IService<Soft> {
 
     /**
      * 获取软件列表_全部_简要
+     *
      * @param soft
      * @return
      */

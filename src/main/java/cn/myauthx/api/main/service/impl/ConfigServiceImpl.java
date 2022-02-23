@@ -14,7 +14,7 @@ import javax.annotation.Resource;
 
 /**
  * <p>
- *  服务实现类
+ * 服务实现类
  * </p>
  *
  * @author DaenMax
@@ -24,6 +24,7 @@ import javax.annotation.Resource;
 public class ConfigServiceImpl extends ServiceImpl<ConfigMapper, Config> implements IConfigService {
     @Resource
     private RedisUtil redisUtil;
+
     /**
      * 获取web信息，redis
      *
@@ -32,13 +33,13 @@ public class ConfigServiceImpl extends ServiceImpl<ConfigMapper, Config> impleme
     @Override
     public Result getWebInfo() {
         Config config = (Config) redisUtil.get("config");
-        if(CheckUtils.isObjectEmpty(config)){
+        if (CheckUtils.isObjectEmpty(config)) {
             return Result.error("配置获取失败，请重启服务");
         }
         JSONObject jsonObject = new JSONObject(true);
-        jsonObject.put("title",config.getSeoTitle());
-        jsonObject.put("keywords",config.getSeoKeywords());
-        jsonObject.put("description",config.getSeoDescription());
-        return Result.ok("获取成功",jsonObject);
+        jsonObject.put("title", config.getSeoTitle());
+        jsonObject.put("keywords", config.getSeoKeywords());
+        jsonObject.put("description", config.getSeoDescription());
+        return Result.ok("获取成功", jsonObject);
     }
 }

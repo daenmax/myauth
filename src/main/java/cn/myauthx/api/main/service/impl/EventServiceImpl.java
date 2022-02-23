@@ -16,12 +16,13 @@ import cn.myauthx.api.util.RedisUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
 
 /**
  * <p>
- *  服务实现类
+ * 服务实现类
  * </p>
  *
  * @author DaenMax
@@ -29,58 +30,59 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements IEventService {
-    @Autowired
+    @Resource
     private EventMapper eventMapper;
-    @Autowired
+    @Resource
     private UserMapper userMapper;
-    @Autowired
+    @Resource
     private PlogMapper plogMapper;
-    @Autowired
+    @Resource
     private RedisUtil redisUtil;
 
     /**
      * 触发事件
+     *
      * @param name
      * @param user
      * @param soft
      * @return
      */
     @Override
-    public Result letEvent(String name,User user, Soft soft) {
+    public Result letEvent(String name, User user, Soft soft) {
         Plog plog = new Plog();
         LambdaQueryWrapper<Event> eventLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        eventLambdaQueryWrapper.eq(Event::getName,name);
-        eventLambdaQueryWrapper.eq(Event::getFromSoftId,soft.getId());
+        eventLambdaQueryWrapper.eq(Event::getName, name);
+        eventLambdaQueryWrapper.eq(Event::getFromSoftId, soft.getId());
         Event event = eventMapper.selectOne(eventLambdaQueryWrapper);
-        if(CheckUtils.isObjectEmpty(event)){
+        if (CheckUtils.isObjectEmpty(event)) {
             return Result.error("事件name错误或者不存在");
         }
-        if(event.getStatus().equals(EventEnums.STATUS_DISABLE.getCode())){
+        if (event.getStatus().equals(EventEnums.STATUS_DISABLE.getCode())) {
             return Result.error("事件已被禁用");
         }
         plog.setPoint(event.getPoint());
-        if(event.getPoint() != 0){
-            if(event.getPoint() > 0){
+        if (event.getPoint() != 0) {
+            if (event.getPoint() > 0) {
                 user.setPoint(user.getPoint() + event.getPoint());
-            }else{
+            } else {
                 Integer af = user.getPoint() + event.getPoint();
-                if(af < 0){
+                if (af < 0) {
                     return Result.error("点数不足，至少需要" + event.getPoint() + "点");
-                }else{
+                } else {
                     user.setPoint(af);
                 }
             }
         }
         plog.setAfterPoint(user.getPoint());
         plog.setSeconds(event.getSeconds());
-        if(event.getSeconds() != 0){
-            if(event.getSeconds() > 0){
+        if (event.getSeconds() != 0) {
+            if (event.getSeconds() > 0) {
                 user.setAuthTime(user.getAuthTime() + event.getSeconds());
-            }else{
+            } else {
                 Integer af = user.getAuthTime() + event.getSeconds();
-                if(af < Integer.parseInt(MyUtils.getTimeStamp())){
+                if (af < Integer.parseInt(MyUtils.getTimeStamp())) {
                     return Result.error("授权期限不足");
-                }else{
+                } else {
                     user.setAuthTime(af);
                 }
             }
@@ -92,20 +94,20 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements
         plog.setFromEventId(event.getId());
         plog.setFromSoftId(event.getFromSoftId());
         int num = userMapper.updateById(user);
-        if(num > 0){
+        if (num > 0) {
             redisUtil.set("user:" + user.getFromSoftId() + ":" + user.getUser(), user);
             plogMapper.insert(plog);
             JSONObject jsonObject = new JSONObject(true);
-            jsonObject.put("user",user.getUser());
-            jsonObject.put("name",user.getName());
-            jsonObject.put("qq",user.getQq());
-            jsonObject.put("point",user.getPoint());
-            jsonObject.put("ckey",user.getCkey());
-            jsonObject.put("regTime",user.getRegTime());
-            jsonObject.put("remark",user.getRemark());
-            jsonObject.put("authTime",user.getAuthTime());
-            return Result.ok("触发事件成功",jsonObject);
-        }else{
+            jsonObject.put("user", user.getUser());
+            jsonObject.put("name", user.getName());
+            jsonObject.put("qq", user.getQq());
+            jsonObject.put("point", user.getPoint());
+            jsonObject.put("ckey", user.getCkey());
+            jsonObject.put("regTime", user.getRegTime());
+            jsonObject.put("remark", user.getRemark());
+            jsonObject.put("authTime", user.getAuthTime());
+            return Result.ok("触发事件成功", jsonObject);
+        } else {
             return Result.error("触发事件失败");
         }
     }

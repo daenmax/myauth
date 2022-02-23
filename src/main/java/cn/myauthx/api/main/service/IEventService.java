@@ -8,7 +8,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
  * <p>
- *  服务类
+ * 服务类
  * </p>
  *
  * @author DaenMax
@@ -17,10 +17,11 @@ import com.baomidou.mybatisplus.extension.service.IService;
 public interface IEventService extends IService<Event> {
     /**
      * 触发事件
+     *
      * @param name
      * @param user
      * @param soft
      * @return
      */
-    Result letEvent(String name,User user, Soft soft);
+    Result letEvent(String name, User user, Soft soft);
 }

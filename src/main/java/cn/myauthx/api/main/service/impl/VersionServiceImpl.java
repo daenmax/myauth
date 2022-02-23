@@ -15,7 +15,6 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -23,7 +22,7 @@ import java.util.*;
 
 /**
  * <p>
- *  服务实现类
+ * 服务实现类
  * </p>
  *
  * @author DaenMax
@@ -31,23 +30,24 @@ import java.util.*;
  */
 @Service
 public class VersionServiceImpl extends ServiceImpl<VersionMapper, Version> implements IVersionService {
-    @Autowired
+    @Resource
     private VersionMapper versionMapper;
-    @Autowired
+    @Resource
     private SoftMapper softMapper;
-    @Autowired
+    @Resource
     private UserMapper userMapper;
-    @Autowired
+    @Resource
     private DataMapper dataMapper;
-    @Autowired
+    @Resource
     private MsgMapper msgMapper;
-    @Autowired
+    @Resource
     private PlogMapper plogMapper;
-    @Autowired
+    @Resource
     private RedisUtil redisUtil;
 
     /**
      * 检测版本更新，根据vkey
+     *
      * @param versionC
      * @param soft
      * @return
@@ -55,35 +55,35 @@ public class VersionServiceImpl extends ServiceImpl<VersionMapper, Version> impl
     @Override
     public Result checkUpdate(Version versionC, Soft soft) {
         Version version = (Version) redisUtil.get("version:" + versionC.getVkey());
-        if(CheckUtils.isObjectEmpty(version)){
+        if (CheckUtils.isObjectEmpty(version)) {
             return Result.error("vkey错误");
         }
-        if(!version.getFromSoftId().equals(soft.getId())){
+        if (!version.getFromSoftId().equals(soft.getId())) {
             return Result.error("vkey与skey不匹配");
         }
         LambdaQueryWrapper<Version> versionLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        versionLambdaQueryWrapper.eq(Version::getFromSoftId,version.getFromSoftId());
-        versionLambdaQueryWrapper.orderBy(true,false,Version::getVer);
+        versionLambdaQueryWrapper.eq(Version::getFromSoftId, version.getFromSoftId());
+        versionLambdaQueryWrapper.orderBy(true, false, Version::getVer);
         List<Version> versionList = versionMapper.selectList(versionLambdaQueryWrapper);
         JSONArray jsonArray = new JSONArray();
         for (Version version1 : versionList) {
             JSONObject jsonObject = new JSONObject();
-            jsonObject.put("ver",version1.getVer());
-            jsonObject.put("updLog",version1.getUpdLog());
-            jsonObject.put("updTime",version1.getUpdTime());
-            jsonObject.put("updType",version1.getUpdType());
-            jsonObject.put("status",version1.getStatus());
+            jsonObject.put("ver", version1.getVer());
+            jsonObject.put("updLog", version1.getUpdLog());
+            jsonObject.put("updTime", version1.getUpdTime());
+            jsonObject.put("updType", version1.getUpdType());
+            jsonObject.put("status", version1.getStatus());
             jsonArray.add(jsonObject);
-            if(version1.getVer().equals(version.getVer())){
+            if (version1.getVer().equals(version.getVer())) {
                 break;
             }
         }
-        String msg = jsonArray.size() > 1?"检测到有新版本":"已是最新版本";
+        String msg = jsonArray.size() > 1 ? "检测到有新版本" : "已是最新版本";
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("ver",version.getVer());
-        jsonObject.put("haveNew",jsonArray.size() > 1?"1":"0");
-        jsonObject.put("list",jsonArray);
-        return Result.ok(msg,jsonObject);
+        jsonObject.put("ver", version.getVer());
+        jsonObject.put("haveNew", jsonArray.size() > 1 ? "1" : "0");
+        jsonObject.put("list", jsonArray);
+        return Result.ok(msg, jsonObject);
     }
 
     /**
@@ -95,40 +95,41 @@ public class VersionServiceImpl extends ServiceImpl<VersionMapper, Version> impl
     @Override
     public Result getNewVersion(Soft soft) {
         LambdaQueryWrapper<Version> versionLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        versionLambdaQueryWrapper.eq(Version::getFromSoftId,soft.getId());
-        versionLambdaQueryWrapper.orderBy(true,false,Version::getVer);
+        versionLambdaQueryWrapper.eq(Version::getFromSoftId, soft.getId());
+        versionLambdaQueryWrapper.orderBy(true, false, Version::getVer);
         List<Version> versionList = versionMapper.selectList(versionLambdaQueryWrapper);
-        if(versionList.size() <= 0){
+        if (versionList.size() <= 0) {
             return Result.error("该软件没有任何版本");
         }
         JSONArray jsonArray = new JSONArray();
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("ver",versionList.get(0).getVer());
-        jsonObject.put("updLog",versionList.get(0).getUpdLog());
-        jsonObject.put("updTime",versionList.get(0).getUpdTime());
-        jsonObject.put("updType",versionList.get(0).getUpdType());
-        jsonObject.put("status",versionList.get(0).getStatus());
+        jsonObject.put("ver", versionList.get(0).getVer());
+        jsonObject.put("updLog", versionList.get(0).getUpdLog());
+        jsonObject.put("updTime", versionList.get(0).getUpdTime());
+        jsonObject.put("updType", versionList.get(0).getUpdType());
+        jsonObject.put("status", versionList.get(0).getStatus());
         jsonArray.add(jsonObject);
         JSONObject jsonObject1 = new JSONObject();
-        jsonObject1.put("list",jsonArray);
-        return Result.ok("获取成功",jsonObject1);
+        jsonObject1.put("list", jsonArray);
+        return Result.ok("获取成功", jsonObject1);
     }
 
     /**
      * 获取版本列表
+     *
      * @param versionC
      * @param myPage
      * @return
      */
     @Override
     public Result getVersionList(Version versionC, MyPage myPage) {
-        Page<Version> page = new Page<>(myPage.getPageIndex(),myPage.getPageSize(),true);
-        if(!CheckUtils.isObjectEmpty(myPage.getOrders())){
+        Page<Version> page = new Page<>(myPage.getPageIndex(), myPage.getPageSize(), true);
+        if (!CheckUtils.isObjectEmpty(myPage.getOrders())) {
             for (int i = 0; i < myPage.getOrders().size(); i++) {
                 myPage.getOrders().get(i).setColumn(UnderlineToCamelUtils.camelToUnderline(myPage.getOrders().get(i).getColumn()));
             }
             page.setOrders(myPage.getOrders());
-        }else{
+        } else {
             OrderItem orderItem = new OrderItem();
             orderItem.setColumn("UPD_TIME");
             orderItem.setAsc(false);
@@ -140,25 +141,26 @@ public class VersionServiceImpl extends ServiceImpl<VersionMapper, Version> impl
         IPage<Version> versionPage = versionMapper.selectPage(page, getQwVersion(versionC));
         for (int i = 0; i < versionPage.getRecords().size(); i++) {
             Soft obj = (Soft) redisUtil.get("id:soft:" + versionPage.getRecords().get(i).getFromSoftId());
-            if(!CheckUtils.isObjectEmpty(obj)){
+            if (!CheckUtils.isObjectEmpty(obj)) {
                 versionPage.getRecords().get(i).setFromSoftName(obj.getName());
             }
         }
-        return Result.ok("获取成功",versionPage);
+        return Result.ok("获取成功", versionPage);
     }
 
     /**
      * 获取查询条件构造器
+     *
      * @param version
      * @return
      */
-    public LambdaQueryWrapper<Version> getQwVersion(Version version){
+    public LambdaQueryWrapper<Version> getQwVersion(Version version) {
         LambdaQueryWrapper<Version> LambdaQueryWrapper = new LambdaQueryWrapper<>();
-        LambdaQueryWrapper.eq(!CheckUtils.isObjectEmpty(version.getFromSoftId()),Version::getFromSoftId,version.getFromSoftId());
-        LambdaQueryWrapper.eq(!CheckUtils.isObjectEmpty(version.getVer()),Version::getVer,version.getVer());
-        LambdaQueryWrapper.eq(!CheckUtils.isObjectEmpty(version.getVkey()),Version::getVkey,version.getVkey());
-        LambdaQueryWrapper.eq(!CheckUtils.isObjectEmpty(version.getUpdType()),Version::getUpdType,version.getUpdType());
-        LambdaQueryWrapper.eq(!CheckUtils.isObjectEmpty(version.getStatus()),Version::getStatus,version.getStatus());
+        LambdaQueryWrapper.eq(!CheckUtils.isObjectEmpty(version.getFromSoftId()), Version::getFromSoftId, version.getFromSoftId());
+        LambdaQueryWrapper.eq(!CheckUtils.isObjectEmpty(version.getVer()), Version::getVer, version.getVer());
+        LambdaQueryWrapper.eq(!CheckUtils.isObjectEmpty(version.getVkey()), Version::getVkey, version.getVkey());
+        LambdaQueryWrapper.eq(!CheckUtils.isObjectEmpty(version.getUpdType()), Version::getUpdType, version.getUpdType());
+        LambdaQueryWrapper.eq(!CheckUtils.isObjectEmpty(version.getStatus()), Version::getStatus, version.getStatus());
         return LambdaQueryWrapper;
     }
 
@@ -171,13 +173,13 @@ public class VersionServiceImpl extends ServiceImpl<VersionMapper, Version> impl
     @Override
     public Result getVersion(Version version) {
         LambdaQueryWrapper<Version> versionLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        versionLambdaQueryWrapper.eq(!CheckUtils.isObjectEmpty(version.getId()),Version::getId,version.getId());
-        versionLambdaQueryWrapper.eq(!CheckUtils.isObjectEmpty(version.getVkey()),Version::getVkey,version.getVkey());
+        versionLambdaQueryWrapper.eq(!CheckUtils.isObjectEmpty(version.getId()), Version::getId, version.getId());
+        versionLambdaQueryWrapper.eq(!CheckUtils.isObjectEmpty(version.getVkey()), Version::getVkey, version.getVkey());
         Version newVersion = versionMapper.selectOne(versionLambdaQueryWrapper);
-        if(CheckUtils.isObjectEmpty(newVersion)){
+        if (CheckUtils.isObjectEmpty(newVersion)) {
             return Result.error("查询失败，未找到");
         }
-        return Result.ok("查询成功",newVersion);
+        return Result.ok("查询成功", newVersion);
     }
 
     /**
@@ -189,12 +191,12 @@ public class VersionServiceImpl extends ServiceImpl<VersionMapper, Version> impl
     @Override
     public Result updVersion(Version version) {
         int num = versionMapper.updateById(version);
-        if(num <= 0){
+        if (num <= 0) {
             return Result.error("修改失败");
         }
         Version newVersion = versionMapper.selectById(version.getId());
-        redisUtil.set("version:" + newVersion.getVkey(),newVersion);
-        redisUtil.set("id:version:" + newVersion.getId(),newVersion);
+        redisUtil.set("version:" + newVersion.getVkey(), newVersion);
+        redisUtil.set("id:version:" + newVersion.getId(), newVersion);
         return Result.ok("修改成功");
     }
 
@@ -207,24 +209,24 @@ public class VersionServiceImpl extends ServiceImpl<VersionMapper, Version> impl
     @Override
     public Result addVersion(Version version) {
         Soft soft = softMapper.selectById(version.getFromSoftId());
-        if(CheckUtils.isObjectEmpty(soft)){
+        if (CheckUtils.isObjectEmpty(soft)) {
             return Result.error("fromSoftId错误");
         }
         LambdaQueryWrapper<Version> versionLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        versionLambdaQueryWrapper.eq(Version::getFromSoftId,version.getFromSoftId());
-        versionLambdaQueryWrapper.eq(Version::getVer,version.getVer());
+        versionLambdaQueryWrapper.eq(Version::getFromSoftId, version.getFromSoftId());
+        versionLambdaQueryWrapper.eq(Version::getVer, version.getVer());
         Version version1 = versionMapper.selectOne(versionLambdaQueryWrapper);
-        if(!CheckUtils.isObjectEmpty(version1)){
+        if (!CheckUtils.isObjectEmpty(version1)) {
             return Result.error("版本号已存在");
         }
         version.setUpdTime(Integer.valueOf(MyUtils.getTimeStamp()));
         version.setVkey(MyUtils.getUUID(true));
         int num = versionMapper.insert(version);
-        if(num <= 0){
+        if (num <= 0) {
             return Result.error("添加失败");
         }
-        redisUtil.set("version:" + version.getVkey(),version);
-        redisUtil.set("id:version:" + version.getId(),version);
+        redisUtil.set("version:" + version.getVkey(), version);
+        redisUtil.set("id:version:" + version.getId(), version);
         return Result.ok("添加成功");
     }
 
@@ -238,33 +240,33 @@ public class VersionServiceImpl extends ServiceImpl<VersionMapper, Version> impl
     @Override
     public Result addVersionAndMsg(Version version, Msg msg) {
         Soft soft = softMapper.selectById(version.getFromSoftId());
-        if(CheckUtils.isObjectEmpty(soft)){
+        if (CheckUtils.isObjectEmpty(soft)) {
             return Result.error("fromSoftId错误");
         }
         LambdaQueryWrapper<Version> versionLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        versionLambdaQueryWrapper.eq(Version::getFromSoftId,version.getFromSoftId());
-        versionLambdaQueryWrapper.eq(Version::getVer,version.getVer());
+        versionLambdaQueryWrapper.eq(Version::getFromSoftId, version.getFromSoftId());
+        versionLambdaQueryWrapper.eq(Version::getVer, version.getVer());
         Version version1 = versionMapper.selectOne(versionLambdaQueryWrapper);
-        if(!CheckUtils.isObjectEmpty(version1)){
+        if (!CheckUtils.isObjectEmpty(version1)) {
             return Result.error("版本号已存在");
         }
         version.setUpdTime(Integer.valueOf(MyUtils.getTimeStamp()));
         version.setVkey(MyUtils.getUUID(true));
         int num = versionMapper.insert(version);
-        if(num <= 0){
+        if (num <= 0) {
             return Result.error("添加失败");
         }
         LambdaQueryWrapper<Version> newVersionLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        newVersionLambdaQueryWrapper.eq(Version::getFromSoftId,version.getFromSoftId());
-        newVersionLambdaQueryWrapper.eq(Version::getVer,version.getVer());
+        newVersionLambdaQueryWrapper.eq(Version::getFromSoftId, version.getFromSoftId());
+        newVersionLambdaQueryWrapper.eq(Version::getVer, version.getVer());
         Version newVersion = versionMapper.selectOne(newVersionLambdaQueryWrapper);
 
         msg.setFromSoftId(newVersion.getFromSoftId());
         msg.setFromVerId(newVersion.getId());
         msg.setStatus(1);
         msgMapper.insert(msg);
-        redisUtil.set("version:" + version.getVkey(),version);
-        redisUtil.set("id:version:" + version.getId(),version);
+        redisUtil.set("version:" + version.getVkey(), version);
+        redisUtil.set("id:version:" + version.getId(), version);
         return Result.ok("添加成功");
     }
 
@@ -277,26 +279,26 @@ public class VersionServiceImpl extends ServiceImpl<VersionMapper, Version> impl
     @Override
     public Result delVersion(Version versionC) {
         Version version = versionMapper.selectById(versionC.getId());
-        if(CheckUtils.isObjectEmpty(version)){
+        if (CheckUtils.isObjectEmpty(version)) {
             return Result.error("删除失败，id错误");
         }
         //删除版本表
         versionMapper.deleteById(version);
         //删除用户表
         LambdaQueryWrapper<User> userLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        userLambdaQueryWrapper.eq(User::getFromVerId,version.getId());
+        userLambdaQueryWrapper.eq(User::getFromVerId, version.getId());
         userMapper.delete(userLambdaQueryWrapper);
         //删除数据表
         LambdaQueryWrapper<Data> dataLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        dataLambdaQueryWrapper.eq(Data::getFromVerId,version.getId());
+        dataLambdaQueryWrapper.eq(Data::getFromVerId, version.getId());
         dataMapper.delete(dataLambdaQueryWrapper);
         //删除回复表
         LambdaQueryWrapper<Msg> msgLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        msgLambdaQueryWrapper.eq(Msg::getFromVerId,version.getId());
+        msgLambdaQueryWrapper.eq(Msg::getFromVerId, version.getId());
         msgMapper.delete(msgLambdaQueryWrapper);
         //删除日志表
         LambdaQueryWrapper<Plog> plogLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        plogLambdaQueryWrapper.eq(Plog::getFromVerId,version.getId());
+        plogLambdaQueryWrapper.eq(Plog::getFromVerId, version.getId());
         plogMapper.delete(plogLambdaQueryWrapper);
 
         redisUtil.del("version:" + version.getVkey());
@@ -313,12 +315,12 @@ public class VersionServiceImpl extends ServiceImpl<VersionMapper, Version> impl
     @Override
     public Result getVersionListEx(Version versionC) {
         LambdaQueryWrapper<Version> versionLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        versionLambdaQueryWrapper.eq(Version::getFromSoftId,versionC.getFromSoftId());
-        versionLambdaQueryWrapper.select(Version::getId,Version::getVer,Version::getVkey);
-        if(!CheckUtils.isObjectEmpty(versionC.getVer())){
-            versionLambdaQueryWrapper.like(Version::getVer,versionC.getVer());
+        versionLambdaQueryWrapper.eq(Version::getFromSoftId, versionC.getFromSoftId());
+        versionLambdaQueryWrapper.select(Version::getId, Version::getVer, Version::getVkey);
+        if (!CheckUtils.isObjectEmpty(versionC.getVer())) {
+            versionLambdaQueryWrapper.like(Version::getVer, versionC.getVer());
         }
         List<Map<String, Object>> maps = versionMapper.selectMaps(versionLambdaQueryWrapper);
-        return Result.ok("获取成功",maps);
+        return Result.ok("获取成功", maps);
     }
 }
