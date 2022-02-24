@@ -116,7 +116,7 @@ public class JsServiceImpl extends ServiceImpl<JsMapper, Js> implements IJsServi
     }
 
     /**
-     * 获取函数，根据id
+     * 查询函数，根据id
      *
      * @param js
      * @return
@@ -138,12 +138,18 @@ public class JsServiceImpl extends ServiceImpl<JsMapper, Js> implements IJsServi
      */
     @Override
     public Result updJs(Js js) {
-        LambdaQueryWrapper<Js> jsLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        jsLambdaQueryWrapper.eq(Js::getFromSoftId, js.getFromSoftId());
-        jsLambdaQueryWrapper.eq(Js::getJsFun, js.getJsFun());
-        List<Js> jsList = jsMapper.selectList(jsLambdaQueryWrapper);
-        if (jsList.size() > 0) {
-            return Result.error("函数名称在当前软件中已存在");
+        Js js1 = jsMapper.selectById(js.getId());
+        if(CheckUtils.isObjectEmpty(js1)){
+            return Result.error("函数ID错误");
+        }
+        if(!js1.getJsFun().equals(js.getJsFun())){
+            LambdaQueryWrapper<Js> jsLambdaQueryWrapper = new LambdaQueryWrapper<>();
+            jsLambdaQueryWrapper.eq(Js::getFromSoftId, js1.getFromSoftId());
+            jsLambdaQueryWrapper.eq(Js::getJsFun, js.getJsFun());
+            List<Js> jsList = jsMapper.selectList(jsLambdaQueryWrapper);
+            if (jsList.size() > 0) {
+                return Result.error("函数名称在当前软件中已存在");
+            }
         }
         js.setFromSoftId(null);
         int num = jsMapper.updateById(js);
