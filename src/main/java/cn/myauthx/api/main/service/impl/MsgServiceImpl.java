@@ -10,8 +10,8 @@ import cn.myauthx.api.main.mapper.SoftMapper;
 import cn.myauthx.api.main.mapper.VersionMapper;
 import cn.myauthx.api.main.service.IMsgService;
 import cn.myauthx.api.util.CheckUtils;
+import cn.myauthx.api.util.MyUtils;
 import cn.myauthx.api.util.RedisUtil;
-import cn.myauthx.api.util.UnderlineToCamelUtils;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -66,7 +66,7 @@ public class MsgServiceImpl extends ServiceImpl<MsgMapper, Msg> implements IMsgS
         Page<Msg> page = new Page<>(myPage.getPageIndex(), myPage.getPageSize(), true);
         if (!CheckUtils.isObjectEmpty(myPage.getOrders())) {
             for (int i = 0; i < myPage.getOrders().size(); i++) {
-                myPage.getOrders().get(i).setColumn(UnderlineToCamelUtils.camelToUnderline(myPage.getOrders().get(i).getColumn()));
+                myPage.getOrders().get(i).setColumn(MyUtils.camelToUnderline(myPage.getOrders().get(i).getColumn()));
             }
             page.setOrders(myPage.getOrders());
         }

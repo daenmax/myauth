@@ -2,25 +2,28 @@ package cn.myauthx.api.util;
 
 import cn.myauthx.api.base.exception.MyException;
 import org.apache.tomcat.util.codec.binary.Base64;
+
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 
 /**
  * AES加解密工具
+ *
  * @author DaenMax
  */
 public class AESUtils {
     /**
      * AES加密，AES/ECB/PKCS5Padding
+     *
      * @param sSrc 要加密的内容
      * @param sKey 密钥，16位，不支持中文
      * @return
      * @throws Exception
      */
-    public static String encrypt(String sSrc, String sKey){
-        try{
-            if(CheckUtils.isObjectEmpty(sSrc)){
+    public static String encrypt(String sSrc, String sKey) {
+        try {
+            if (CheckUtils.isObjectEmpty(sSrc)) {
                 return "";
             }
             if (sKey.length() != 16) {
@@ -40,12 +43,13 @@ public class AESUtils {
 
     /**
      * AES解密，AES/ECB/PKCS5Padding
+     *
      * @param sSrc 要解密的内容
      * @param sKey 密钥，16位，不支持中文
      * @return
      * @throws Exception
      */
-    public static String decrypt(String sSrc, String sKey)  {
+    public static String decrypt(String sSrc, String sKey) {
         try {
             // 判断Key是否正确
             if (CheckUtils.isObjectEmpty(sKey)) {

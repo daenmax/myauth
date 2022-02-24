@@ -6,6 +6,7 @@ import java.net.UnknownHostException;
 
 /**
  * 获取客户端IP
+ *
  * @author DaenMax
  */
 public class IpUtil {
@@ -45,7 +46,7 @@ public class IpUtil {
         } catch (Exception e) {
             ipAddress = "";
         }
-        if(ipAddress.equals("0:0:0:0:0:0:0:1")){
+        if (ipAddress.equals("0:0:0:0:0:0:0:1")) {
             ipAddress = "127.0.0.1";
         }
         return ipAddress;

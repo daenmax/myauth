@@ -9,7 +9,6 @@ import cn.myauthx.api.main.service.IJsService;
 import cn.myauthx.api.util.CheckUtils;
 import cn.myauthx.api.util.MyUtils;
 import cn.myauthx.api.util.RedisUtil;
-import cn.myauthx.api.util.UnderlineToCamelUtils;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -104,7 +103,7 @@ public class JsServiceImpl extends ServiceImpl<JsMapper, Js> implements IJsServi
         Page<Js> page = new Page<>(myPage.getPageIndex(), myPage.getPageSize(), true);
         if (!CheckUtils.isObjectEmpty(myPage.getOrders())) {
             for (int i = 0; i < myPage.getOrders().size(); i++) {
-                myPage.getOrders().get(i).setColumn(UnderlineToCamelUtils.camelToUnderline(myPage.getOrders().get(i).getColumn()));
+                myPage.getOrders().get(i).setColumn(MyUtils.camelToUnderline(myPage.getOrders().get(i).getColumn()));
             }
             page.setOrders(myPage.getOrders());
         }
@@ -140,10 +139,10 @@ public class JsServiceImpl extends ServiceImpl<JsMapper, Js> implements IJsServi
     @Override
     public Result updJs(Js js) {
         LambdaQueryWrapper<Js> jsLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        jsLambdaQueryWrapper.eq(Js::getFromSoftId,js.getFromSoftId());
-        jsLambdaQueryWrapper.eq(Js::getJsFun,js.getJsFun());
+        jsLambdaQueryWrapper.eq(Js::getFromSoftId, js.getFromSoftId());
+        jsLambdaQueryWrapper.eq(Js::getJsFun, js.getJsFun());
         List<Js> jsList = jsMapper.selectList(jsLambdaQueryWrapper);
-        if(jsList.size()>0){
+        if (jsList.size() > 0) {
             return Result.error("函数名称在当前软件中已存在");
         }
         js.setFromSoftId(null);
@@ -190,7 +189,7 @@ public class JsServiceImpl extends ServiceImpl<JsMapper, Js> implements IJsServi
     @Override
     public Result delJs(Js jsC) {
         Js js = jsMapper.selectById(jsC.getId());
-        if(CheckUtils.isObjectEmpty(js)){
+        if (CheckUtils.isObjectEmpty(js)) {
             return Result.error("删除失败，id错误");
         }
         int num = jsMapper.deleteById(jsC.getId());
@@ -226,6 +225,31 @@ public class JsServiceImpl extends ServiceImpl<JsMapper, Js> implements IJsServi
         JSONObject jsonObject = new JSONObject(true);
         jsonObject.put("func", js.getJsFun());
         jsonObject.put("ret", ret);
-        return Result.ok("函数执行成功", jsonObject);
+        return Result.ok("执行结果", jsonObject);
+    }
+
+    /**
+     * 调试Js，网页接口用
+     *
+     * @param jsC
+     * @param c1
+     * @param c2
+     * @param c3
+     * @param c4
+     * @param c5
+     * @param c6
+     * @param c7
+     * @param c8
+     * @param c9
+     * @param c10
+     * @return
+     */
+    @Override
+    public Result testJsWeb(Js jsC, String c1, String c2, String c3, String c4, String c5, String c6, String c7, String c8, String c9, String c10) {
+        String ret = MyUtils.runJs(jsC.getJsContent(), jsC.getJsFun(), c1, c2, c3, c4, c5, c6, c7, c8, c9, c10);
+        JSONObject jsonObject = new JSONObject(true);
+        jsonObject.put("func", jsC.getJsFun());
+        jsonObject.put("ret", ret);
+        return Result.ok("执行结果", jsonObject);
     }
 }
