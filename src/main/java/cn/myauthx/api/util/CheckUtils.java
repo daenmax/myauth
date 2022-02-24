@@ -7,6 +7,7 @@ import java.util.function.Supplier;
 
 /**
  * 检查工具类
+ *
  * @author DaenMax
  */
 public class CheckUtils {
@@ -15,6 +16,7 @@ public class CheckUtils {
     /**
      * 判断Object对象为空或空字符串
      * 为NULL或者""或者" "都会返回true
+     *
      * @param obj
      * @return
      */

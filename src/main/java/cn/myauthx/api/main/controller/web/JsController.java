@@ -147,4 +147,69 @@ public class JsController {
         }
         return jsService.delJs(js);
     }
+
+    /**
+     * 运行函数
+     *
+     * @param request
+     * @return
+     */
+    @OpenApi
+    @AdminLogin
+    @PostMapping("runJs")
+    public Result runJs(HttpServletRequest request) {
+        JSONObject jsonObject = (JSONObject) request.getAttribute("json");
+        Js js = jsonObject.toJavaObject(Js.class);
+        if (CheckUtils.isObjectEmpty(js)) {
+            return Result.error("参数错误");
+        }
+        if (CheckUtils.isObjectEmpty(js.getId())) {
+            return Result.error("id不能为空");
+        }
+        String c1 = jsonObject.getJSONObject("data").getString("c1");
+        String c2 = jsonObject.getJSONObject("data").getString("c2");
+        String c3 = jsonObject.getJSONObject("data").getString("c3");
+        String c4 = jsonObject.getJSONObject("data").getString("c4");
+        String c5 = jsonObject.getJSONObject("data").getString("c5");
+        String c6 = jsonObject.getJSONObject("data").getString("c6");
+        String c7 = jsonObject.getJSONObject("data").getString("c7");
+        String c8 = jsonObject.getJSONObject("data").getString("c8");
+        String c9 = jsonObject.getJSONObject("data").getString("c9");
+        String c10 = jsonObject.getJSONObject("data").getString("c10");
+        return jsService.runJsWeb(js, c1, c2, c3, c4, c5, c6, c7, c8, c9, c10);
+    }
+
+    /**
+     * 调试函数
+     *
+     * @param request
+     * @return
+     */
+    @OpenApi
+    @AdminLogin
+    @PostMapping("testJs")
+    public Result testJs(HttpServletRequest request) {
+        JSONObject jsonObject = (JSONObject) request.getAttribute("json");
+        Js js = jsonObject.toJavaObject(Js.class);
+        if (CheckUtils.isObjectEmpty(js)) {
+            return Result.error("参数错误");
+        }
+        if (CheckUtils.isObjectEmpty(js.getJsFun())) {
+            return Result.error("函数名称不能为空");
+        }
+        if (CheckUtils.isObjectEmpty(js.getJsContent())) {
+            return Result.error("函数内容不能为空");
+        }
+        String c1 = jsonObject.getJSONObject("data").getString("c1");
+        String c2 = jsonObject.getJSONObject("data").getString("c2");
+        String c3 = jsonObject.getJSONObject("data").getString("c3");
+        String c4 = jsonObject.getJSONObject("data").getString("c4");
+        String c5 = jsonObject.getJSONObject("data").getString("c5");
+        String c6 = jsonObject.getJSONObject("data").getString("c6");
+        String c7 = jsonObject.getJSONObject("data").getString("c7");
+        String c8 = jsonObject.getJSONObject("data").getString("c8");
+        String c9 = jsonObject.getJSONObject("data").getString("c9");
+        String c10 = jsonObject.getJSONObject("data").getString("c10");
+        return jsService.testJsWeb(js, c1, c2, c3, c4, c5, c6, c7, c8, c9, c10);
+    }
 }

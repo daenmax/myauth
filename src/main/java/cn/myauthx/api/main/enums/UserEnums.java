@@ -16,7 +16,8 @@ import java.util.Map;
 @AllArgsConstructor
 @Getter
 public enum UserEnums {
-    TOKEN_VALIDITY(86400,"有效期：秒"),
+    //60分钟
+    TOKEN_VALIDITY(3600,"有效期：秒"),
     STATUS_DISABLE(0,"禁用"),
     STATUS_ABLE(1,"正常");
     private Integer code;
