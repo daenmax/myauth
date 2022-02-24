@@ -44,7 +44,7 @@ public interface IJsService extends IService<Js> {
     Result getJsList(Js js, MyPage myPage);
 
     /**
-     * 获取函数，根据id
+     * 查询函数，根据id
      *
      * @param js
      * @return

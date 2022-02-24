@@ -75,7 +75,7 @@ public class JsController {
     }
 
     /**
-     * 修改软件
+     * 修改函数
      *
      * @param request
      * @return
@@ -92,9 +92,6 @@ public class JsController {
         js.setAddTime(null);
         if (CheckUtils.isObjectEmpty(js.getId())) {
             return Result.error("id不能为空");
-        }
-        if (CheckUtils.isObjectEmpty(js.getFromSoftId())) {
-            return Result.error("fromSoftId参数不能为空");
         }
         if (CheckUtils.isObjectEmpty(js.getJsFun()) && CheckUtils.isObjectEmpty(js.getJsContent())
                 && CheckUtils.isObjectEmpty(js.getStatus()) && CheckUtils.isObjectEmpty(js.getRemark())) {

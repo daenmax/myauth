@@ -116,7 +116,7 @@ public class JsServiceImpl extends ServiceImpl<JsMapper, Js> implements IJsServi
     }
 
     /**
-     * 获取函数，根据id
+     * 查询函数，根据id
      *
      * @param js
      * @return
@@ -144,7 +144,7 @@ public class JsServiceImpl extends ServiceImpl<JsMapper, Js> implements IJsServi
         }
         if(!js1.getJsFun().equals(js.getJsFun())){
             LambdaQueryWrapper<Js> jsLambdaQueryWrapper = new LambdaQueryWrapper<>();
-            jsLambdaQueryWrapper.eq(Js::getFromSoftId, js.getFromSoftId());
+            jsLambdaQueryWrapper.eq(Js::getFromSoftId, js1.getFromSoftId());
             jsLambdaQueryWrapper.eq(Js::getJsFun, js.getJsFun());
             List<Js> jsList = jsMapper.selectList(jsLambdaQueryWrapper);
             if (jsList.size() > 0) {
