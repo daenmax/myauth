@@ -156,7 +156,7 @@ public class VersionServiceImpl extends ServiceImpl<VersionMapper, Version> impl
     public LambdaQueryWrapper<Version> getQwVersion(Version version) {
         LambdaQueryWrapper<Version> LambdaQueryWrapper = new LambdaQueryWrapper<>();
         LambdaQueryWrapper.eq(!CheckUtils.isObjectEmpty(version.getFromSoftId()), Version::getFromSoftId, version.getFromSoftId());
-        LambdaQueryWrapper.eq(!CheckUtils.isObjectEmpty(version.getVer()), Version::getVer, version.getVer());
+        LambdaQueryWrapper.like(!CheckUtils.isObjectEmpty(version.getVer()), Version::getVer, version.getVer());
         LambdaQueryWrapper.eq(!CheckUtils.isObjectEmpty(version.getVkey()), Version::getVkey, version.getVkey());
         LambdaQueryWrapper.eq(!CheckUtils.isObjectEmpty(version.getUpdType()), Version::getUpdType, version.getUpdType());
         LambdaQueryWrapper.eq(!CheckUtils.isObjectEmpty(version.getStatus()), Version::getStatus, version.getStatus());
