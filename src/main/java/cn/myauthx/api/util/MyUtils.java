@@ -1,10 +1,7 @@
 package cn.myauthx.api.util;
 
-import cn.myauthx.api.base.exception.MyException;
 import cn.myauthx.api.base.vo.Result;
-import cn.myauthx.api.main.entity.Soft;
 import com.alibaba.fastjson.JSONObject;
-import lombok.extern.java.Log;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.Base64Utils;
 import org.springframework.util.DigestUtils;
@@ -15,6 +12,8 @@ import javax.script.ScriptEngineManager;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -270,5 +269,41 @@ public class MyUtils {
             sb.append(matcher.end() == line.length() ? "" : "_");
         }
         return sb.toString();
+    }
+
+    /**
+     * 10位时间戳转Date类型
+     *
+     * @param timeStamp
+     * @return
+     */
+    public static Date stamp2Date(String timeStamp) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date date = null;
+
+        try {
+            date = sdf.parse(sdf.format(new Long(timeStamp) * 1000));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        return date;
+    }
+
+    /**
+     * Date类型转10位时间戳
+     *
+     * @param date
+     * @return
+     */
+    public static String Date2stamp(Date date) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String timeStamp = null;
+        try {
+            timeStamp = String.valueOf(sdf.parse(sdf.format(date)).getTime() / 1000);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return timeStamp;
     }
 }

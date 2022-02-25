@@ -51,12 +51,52 @@ public class CardServiceImpl extends ServiceImpl<CardMapper, Card> implements IC
         LambdaQueryWrapper.like(!CheckUtils.isObjectEmpty(card.getCkey()), Card::getCkey, card.getCkey());
         LambdaQueryWrapper.eq(!CheckUtils.isObjectEmpty(card.getPoint()), Card::getPoint, card.getPoint());
         LambdaQueryWrapper.eq(!CheckUtils.isObjectEmpty(card.getSeconds()), Card::getSeconds, card.getSeconds());
-        LambdaQueryWrapper.eq(!CheckUtils.isObjectEmpty(card.getAddTime()), Card::getAddTime, card.getAddTime());
-        LambdaQueryWrapper.eq(!CheckUtils.isObjectEmpty(card.getLetTime()), Card::getLetTime, card.getLetTime());
-        LambdaQueryWrapper.eq(!CheckUtils.isObjectEmpty(card.getLetUser()), Card::getLetUser, card.getLetUser());
+        LambdaQueryWrapper.like(!CheckUtils.isObjectEmpty(card.getAddTime()), Card::getAddTime, card.getAddTime());
+        LambdaQueryWrapper.like(!CheckUtils.isObjectEmpty(card.getLetTime()), Card::getLetTime, card.getLetTime());
+        LambdaQueryWrapper.like(!CheckUtils.isObjectEmpty(card.getLetUser()), Card::getLetUser, card.getLetUser());
         LambdaQueryWrapper.eq(!CheckUtils.isObjectEmpty(card.getStatus()), Card::getStatus, card.getStatus());
         LambdaQueryWrapper.eq(!CheckUtils.isObjectEmpty(card.getFromSoftId()), Card::getFromSoftId, card.getFromSoftId());
         return LambdaQueryWrapper;
+    }
+
+    /**
+     * 导出卡密
+     *
+     * @param card
+     * @return
+     */
+    @Override
+    public List<Card> exportCard(Card card) {
+        List<Card> cardList = cardMapper.selectList(getQwCard(card));
+        for (int i = 0; i < cardList.size(); i++) {
+            Soft obj = (Soft) redisUtil.get("id:soft:" + cardList.get(i).getFromSoftId());
+            cardList.get(i).setFromSoftName(obj.getName());
+            cardList.get(i).setStatusName(cardStatus2Str(cardList.get(i).getStatus()));
+            cardList.get(i).setAddTimeName(MyUtils.stamp2Date(String.valueOf(cardList.get(i).getAddTime())));
+            if (!CheckUtils.isObjectEmpty(cardList.get(i).getLetTime())) {
+                cardList.get(i).setLetTimeName(MyUtils.stamp2Date(String.valueOf(cardList.get(i).getLetTime())));
+            }
+        }
+        return cardList;
+    }
+
+    /**
+     * 卡密状态转换
+     *
+     * @param status
+     * @return
+     */
+    private String cardStatus2Str(Integer status) {
+        if (status == 0) {
+            return "未使用";
+        }
+        if (status == 1) {
+            return "已使用";
+        }
+        if (status == 2) {
+            return "被禁用";
+        }
+        return "未知";
     }
 
     /**

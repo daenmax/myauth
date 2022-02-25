@@ -7,6 +7,7 @@ import cn.myauthx.api.main.entity.Card;
 import cn.myauthx.api.main.entity.MyPage;
 import cn.myauthx.api.main.service.ICardService;
 import cn.myauthx.api.util.CheckUtils;
+import cn.myauthx.api.util.ExportXls;
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,6 +16,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.List;
 
 /**
  * 前端web使用的API接口
@@ -27,6 +31,29 @@ import javax.servlet.http.HttpServletRequest;
 public class CardController {
     @Resource
     private ICardService cardService;
+
+    /**
+     * 导出卡密
+     *
+     * @param request
+     * @return
+     */
+    @OpenApi
+    @AdminLogin
+    @PostMapping("exportCard")
+    public void exportCard(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        JSONObject jsonObject = (JSONObject) request.getAttribute("json");
+        Card card = jsonObject.toJavaObject(Card.class);
+        if (CheckUtils.isObjectEmpty(card)) {
+            return;
+        }
+        if (CheckUtils.isObjectEmpty(card.getFromSoftId())) {
+            return;
+        }
+        List<Card> cardList = cardService.exportCard(card);
+        ExportXls.exportXls(request, response, "导出卡密", "卡密", cardList);
+        return;
+    }
 
     /**
      * 获取卡密列表

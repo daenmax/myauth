@@ -5,6 +5,8 @@ import cn.myauthx.api.main.entity.Card;
 import cn.myauthx.api.main.entity.MyPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 
+import java.util.List;
+
 /**
  * <p>
  * 服务类
@@ -14,6 +16,14 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * @since 2022-01-06
  */
 public interface ICardService extends IService<Card> {
+    /**
+     * 导出卡密
+     *
+     * @param card
+     * @return
+     */
+    List<Card> exportCard(Card card);
+
     /**
      * 获取卡密列表
      *

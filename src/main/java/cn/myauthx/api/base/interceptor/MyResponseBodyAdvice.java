@@ -14,11 +14,13 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 /**
  * 全局拦截返回值
+ *
  * @author DaenMax
  */
 @ControllerAdvice
@@ -38,12 +40,12 @@ public class MyResponseBodyAdvice implements ResponseBodyAdvice {
         httpSession.setAttribute("body", body);
         Integer open = Integer.parseInt(String.valueOf(httpServletRequest.getAttribute("open")));
         //如果不是开放API，那么返回结果需要加签，具体要不要加密在于软件的genStatus，在这里实现全局拦截返回结果并修改后放行
-        if(OpenApiEnums.NO.getCode().equals(open)){
+        if (OpenApiEnums.NO.getCode().equals(open)) {
             Soft soft = (Soft) httpServletRequest.getAttribute("obj_soft");
             Result result = (Result) body;
             JSONObject retJson = (JSONObject) result.getResult();
-            if(retJson != null){
-                body = MyUtils.calculateSignReturn(result.getMsg(),retJson,soft.getGenStatus(),soft.getGenKey());
+            if (retJson != null) {
+                body = MyUtils.calculateSignReturn(result.getMsg(), retJson, soft.getGenStatus(), soft.getGenKey());
             }
         }
         return body;
