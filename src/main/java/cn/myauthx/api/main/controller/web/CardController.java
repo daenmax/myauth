@@ -5,11 +5,13 @@ import cn.myauthx.api.base.annotation.OpenApi;
 import cn.myauthx.api.base.vo.Result;
 import cn.myauthx.api.main.entity.Card;
 import cn.myauthx.api.main.entity.MyPage;
+import cn.myauthx.api.main.service.IAdminService;
 import cn.myauthx.api.main.service.ICardService;
 import cn.myauthx.api.util.CheckUtils;
 import cn.myauthx.api.util.ExportXls;
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -31,19 +33,40 @@ import java.util.List;
 public class CardController {
     @Resource
     private ICardService cardService;
+    @Resource
+    private IAdminService adminService;
+
 
     /**
      * 导出卡密
      *
+     * @param ckey
+     * @param point
+     * @param seconds
+     * @param addTime
+     * @param letTime
+     * @param letUser
+     * @param status
+     * @param fromSoftId
      * @param request
-     * @return
+     * @param response
+     * @throws IOException
      */
     @OpenApi
-    @AdminLogin
-    @PostMapping("exportCard")
-    public void exportCard(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        JSONObject jsonObject = (JSONObject) request.getAttribute("json");
-        Card card = jsonObject.toJavaObject(Card.class);
+    @GetMapping("exportCard")
+    public void exportCard(String token, String ckey, Integer point, Integer seconds, Integer addTime, Integer letTime, String letUser, Integer status, Integer fromSoftId, HttpServletRequest request, HttpServletResponse response) throws IOException {
+        if (!adminService.tokenIsOk(token)) {
+            return;
+        }
+        Card card = new Card();
+        card.setCkey(ckey);
+        card.setPoint(point);
+        card.setSeconds(seconds);
+        card.setAddTime(addTime);
+        card.setLetTime(letTime);
+        card.setLetUser(letUser);
+        card.setStatus(status);
+        card.setFromSoftId(fromSoftId);
         if (CheckUtils.isObjectEmpty(card)) {
             return;
         }
@@ -51,7 +74,7 @@ public class CardController {
             return;
         }
         List<Card> cardList = cardService.exportCard(card);
-        ExportXls.exportXls(request, response, "exportCard", "卡密", cardList,Card.class);
+        ExportXls.exportXls(request, response, "exportCard", "卡密", cardList, Card.class);
         return;
     }
 

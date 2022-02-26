@@ -420,7 +420,7 @@ public class MyInterceptor implements HandlerInterceptor {
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
         if (handler instanceof HandlerMethod) {
             //取出在ResponseBodyAdvice中设置的body
-            if(!CheckUtils.isObjectEmpty(request.getSession())){
+            if (!CheckUtils.isObjectEmpty(request.getSession())) {
                 Result result = (Result) request.getSession().getAttribute("body");
                 if (!CheckUtils.isObjectEmpty(result)) {
                     log.info("响应->" + result.toJsonString());
