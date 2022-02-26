@@ -219,7 +219,9 @@ public class VersionServiceImpl extends ServiceImpl<VersionMapper, Version> impl
             return Result.error("版本号已存在");
         }
         version.setUpdTime(Integer.valueOf(MyUtils.getTimeStamp()));
-        version.setVkey(MyUtils.getUUID(true));
+        if(CheckUtils.isObjectEmpty(version.getVkey())){
+            version.setVkey(MyUtils.getUUID(true));
+        }
         int num = versionMapper.insert(version);
         if (num <= 0) {
             return Result.error("添加失败");
@@ -250,7 +252,9 @@ public class VersionServiceImpl extends ServiceImpl<VersionMapper, Version> impl
             return Result.error("版本号已存在");
         }
         version.setUpdTime(Integer.valueOf(MyUtils.getTimeStamp()));
-        version.setVkey(MyUtils.getUUID(true));
+        if(CheckUtils.isObjectEmpty(version.getVkey())){
+            version.setVkey(MyUtils.getUUID(true));
+        }
         int num = versionMapper.insert(version);
         if (num <= 0) {
             return Result.error("添加失败");
