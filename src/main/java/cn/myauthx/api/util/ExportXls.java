@@ -25,8 +25,9 @@ public class ExportXls<T> {
      * @param fileName 导出的文件名，不需要加.xls
      * @param sheetName 工作表名
      * @param list<T>
+     * @param entityClass
      */
-    public static <T> void exportXls(HttpServletRequest request, HttpServletResponse response, String fileName, String sheetName, List<T> list) {
+    public static <T> void exportXls(HttpServletRequest request, HttpServletResponse response, String fileName, String sheetName, List<T> list,Class entityClass) {
         request.getSession();
         response.setContentType("application/vnd.ms-excel");
         response.setCharacterEncoding("utf-8");
@@ -42,7 +43,7 @@ public class ExportXls<T> {
             e.printStackTrace();
         }
 
-        ExcelWriterBuilder write = EasyExcel.write(outputStream, list.getClass());
+        ExcelWriterBuilder write = EasyExcel.write(outputStream, entityClass);
         ExcelWriterSheetBuilder sheet = write.sheet(sheetName);
         sheet.doWrite(list);
         return;

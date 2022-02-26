@@ -51,7 +51,7 @@ public class CardController {
             return;
         }
         List<Card> cardList = cardService.exportCard(card);
-        ExportXls.exportXls(request, response, "导出卡密", "卡密", cardList);
+        ExportXls.exportXls(request, response, "exportCard", "卡密", cardList,Card.class);
         return;
     }
 
