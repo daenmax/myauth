@@ -30,7 +30,7 @@ public class VersionController {
     private IVersionService versionService;
 
     /**
-     * 获取软件列表
+     * 获取版本列表
      *
      * @param request
      * @return
