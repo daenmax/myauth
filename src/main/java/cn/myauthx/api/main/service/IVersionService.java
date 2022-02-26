@@ -17,6 +17,14 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface IVersionService extends IService<Version> {
     /**
+     * 获取更新日志
+     *
+     * @param skey
+     * @return
+     */
+    Result getUpdateLog(String skey);
+
+    /**
      * 检测版本更新，根据vkey
      *
      * @param versionC

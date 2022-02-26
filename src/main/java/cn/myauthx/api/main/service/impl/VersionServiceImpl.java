@@ -322,4 +322,27 @@ public class VersionServiceImpl extends ServiceImpl<VersionMapper, Version> impl
         List<Map<String, Object>> maps = versionMapper.selectMaps(versionLambdaQueryWrapper);
         return Result.ok("获取成功", maps);
     }
+
+    /**
+     * 获取更新日志
+     *
+     * @param skey
+     * @return
+     */
+    @Override
+    public Result getUpdateLog(String skey) {
+        Soft soft = (Soft) redisUtil.get("soft:" + skey);
+        if(CheckUtils.isObjectEmpty(soft)){
+            return Result.error("skey错误");
+        }
+        LambdaQueryWrapper<Version> versionLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        versionLambdaQueryWrapper.eq(Version::getFromSoftId,soft.getId());
+        versionLambdaQueryWrapper.orderBy(true,false,Version::getUpdTime);
+        versionLambdaQueryWrapper.select(Version::getVer, Version::getUpdLog,Version::getUpdTime);
+        List<Map<String, Object>> maps = versionMapper.selectMaps(versionLambdaQueryWrapper);
+        JSONObject jsonObject = new JSONObject(true);
+        jsonObject.put("softName",soft.getName());
+        jsonObject.put("updlogList",maps);
+        return Result.ok("获取成功",jsonObject);
+    }
 }

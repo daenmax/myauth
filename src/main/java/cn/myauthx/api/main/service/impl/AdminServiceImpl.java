@@ -90,4 +90,30 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin> implements
         redisUtil.del("admin:" + token);
         return Result.ok("密码修改成功，请重新登录");
     }
+
+    /**
+     * 校验token
+     *
+     * @param token
+     * @return
+     */
+    @Override
+    public Boolean tokenIsOk(String token) {
+        if (CheckUtils.isObjectEmpty(token)) {
+            return false;
+        }
+        LambdaQueryWrapper<Admin> adminLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        adminLambdaQueryWrapper.eq(Admin::getToken, token);
+        Admin admin = adminMapper.selectOne(adminLambdaQueryWrapper);
+        if (CheckUtils.isObjectEmpty(admin)) {
+            return false;
+        }
+        if (admin.getStatus().equals(AdminEnums.STATUS_DISABLE.getCode())) {
+            return false;
+        }
+        if (admin.getLastTime() + AdminEnums.TOKEN_VALIDITY.getCode() < Integer.parseInt(MyUtils.getTimeStamp())) {
+            return false;
+        }
+        return true;
+    }
 }

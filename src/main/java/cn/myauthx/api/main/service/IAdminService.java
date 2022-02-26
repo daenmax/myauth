@@ -30,4 +30,12 @@ public interface IAdminService extends IService<Admin> {
      * @return
      */
     Result editPass(String nowPass, String newPass, Admin admin);
+
+    /**
+     * 校验token
+     *
+     * @param token
+     * @return
+     */
+    Boolean tokenIsOk(String token);
 }

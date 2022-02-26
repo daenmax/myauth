@@ -6,6 +6,7 @@ import cn.myauthx.api.base.vo.Result;
 import cn.myauthx.api.main.entity.Admin;
 import cn.myauthx.api.main.service.IAdminService;
 import cn.myauthx.api.main.service.IConfigService;
+import cn.myauthx.api.main.service.IVersionService;
 import cn.myauthx.api.util.CheckUtils;
 import cn.myauthx.api.util.IpUtil;
 import com.alibaba.fastjson.JSONObject;
@@ -26,6 +27,8 @@ import javax.servlet.http.HttpServletRequest;
 public class WebApiController {
     @Resource
     private IAdminService adminService;
+    @Resource
+    private IVersionService versionService;
     @Resource
     private IConfigService configService;
 
@@ -106,6 +109,14 @@ public class WebApiController {
             return Result.error("新密码和旧密码均不能为空");
         }
         return adminService.editPass(nowPass, newPass, admin);
+    }
+    @OpenApi
+    @GetMapping("getUpdateLog")
+    public Result getUpdateLog(String skey){
+        if(CheckUtils.isObjectEmpty(skey)){
+            return Result.error("skey不能为空");
+        }
+        return versionService.getUpdateLog(skey);
     }
 
 }
