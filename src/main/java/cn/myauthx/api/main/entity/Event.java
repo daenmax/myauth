@@ -49,7 +49,7 @@ public class Event extends Model {
     /**
      * 0=禁用，1=正常
      */
-    private String status;
+    private Integer status;
 
     private Integer fromSoftId;
 
