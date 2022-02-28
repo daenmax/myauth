@@ -4,7 +4,10 @@ server:
   servlet:
     context-path: /myauth
 
-#mybatis-plus配置控制台打印完整带参数SQL语句
+# 日志输出路径
+log-file-path: D:/idea-workspace/myauth/log
+
+# mybatis-plus配置控制台打印完整带参数SQL语句
 mybatis-plus:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
@@ -63,6 +66,7 @@ spring:
     port: 6379
     password:
     timeout: 2000
+    #数据源序号
     database: 0
     ##集群环境打开下面注释，单机不需要打开
     #cluster:
@@ -81,4 +85,3 @@ spring:
       min-idle:
 # 加密token的秘钥，长度必须为16位，不支持中文
 genKey: myauthdaen666888
-log-file-path: D:/idea-workspace/myauth/log
