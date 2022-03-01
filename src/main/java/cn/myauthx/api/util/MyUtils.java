@@ -101,6 +101,7 @@ public class MyUtils {
     public static String calculateSign(JSONObject jsonObject, String genKey) {
         String pathvalue = json2pathValue(jsonObject);
         pathvalue = pathvalue + "&gen_key=" + genKey;
+        pathvalue = pathvalue.replaceAll("\\\\r\\\\n","\\\\n").replaceAll("\\\\n","\\\\r\\\\n");
         String sign = DigestUtils.md5DigestAsHex(pathvalue.getBytes(StandardCharsets.UTF_8));
         return sign;
     }
@@ -109,6 +110,7 @@ public class MyUtils {
         jsonObject.put("timeStamp", MyUtils.getTimeStamp());
         String pathvalue = json2pathValue(jsonObject);
         pathvalue = pathvalue + "&gen_key=" + gen_key;
+        pathvalue = pathvalue.replaceAll("\\\\r\\\\n","\\\\n").replaceAll("\\\\n","\\\\r\\\\n");
         String sign = DigestUtils.md5DigestAsHex(pathvalue.getBytes(StandardCharsets.UTF_8));
         if (gen_status != 1) {
             return Result.ok(msg, jsonObject).sign(sign);

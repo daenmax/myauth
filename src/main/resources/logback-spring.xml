@@ -167,7 +167,7 @@
     <springProfile name="prod">
         <root level="INFO">
             <!--输出到控制台-->
-            <appender-ref ref="CONSOLE_PROD"/>
+            <!--<appender-ref ref="CONSOLE_PROD"/>-->
             <!--写出日志文件-->
             <appender-ref ref="WARN_FILE"/>
             <appender-ref ref="ERROR_FILE"/>
