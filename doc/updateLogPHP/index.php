@@ -65,10 +65,10 @@ function replaceTime($timestamp){
 </fieldset>
 <ul class="layui-timeline">  
 <?php
-$huo = ;
-$yuan = ;
-$emoji = 💗;
-$xiao = 😃;
+$huo = '';
+$yuan = '';
+$emoji = '💗';
+$xiao = '😃';
 $flag = $xiao;
 foreach($updlogList as $updlog){
 	echo '<li class="layui-timeline-item"><i class="layui-icon layui-timeline-axis">'.$flag.'</i><div class="layui-timeline-content layui-text"><h3 class="layui-timeline-title">Ver:';
