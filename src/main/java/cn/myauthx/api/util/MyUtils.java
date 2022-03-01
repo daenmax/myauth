@@ -106,6 +106,14 @@ public class MyUtils {
         return sign;
     }
 
+    /**
+     * 计算sign签名，返回时用
+     * @param msg
+     * @param jsonObject
+     * @param gen_status
+     * @param gen_key
+     * @return
+     */
     public static Result calculateSignReturn(String msg, JSONObject jsonObject, Integer gen_status, String gen_key) {
         jsonObject.put("timeStamp", MyUtils.getTimeStamp());
         String pathvalue = json2pathValue(jsonObject);
