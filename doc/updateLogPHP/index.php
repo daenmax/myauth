@@ -1,11 +1,16 @@
-<?php
+<!-- 
+MyAuth updateLog
+By Daen
+QQ1330166565
+ -->
+ <?php
 /**
 * 更新日志
 * Daen
 * QQ 1330166565
 **/
 //服务器地址
-$server_url = "http://localhost:8081/myauth/";
+$server_url = "http://myauthtest.daenx.cn/myauth/";
 //错误跳转地址
 $error_url = "http://mycdn.daenx.cn/error.html";
 $skey = $_GET['skey'];
@@ -18,11 +23,9 @@ if( $json['code'] != 200){
 	redirect($error_url);
 }
 $updlogList = $json['result']['updlogList'];
-
-
 function replaceFlag($updLog){
 	$ret = str_replace('【新增】','<span class="layui-badge layui-bg-green">新增</span> &nbsp;&nbsp;',$updLog);
-	$ret = str_replace('【修复】','<span class="layui-badge layui-bg-orange">新增</span> &nbsp;&nbsp;',$ret);
+	$ret = str_replace('【修复】','<span class="layui-badge layui-bg-orange">修复</span> &nbsp;&nbsp;',$ret);
 	$ret = str_replace('【优化】','<span class="layui-badge layui-bg-blue">优化</span> &nbsp;&nbsp;',$ret);
 	$ret = str_replace('【其他】','<span class="layui-badge layui-bg-black">其他</span> &nbsp;&nbsp;',$ret);
 	$ret = str_replace('【删除】','<span class="layui-badge layui-bg-red">删除</span> &nbsp;&nbsp;',$ret);
@@ -39,11 +42,6 @@ function replaceTime($timestamp){
     return date('Y-m-d H:i:s',$timestamp);
 }
 ?>
-<!-- 
-MyAuth
-By Daen
-QQ1330166565
- -->
 <!DOCTYPE html>
 <html>
 <head>
@@ -53,7 +51,7 @@ QQ1330166565
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <link rel="stylesheet" href="css/layui.css" media="all">
-  
+  <link rel="shortcut icon" type="image/x-icon" href="favicon.ico" />
 </head>
 <body style="padding:20px;max-width:700px;margin:0 auto;">
 <fieldset class="layui-elem-field layui-field-title" style="margin-top: 30px;">
@@ -67,8 +65,13 @@ QQ1330166565
 </fieldset>
 <ul class="layui-timeline">  
 <?php
+$huo = '';
+$yuan = '';
+$emoji = '💗';
+$xiao = '😃';
+$flag = $xiao;
 foreach($updlogList as $updlog){
-	echo '<li class="layui-timeline-item"><i class="layui-icon layui-timeline-axis"></i><div class="layui-timeline-content layui-text"><h3 class="layui-timeline-title">Ver:';
+	echo '<li class="layui-timeline-item"><i class="layui-icon layui-timeline-axis">'.$flag.'</i><div class="layui-timeline-content layui-text"><h3 class="layui-timeline-title">Ver:';
 	echo $updlog['ver'].'&nbsp;&nbsp;'.replaceTime($updlog['upd_time']).'</h3>'.replaceHr(replaceFlag($updlog['upd_log'])).'</div></li>';
 }
 ?>
