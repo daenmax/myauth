@@ -70,7 +70,7 @@ httpRequest.onreadystatechange = function () {
 		var xiao = '😃';
 		var flag = xiao;
 		for (element of updlogList){
-		  log = log + '<li class="layui-timeline-item"><i class="layui-icon layui-timeline-axis">' + flag + '</i><div class="layui-timeline-content layui-text"><h3 class="layui-timeline-title">Ver:' + element.ver + '&nbsp;&nbsp;' +timestampToTime( element.upd_time) + '</h3>' + replaceHr(replaceFlag(element.upd_log)) + 'element';
+		  log = log + '<li class="layui-timeline-item"><i class="layui-icon layui-timeline-axis">' + flag + '</i><div class="layui-timeline-content layui-text"><h3 class="layui-timeline-title">Ver:' + element.ver + '&nbsp;&nbsp;' +timestampToTime( element.upd_time) + '</h3>' + replaceHr(replaceFlag(element.upd_log));
 		}
 		html = html + log;
 		html = html + '</ul>       ';
