@@ -3,9 +3,9 @@ package cn.myauthx.api.main.controller.web;
 import cn.myauthx.api.base.annotation.AdminLogin;
 import cn.myauthx.api.base.annotation.OpenApi;
 import cn.myauthx.api.base.vo.Result;
-import cn.myauthx.api.main.entity.Data;
 import cn.myauthx.api.main.entity.MyPage;
-import cn.myauthx.api.main.service.IDataService;
+import cn.myauthx.api.main.entity.Plog;
+import cn.myauthx.api.main.service.IPlogService;
 import cn.myauthx.api.util.CheckUtils;
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
@@ -24,30 +24,30 @@ import javax.servlet.http.HttpServletRequest;
 @Slf4j
 @RestController
 @RequestMapping("/web")
-public class DataController {
+public class PlogController {
     @Resource
-    private IDataService dataService;
+    private IPlogService plogService;
 
     /**
-     * 获取数据列表
+     * 获取日志列表
      *
      * @param request
      * @return
      */
     @OpenApi
     @AdminLogin
-    @PostMapping("getDataList")
-    public Result getDataList(HttpServletRequest request) {
+    @PostMapping("getPlogList")
+    public Result getPlogList(HttpServletRequest request) {
         JSONObject jsonObject = (JSONObject) request.getAttribute("json");
-        Data data = jsonObject.toJavaObject(Data.class);
+        Plog plog = jsonObject.toJavaObject(Plog.class);
         MyPage myPage = jsonObject.toJavaObject(MyPage.class);
-        if (CheckUtils.isObjectEmpty(data) || CheckUtils.isObjectEmpty(myPage)) {
+        if (CheckUtils.isObjectEmpty(plog) || CheckUtils.isObjectEmpty(myPage)) {
             return Result.error("参数错误");
         }
         if (CheckUtils.isObjectEmpty(myPage.getPageIndex()) || CheckUtils.isObjectEmpty(myPage.getPageSize())) {
             return Result.error("页码和尺寸参数不能为空");
         }
-        return dataService.getDataList(data, myPage);
+        return plogService.getPlogList(plog, myPage);
     }
 
     /**
@@ -58,14 +58,14 @@ public class DataController {
      */
     @OpenApi
     @AdminLogin
-    @PostMapping("delData")
-    public Result delData(HttpServletRequest request) {
+    @PostMapping("delPlog")
+    public Result delPlog(HttpServletRequest request) {
         JSONObject jsonObject = (JSONObject) request.getAttribute("json");
-        Data data = jsonObject.toJavaObject(Data.class);
-        if(CheckUtils.isObjectEmpty(data)){
-            data = new Data();
+        Plog plog = jsonObject.toJavaObject(Plog.class);
+        if (CheckUtils.isObjectEmpty(plog)) {
+            plog = new Plog();
         }
-        return dataService.delData(data);
+        return plogService.delPlog(plog);
     }
 
 
