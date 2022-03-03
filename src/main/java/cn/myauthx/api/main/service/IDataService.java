@@ -2,6 +2,7 @@ package cn.myauthx.api.main.service;
 
 import cn.myauthx.api.base.vo.Result;
 import cn.myauthx.api.main.entity.Data;
+import cn.myauthx.api.main.entity.MyPage;
 import cn.myauthx.api.main.entity.Soft;
 import cn.myauthx.api.main.entity.Version;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -28,4 +29,21 @@ public interface IDataService extends IService<Data> {
      * @return
      */
     Result upData(String type, String content, String ip, String device_info, String device_code, Soft soft, Version version);
+
+    /**
+     * 获取数据列表
+     *
+     * @param data
+     * @param myPage
+     * @return
+     */
+    Result getDataList(Data data, MyPage myPage);
+
+    /**
+     * 删除数据
+     *
+     * @param data
+     * @return
+     */
+    Result delData(Data data);
 }

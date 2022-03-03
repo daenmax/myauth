@@ -1,6 +1,7 @@
 package cn.myauthx.api.base.config;
 
 import cn.myauthx.api.main.entity.*;
+import cn.myauthx.api.main.enums.AdminEnums;
 import cn.myauthx.api.main.service.*;
 import cn.myauthx.api.util.CheckUtils;
 import cn.myauthx.api.util.MyUtils;
@@ -12,6 +13,7 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Configuration;
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Set;
 
 /**
  * 项目初始化类
@@ -34,6 +36,29 @@ public class InitConfig  implements ApplicationRunner {
     private IConfigService configService;
     @Override
     public void run(ApplicationArguments args) throws Exception {
+        log.info("=================  【启动服务成功，开始初始化服务】  =================");
+        log.info("[redis]开始执行清空操作...");
+        Set<String> scan = redisUtil.scan("ban*");
+        for (String s : scan) {
+            redisUtil.del(s.toString());
+        }
+        scan = redisUtil.scan("admin*");
+        for (String s : scan) {
+            redisUtil.del(s.toString());
+        }
+        /*scan = redisUtil.scan("id*");
+        for (String s : scan) {
+            redisUtil.del(s.toString());
+        }
+        scan = redisUtil.scan("soft*");
+        for (String s : scan) {
+            redisUtil.del(s.toString());
+        }
+        scan = redisUtil.scan("version*");
+        for (String s : scan) {
+            redisUtil.del(s.toString());
+        }*/
+        log.info("[redis]清空完毕");
         log.info("[config]初始化配置表...");
         Config config = configService.getById(1);
         if(CheckUtils.isObjectEmpty(config)){
@@ -48,6 +73,19 @@ public class InitConfig  implements ApplicationRunner {
         }
         redisUtil.set("config" ,config);
         log.info("[config]配置表初始化完毕");
+
+        log.info("[admin]初始化管理员...");
+        long adminCount = adminService.count();
+        if(adminCount == 0){
+            Admin admin = new Admin();
+            admin.setUser("admin");
+            admin.setPass("123456");
+            admin.setRegTime(Integer.valueOf(MyUtils.getTimeStamp()));
+            admin.setStatus(AdminEnums.STATUS_ABLE.getCode());
+            adminService.save(admin);
+        }
+        log.info("[admin]管理员初始化完毕");
+
         log.info("[soft]开始读取...");
         List<Soft> softList = softService.list();
         log.info("[soft]读取到的数量->" + softList.size());

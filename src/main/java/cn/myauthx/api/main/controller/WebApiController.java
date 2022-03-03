@@ -26,8 +26,6 @@ import javax.servlet.http.HttpServletRequest;
 @RequestMapping("/web")
 public class WebApiController {
     @Resource
-    private IAdminService adminService;
-    @Resource
     private IVersionService versionService;
     @Resource
     private IConfigService configService;
@@ -59,61 +57,18 @@ public class WebApiController {
         return configService.getWebInfo();
     }
 
-    /**
-     * 登录
-     *
-     * @param request
-     * @return
-     */
-    @OpenApi
-    @PostMapping("login")
-    public Result login(HttpServletRequest request) {
-        JSONObject jsonObject = (JSONObject) request.getAttribute("json");
-        String user = jsonObject.getString("user");
-        String pass = jsonObject.getString("pass");
-        if (CheckUtils.isObjectEmpty(user) || CheckUtils.isObjectEmpty(pass)) {
-            return Result.error("参数错误");
-        }
-        String ip = IpUtil.getIpAddr(request);
-        return adminService.login(user, pass, ip);
-    }
+
 
     /**
-     * 检查登录token有效性
+     * 获取更新日志
      *
-     * @param request
+     * @param skey
      * @return
      */
-    @OpenApi
-    @AdminLogin
-    @PostMapping("checkLogin")
-    public Result checkLogin(HttpServletRequest request) {
-        return Result.ok("token正常");
-    }
-
-    /**
-     * 修改密码
-     *
-     * @param request
-     * @return
-     */
-    @OpenApi
-    @AdminLogin
-    @PostMapping("editPass")
-    public Result editPass(HttpServletRequest request) {
-        JSONObject jsonObject = (JSONObject) request.getAttribute("json");
-        String nowPass = jsonObject.getString("nowPass");
-        String newPass = jsonObject.getString("newPass");
-        Admin admin = (Admin) request.getAttribute("obj_admin");
-        if (CheckUtils.isObjectEmpty(nowPass) || CheckUtils.isObjectEmpty(newPass)) {
-            return Result.error("新密码和旧密码均不能为空");
-        }
-        return adminService.editPass(nowPass, newPass, admin);
-    }
     @OpenApi
     @GetMapping("getUpdateLog")
-    public Result getUpdateLog(String skey){
-        if(CheckUtils.isObjectEmpty(skey)){
+    public Result getUpdateLog(String skey) {
+        if (CheckUtils.isObjectEmpty(skey)) {
             return Result.error("skey不能为空");
         }
         return versionService.getUpdateLog(skey);
