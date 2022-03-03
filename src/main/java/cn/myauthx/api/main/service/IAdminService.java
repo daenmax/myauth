@@ -38,4 +38,12 @@ public interface IAdminService extends IService<Admin> {
      * @return
      */
     Boolean tokenIsOk(String token);
+
+    /**
+     * 修改QQ
+     * @param qq
+     * @param admin
+     * @return
+     */
+    Result editQQ(String qq, Admin admin);
 }

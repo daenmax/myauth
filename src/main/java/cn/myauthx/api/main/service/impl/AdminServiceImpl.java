@@ -116,4 +116,23 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin> implements
         }
         return true;
     }
+
+    /**
+     * 修改QQ
+     *
+     * @param qq
+     * @param admin
+     * @return
+     */
+    @Override
+    public Result editQQ(String qq, Admin admin) {
+        String token = admin.getToken();
+        admin.setQq(qq);
+        int num = adminMapper.updateById(admin);
+        if (num < 1) {
+            return Result.error("修改QQ失败");
+        }
+        redisUtil.set("admin:" + token, admin);
+        return Result.ok("QQ修改成功");
+    }
 }

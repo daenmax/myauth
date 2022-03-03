@@ -110,10 +110,36 @@ public class WebApiController {
         }
         return adminService.editPass(nowPass, newPass, admin);
     }
+
+    /**
+     * 修改QQ
+     *
+     * @param request
+     * @return
+     */
+    @OpenApi
+    @AdminLogin
+    @PostMapping("editQQ")
+    public Result editQQ(HttpServletRequest request) {
+        JSONObject jsonObject = (JSONObject) request.getAttribute("json");
+        String qq = jsonObject.getString("qq");
+        Admin admin = (Admin) request.getAttribute("obj_admin");
+        if (CheckUtils.isObjectEmpty(qq) ) {
+            return Result.error("QQ不能为空");
+        }
+        return adminService.editQQ(qq, admin);
+    }
+
+    /**
+     * 获取更新日志
+     *
+     * @param skey
+     * @return
+     */
     @OpenApi
     @GetMapping("getUpdateLog")
-    public Result getUpdateLog(String skey){
-        if(CheckUtils.isObjectEmpty(skey)){
+    public Result getUpdateLog(String skey) {
+        if (CheckUtils.isObjectEmpty(skey)) {
             return Result.error("skey不能为空");
         }
         return versionService.getUpdateLog(skey);
