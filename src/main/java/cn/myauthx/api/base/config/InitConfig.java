@@ -42,6 +42,10 @@ public class InitConfig  implements ApplicationRunner {
         for (String s : scan) {
             redisUtil.del(s.toString());
         }
+        scan = redisUtil.scan("admin*");
+        for (String s : scan) {
+            redisUtil.del(s.toString());
+        }
         /*scan = redisUtil.scan("id*");
         for (String s : scan) {
             redisUtil.del(s.toString());

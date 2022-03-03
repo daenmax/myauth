@@ -2,6 +2,7 @@ package cn.myauthx.api.main.service.impl;
 
 import cn.myauthx.api.base.vo.Result;
 import cn.myauthx.api.main.entity.Admin;
+import cn.myauthx.api.main.entity.MyPage;
 import cn.myauthx.api.main.enums.AdminEnums;
 import cn.myauthx.api.main.mapper.AdminMapper;
 import cn.myauthx.api.main.service.IAdminService;
@@ -10,10 +11,13 @@ import cn.myauthx.api.util.MyUtils;
 import cn.myauthx.api.util.RedisUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * <p>
@@ -134,5 +138,138 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin> implements
         }
         redisUtil.set("admin:" + token, admin);
         return Result.ok("QQ修改成功");
+    }
+
+    /**
+     * 获取查询条件构造器
+     *
+     * @param admin
+     * @return
+     */
+    public LambdaQueryWrapper<Admin> getQwAdmin(Admin admin) {
+        LambdaQueryWrapper<Admin> LambdaQueryWrapper = new LambdaQueryWrapper<>();
+        LambdaQueryWrapper.like(!CheckUtils.isObjectEmpty(admin.getUser()), Admin::getUser, admin.getUser());
+        LambdaQueryWrapper.like(!CheckUtils.isObjectEmpty(admin.getQq()), Admin::getQq, admin.getQq());
+        LambdaQueryWrapper.like(!CheckUtils.isObjectEmpty(admin.getRegTime()), Admin::getRegTime, admin.getRegTime());
+        LambdaQueryWrapper.like(!CheckUtils.isObjectEmpty(admin.getLastTime()), Admin::getLastTime, admin.getLastTime());
+        LambdaQueryWrapper.like(!CheckUtils.isObjectEmpty(admin.getLastIp()), Admin::getLastIp, admin.getLastIp());
+        LambdaQueryWrapper.eq(!CheckUtils.isObjectEmpty(admin.getStatus()), Admin::getStatus, admin.getStatus());
+        return LambdaQueryWrapper;
+    }
+
+    /**
+     * 获取管理员列表
+     *
+     * @param admin
+     * @param myPage
+     * @return
+     */
+    @Override
+    public Result getAdminList(Admin admin, MyPage myPage) {
+        Page<Admin> page = new Page<>(myPage.getPageIndex(), myPage.getPageSize(), true);
+        if (!CheckUtils.isObjectEmpty(myPage.getOrders())) {
+            for (int i = 0; i < myPage.getOrders().size(); i++) {
+                myPage.getOrders().get(i).setColumn(MyUtils.camelToUnderline(myPage.getOrders().get(i).getColumn()));
+            }
+            page.setOrders(myPage.getOrders());
+        }
+        LambdaQueryWrapper<Admin> qwAdmin = getQwAdmin(admin);
+        qwAdmin.ne(Admin::getUser, "admin");
+        IPage<Admin> msgPage = adminMapper.selectPage(page, qwAdmin);
+
+        return Result.ok("获取成功", msgPage);
+    }
+
+    /**
+     * 修改管理员
+     *
+     * @param adminC
+     * @return
+     */
+    @Override
+    public Result updAdmin(Admin adminC) {
+        Admin admin = adminMapper.selectById(adminC.getId());
+        if (CheckUtils.isObjectEmpty(admin)) {
+            return Result.error("管理员ID错误");
+        }
+        if ("admin".equals(admin.getUser())) {
+            return Result.error("你不能修改admin");
+        }
+        if (!CheckUtils.isObjectEmpty(adminC.getUser())) {
+            if (!admin.getUser().equals(adminC.getUser())) {
+                LambdaQueryWrapper<Admin> adminLambdaQueryWrapper = new LambdaQueryWrapper<>();
+                adminLambdaQueryWrapper.eq(Admin::getUser, adminC.getUser());
+                List<Admin> adminList = adminMapper.selectList(adminLambdaQueryWrapper);
+                if (adminList.size() > 0) {
+                    return Result.error("账号已存在");
+                }
+            }
+        }
+        int num = adminMapper.updateById(adminC);
+        if (num <= 0) {
+            return Result.error("修改失败");
+        }
+        redisUtil.del("admin:" + admin.getToken());
+        return Result.ok("修改成功");
+    }
+
+    /**
+     * 查询管理员，根据id
+     *
+     * @param admin
+     * @return
+     */
+    @Override
+    public Result getAdmin(Admin admin) {
+        Admin newAdmin = adminMapper.selectById(admin.getId());
+        if (CheckUtils.isObjectEmpty(newAdmin)) {
+            return Result.error("管理员ID错误");
+        }
+        return Result.ok("查询成功", newAdmin);
+    }
+
+    /**
+     * 添加管理员
+     *
+     * @param adminC
+     * @return
+     */
+    @Override
+    public Result addAdmin(Admin adminC) {
+        LambdaQueryWrapper<Admin> adminLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        adminLambdaQueryWrapper.eq(Admin::getUser, adminC.getUser());
+        List<Admin> adminList = adminMapper.selectList(adminLambdaQueryWrapper);
+        if (adminList.size() > 0) {
+            return Result.error("账号已存在");
+        }
+        adminC.setRegTime(Integer.valueOf(MyUtils.getTimeStamp()));
+        int num = adminMapper.insert(adminC);
+        if (num <= 0) {
+            return Result.error("添加失败");
+        }
+        return Result.ok("添加成功");
+    }
+
+    /**
+     * 删除管理员
+     *
+     * @param adminC
+     * @return
+     */
+    @Override
+    public Result delAdmin(Admin adminC) {
+        Admin admin = adminMapper.selectById(adminC.getId());
+        if (CheckUtils.isObjectEmpty(admin)) {
+            return Result.error("管理员ID错误");
+        }
+        if ("admin".equals(admin.getUser())) {
+            return Result.error("你不能删除admin");
+        }
+        int num = adminMapper.deleteById(adminC.getId());
+        if (num <= 0) {
+            return Result.error("删除失败");
+        }
+        redisUtil.del("admin:" + admin.getToken());
+        return Result.ok("删除成功");
     }
 }

@@ -71,9 +71,7 @@ public class MyInterceptor implements HandlerInterceptor {
                     response.getWriter().write(retStr);
                     return false;
                 }
-                LambdaQueryWrapper<Admin> adminLambdaQueryWrapper = new LambdaQueryWrapper<>();
-                adminLambdaQueryWrapper.eq(Admin::getToken, token);
-                Admin admin = adminMapper.selectOne(adminLambdaQueryWrapper);
+                Admin admin = (Admin) redisUtil.get("admin:" + token);
                 if (CheckUtils.isObjectEmpty(admin)) {
                     log.info("接收->" + jsonObject.toJSONString());
                     String retStr = Result.error(402, "token无效，请重新登录").toJsonString();
