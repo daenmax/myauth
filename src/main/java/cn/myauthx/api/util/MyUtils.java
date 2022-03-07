@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
+import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -101,13 +102,14 @@ public class MyUtils {
     public static String calculateSign(JSONObject jsonObject, String genKey) {
         String pathvalue = json2pathValue(jsonObject);
         pathvalue = pathvalue + "&gen_key=" + genKey;
-        pathvalue = pathvalue.replaceAll("\\\\r\\\\n","\\\\n").replaceAll("\\\\n","\\\\r\\\\n");
+        pathvalue = pathvalue.replaceAll("\\\\r\\\\n", "\\\\n").replaceAll("\\\\n", "\\\\r\\\\n");
         String sign = DigestUtils.md5DigestAsHex(pathvalue.getBytes(StandardCharsets.UTF_8));
         return sign;
     }
 
     /**
      * 计算sign签名，返回时用
+     *
      * @param msg
      * @param jsonObject
      * @param gen_status
@@ -118,7 +120,7 @@ public class MyUtils {
         jsonObject.put("timeStamp", MyUtils.getTimeStamp());
         String pathvalue = json2pathValue(jsonObject);
         pathvalue = pathvalue + "&gen_key=" + gen_key;
-        pathvalue = pathvalue.replaceAll("\\\\r\\\\n","\\\\n").replaceAll("\\\\n","\\\\r\\\\n");
+        pathvalue = pathvalue.replaceAll("\\\\r\\\\n", "\\\\n").replaceAll("\\\\n", "\\\\r\\\\n");
         String sign = DigestUtils.md5DigestAsHex(pathvalue.getBytes(StandardCharsets.UTF_8));
         if (gen_status != 1) {
             return Result.ok(msg, jsonObject).sign(sign);
@@ -306,7 +308,7 @@ public class MyUtils {
      * @param date
      * @return
      */
-    public static String Date2stamp(Date date) {
+    public static String date2stamp(Date date) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String timeStamp = null;
         try {
@@ -315,5 +317,34 @@ public class MyUtils {
             e.printStackTrace();
         }
         return timeStamp;
+    }
+
+    /**
+     * 时间文本转Date
+     * @param strDate yyyy-MM-dd HH:mm:ss
+     * @return
+     */
+    public static Date strToDate(String strDate) {
+        if(!"".equals(strDate)){
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            ParsePosition pos = new ParsePosition(0);
+            Date strtodate = formatter.parse(strDate, pos);
+            return strtodate;
+        }
+        return new Date();
+    }
+
+    /**
+     * Date转时间文本，例如转成yyyy-MM-dd HH:mm:ss
+     * @param date
+     * @return
+     */
+    public static String dateToStr(Date date) {
+        if(date == null){
+            return "";
+        }
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String dateString = formatter.format(date);
+        return dateString;
     }
 }
