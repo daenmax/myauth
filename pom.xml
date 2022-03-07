@@ -79,12 +79,6 @@
             <artifactId>fastjson</artifactId>
             <version>1.2.78</version>
         </dependency>
-        <!--导出excle依赖-->
-        <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>easyexcel</artifactId>
-            <version>3.0.5</version>
-        </dependency>
 
 
         <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
