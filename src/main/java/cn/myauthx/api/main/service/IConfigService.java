@@ -19,4 +19,19 @@ public interface IConfigService extends IService<Config> {
      * @return
      */
     Result getWebInfo();
+
+    /**
+     * 修改系统设置
+     *
+     * @param config
+     * @return
+     */
+    Result editConfig(Config config);
+
+    /**
+     * 获取系统设置
+     *
+     * @return
+     */
+    Result getConfig();
 }

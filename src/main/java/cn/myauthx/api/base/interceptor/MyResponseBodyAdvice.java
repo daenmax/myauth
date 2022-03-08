@@ -4,6 +4,7 @@ package cn.myauthx.api.base.interceptor;
 import cn.myauthx.api.base.vo.Result;
 import cn.myauthx.api.main.entity.Soft;
 import cn.myauthx.api.main.enums.OpenApiEnums;
+import cn.myauthx.api.util.CheckUtils;
 import cn.myauthx.api.util.MyUtils;
 import com.alibaba.fastjson.JSONObject;
 import org.springframework.core.MethodParameter;
@@ -38,7 +39,12 @@ public class MyResponseBodyAdvice implements ResponseBodyAdvice {
         HttpSession httpSession = httpServletRequest.getSession(true);
         //放到缓存里，以便于可以在HandlerInterceptor拦截里取出并打印出返回结果
         httpSession.setAttribute("body", body);
-        Integer open = Integer.parseInt(String.valueOf(httpServletRequest.getAttribute("open")));
+        Integer open = 0;
+        if(CheckUtils.isObjectEmpty(httpServletRequest.getAttribute("open"))){
+            open = 0;
+        }else{
+            open = Integer.parseInt(String.valueOf(httpServletRequest.getAttribute("open")));
+        }
         //如果不是开放API，那么返回结果需要加签，具体要不要加密在于软件的genStatus，在这里实现全局拦截返回结果并修改后放行
         if (OpenApiEnums.NO.getCode().equals(open)) {
             Soft soft = (Soft) httpServletRequest.getAttribute("obj_soft");
