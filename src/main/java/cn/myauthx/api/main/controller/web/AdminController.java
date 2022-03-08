@@ -100,7 +100,7 @@ public class AdminController {
     }
 
     /**
-     * 获取数据列表
+     * 获取管理员列表
      *
      * @param request
      * @return
@@ -126,7 +126,7 @@ public class AdminController {
     }
 
     /**
-     * 修改事件
+     * 修改管理员
      *
      * @param request
      * @return
