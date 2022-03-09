@@ -4,8 +4,7 @@ import cn.myauthx.api.base.po.baseEntity;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.baomidou.mybatisplus.extension.activerecord.Model;
-import lombok.Data;
+import java.io.Serializable;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -16,38 +15,37 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author DaenMax
- * @since 2022-01-06
+ * @since 2022-03-09
  */
-@Data
+@Getter
+@Setter
 @Accessors(chain = true)
-@TableName("ma_admin")
-public class Admin extends Model {
+@TableName("ma_role")
+public class Role extends baseEntity {
 
     private static final long serialVersionUID = 1L;
 
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
-    private String user;
-
-    private String pass;
-
-    private String qq;
-
-    private Integer regTime;
-
-    private Integer lastTime;
-
-    private String lastIp;
-
-    private String token;
+    /**
+     * 角色名
+     */
+    private String name;
+    /**
+     * 0=超级管理员
+     */
+    private Integer fromSoftId;
 
     /**
-     * 0=禁用，1=正常
+     * 只存menu的id，json数组
      */
-    private Integer status;
+    private String meunIds;
 
-    private Integer role;
+    /**
+     * 折扣，单位百分%
+     */
+    private Integer discount;
 
-    private String money;
+
 }

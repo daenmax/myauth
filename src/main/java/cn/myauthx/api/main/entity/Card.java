@@ -91,4 +91,8 @@ public class Card extends Model {
     @TableField(exist = false)
     private String fromSoftName;
 
+    /**
+     * 生成人ID
+     */
+    private Integer fromAdminId;
 }

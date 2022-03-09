@@ -55,6 +55,7 @@ public class CardServiceImpl extends ServiceImpl<CardMapper, Card> implements IC
         LambdaQueryWrapper.like(!CheckUtils.isObjectEmpty(card.getLetTime()), Card::getLetTime, card.getLetTime());
         LambdaQueryWrapper.like(!CheckUtils.isObjectEmpty(card.getLetUser()), Card::getLetUser, card.getLetUser());
         LambdaQueryWrapper.eq(!CheckUtils.isObjectEmpty(card.getStatus()), Card::getStatus, card.getStatus());
+        LambdaQueryWrapper.eq(!CheckUtils.isObjectEmpty(card.getFromAdminId()), Card::getFromAdminId, card.getFromAdminId());
         LambdaQueryWrapper.eq(!CheckUtils.isObjectEmpty(card.getFromSoftId()), Card::getFromSoftId, card.getFromSoftId());
         return LambdaQueryWrapper;
     }

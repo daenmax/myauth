@@ -13,10 +13,10 @@ import java.util.Collections;
  */
 public class CodeGenerator {
     private final String moudleName = "main";//模块名
-    private final String tableName = "ma_user";//表名
+    private final String tableName = "ma_role";//表名
     @Test
     public void generate() {
-        FastAutoGenerator.create("jdbc:mysql://localhost:3306/myauthtest?serverTimezone=Asia/Shanghai", "myauthtest", "myauthtest")
+        FastAutoGenerator.create("jdbc:mysql://localhost:3306/myauthtest?serverTimezone=Asia/Shanghai", "myauthtest", "wTT6JnzfND8srBt8")
                 .globalConfig(builder -> {
                     builder.author("DaenMax") // 设置作者
                             //.enableSwagger() // 开启 swagger 模式

@@ -54,7 +54,7 @@ public class CardController {
      */
     @OpenApi
     @GetMapping("exportCard")
-    public void exportCard(String token, String ckey, Integer point, Integer seconds, Integer addTime, Integer letTime, String letUser, Integer status, Integer fromSoftId, HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public void exportCard(String token, String ckey, Integer point, Integer seconds, Integer addTime, Integer letTime, String letUser, Integer status, Integer fromSoftId, Integer fromAdminId,HttpServletRequest request, HttpServletResponse response) throws IOException {
         if (!adminService.tokenIsOk(token)) {
             return;
         }
@@ -67,6 +67,7 @@ public class CardController {
         card.setLetUser(letUser);
         card.setStatus(status);
         card.setFromSoftId(fromSoftId);
+        card.setFromAdminId(fromAdminId);
         if (CheckUtils.isObjectEmpty(card)) {
             return;
         }

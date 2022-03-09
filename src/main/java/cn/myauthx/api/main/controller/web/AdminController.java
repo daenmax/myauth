@@ -155,7 +155,8 @@ public class AdminController {
             return Result.error("账号不能修改为admin");
         }
         if (CheckUtils.isObjectEmpty(admin.getUser()) && CheckUtils.isObjectEmpty(admin.getPass())
-                && CheckUtils.isObjectEmpty(admin.getQq()) && CheckUtils.isObjectEmpty(admin.getStatus())) {
+                && CheckUtils.isObjectEmpty(admin.getQq()) && CheckUtils.isObjectEmpty(admin.getStatus())
+                && CheckUtils.isObjectEmpty(admin.getRole()) && CheckUtils.isObjectEmpty(admin.getMoney())) {
             return Result.error("参数不能全部为空");
         }
         return adminService.updAdmin(admin);
@@ -206,7 +207,7 @@ public class AdminController {
             return Result.error("你没有权限");
         }
         if (CheckUtils.isObjectEmpty(admin.getUser()) || CheckUtils.isObjectEmpty(admin.getPass()) || CheckUtils.isObjectEmpty(admin.getQq())
-                || CheckUtils.isObjectEmpty(admin.getStatus())) {
+                || CheckUtils.isObjectEmpty(admin.getStatus()) || CheckUtils.isObjectEmpty(admin.getRole()) || CheckUtils.isObjectEmpty(admin.getMoney())) {
             return Result.error("参数不全");
         }
         if ("admin".equals(admin.getUser())) {

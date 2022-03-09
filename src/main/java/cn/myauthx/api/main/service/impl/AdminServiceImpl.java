@@ -66,6 +66,7 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin> implements
         jsonObject.put("qq", admin.getQq());
         jsonObject.put("regTime", admin.getRegTime());
         jsonObject.put("token", admin.getToken());
+        jsonObject.put("role", admin.getRole());
         return Result.ok("登录成功", jsonObject);
     }
 
@@ -154,6 +155,7 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin> implements
         LambdaQueryWrapper.like(!CheckUtils.isObjectEmpty(admin.getLastTime()), Admin::getLastTime, admin.getLastTime());
         LambdaQueryWrapper.like(!CheckUtils.isObjectEmpty(admin.getLastIp()), Admin::getLastIp, admin.getLastIp());
         LambdaQueryWrapper.eq(!CheckUtils.isObjectEmpty(admin.getStatus()), Admin::getStatus, admin.getStatus());
+        LambdaQueryWrapper.eq(!CheckUtils.isObjectEmpty(admin.getRole()), Admin::getRole, admin.getRole());
         return LambdaQueryWrapper;
     }
 

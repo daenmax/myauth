@@ -4,50 +4,61 @@ import cn.myauthx.api.base.po.baseEntity;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.baomidou.mybatisplus.extension.activerecord.Model;
-import lombok.Data;
+import java.io.Serializable;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
 /**
  * <p>
- *
+ * 
  * </p>
  *
  * @author DaenMax
- * @since 2022-01-06
+ * @since 2022-03-09
  */
-@Data
+@Getter
+@Setter
 @Accessors(chain = true)
-@TableName("ma_admin")
-public class Admin extends Model {
+@TableName("ma_strategy")
+public class Strategy extends baseEntity {
 
     private static final long serialVersionUID = 1L;
 
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
-    private String user;
-
-    private String pass;
-
-    private String qq;
-
-    private Integer regTime;
-
-    private Integer lastTime;
-
-    private String lastIp;
-
-    private String token;
+    /**
+     * 策略名称，例如：月卡，年卡
+     */
+    private String name;
 
     /**
-     * 0=禁用，1=正常
+     * 1=期限卡，2=余额卡
+     */
+    private Integer type;
+
+    /**
+     * 卡面额
+     */
+    private Integer value;
+
+    /**
+     * 排序，越小越大，从1开始
+     */
+    private Integer sort;
+
+    /**
+     * 价格
+     */
+    private String price;
+
+    private Integer fromSoftId;
+
+    /**
+     * 状态。1=正常，0=禁用
      */
     private Integer status;
 
-    private Integer role;
 
-    private String money;
 }
