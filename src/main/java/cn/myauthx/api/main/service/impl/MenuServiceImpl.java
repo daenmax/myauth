@@ -3,6 +3,7 @@ package cn.myauthx.api.main.service.impl;
 import cn.myauthx.api.base.vo.Result;
 import cn.myauthx.api.main.entity.*;
 import cn.myauthx.api.main.mapper.MenuMapper;
+import cn.myauthx.api.main.mapper.RoleMapper;
 import cn.myauthx.api.main.service.IMenuService;
 import cn.myauthx.api.util.CheckUtils;
 import cn.myauthx.api.util.MyUtils;
@@ -31,6 +32,8 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements IM
     @Resource
     private MenuMapper menuMapper;
     @Resource
+    private RoleMapper roleMapper;
+    @Resource
     private RedisUtil redisUtil;
 
     /**
@@ -41,7 +44,7 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements IM
      */
     @Override
     public Result getMenuList(Admin admin) {
-        Role role = (Role) redisUtil.get("role:" + admin.getRole());
+        Role role = roleMapper.selectById(admin.getRole());
         JSONArray jsonArray = JSONArray.parseArray(role.getMeunIds());
         LambdaQueryWrapper<Menu> menuLambdaQueryWrapper = new LambdaQueryWrapper<>();
         if (role.getFromSoftId().equals(0)) {

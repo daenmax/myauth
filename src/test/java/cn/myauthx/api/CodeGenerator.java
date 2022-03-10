@@ -13,7 +13,7 @@ import java.util.Collections;
  */
 public class CodeGenerator {
     private final String moudleName = "main";//模块名
-    private final String tableName = "ma_role";//表名
+    private final String tableName = "ma_alog";//表名
     @Test
     public void generate() {
         FastAutoGenerator.create("jdbc:mysql://localhost:3306/myauthtest?serverTimezone=Asia/Shanghai", "myauthtest", "wTT6JnzfND8srBt8")

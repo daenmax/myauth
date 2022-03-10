@@ -266,7 +266,7 @@ public class AdminController {
         if (CheckUtils.isObjectEmpty(admin.getMoney())) {
             return Result.error("变动的金额不能为空");
         }
-
-        return adminService.chaMoney(admin);
+        Admin myAdmin = (Admin) request.getAttribute("obj_admin");
+        return adminService.chaMoney(admin,myAdmin);
     }
 }
