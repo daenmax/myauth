@@ -3,6 +3,7 @@ package cn.myauthx.api.main.controller.web;
 import cn.myauthx.api.base.annotation.AdminLogin;
 import cn.myauthx.api.base.annotation.OpenApi;
 import cn.myauthx.api.base.vo.Result;
+import cn.myauthx.api.main.entity.Admin;
 import cn.myauthx.api.main.entity.Card;
 import cn.myauthx.api.main.entity.MyPage;
 import cn.myauthx.api.main.service.IAdminService;
@@ -54,7 +55,7 @@ public class CardController {
      */
     @OpenApi
     @GetMapping("exportCard")
-    public void exportCard(String token, String ckey, Integer point, Integer seconds, Integer addTime, Integer letTime, String letUser, Integer status, Integer fromSoftId, HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public void exportCard(String token, String ckey, Integer point, Integer seconds, Integer addTime, Integer letTime, String letUser, Integer status, Integer fromSoftId, Integer fromAdminId,HttpServletRequest request, HttpServletResponse response) throws IOException {
         if (!adminService.tokenIsOk(token)) {
             return;
         }
@@ -67,6 +68,7 @@ public class CardController {
         card.setLetUser(letUser);
         card.setStatus(status);
         card.setFromSoftId(fromSoftId);
+        card.setFromAdminId(fromAdminId);
         if (CheckUtils.isObjectEmpty(card)) {
             return;
         }
@@ -189,7 +191,8 @@ public class CardController {
         if (CheckUtils.isObjectEmpty(card.getPoint())) {
             card.setPoint(0);
         }
-        return cardService.addCard(prefix, count, card);
+        Admin myAdmin = (Admin) request.getAttribute("obj_admin");
+        return cardService.addCard(prefix, count, card,myAdmin);
     }
 
     /**

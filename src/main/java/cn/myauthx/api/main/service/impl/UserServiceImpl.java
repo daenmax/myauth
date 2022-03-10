@@ -83,6 +83,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
             user.setRemark(userC.getRemark());
             user.setDeviceInfo(userC.getDeviceInfo());
             user.setDeviceCode(userC.getDeviceCode());
+            user.setFromAdminId(1);
             int num = userMapper.insert(user);
             if (num > 0) {
                 JSONObject jsonObject = new JSONObject();
@@ -114,6 +115,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
                 user.setRemark(userC.getRemark());
                 user.setDeviceInfo(userC.getDeviceInfo());
                 user.setDeviceCode(userC.getDeviceCode());
+                user.setFromAdminId(1);
                 int num = userMapper.insert(user);
                 if (num > 0) {
                     JSONObject jsonObject = new JSONObject();
@@ -156,6 +158,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
                 user.setRemark(userC.getRemark());
                 user.setDeviceInfo(userC.getDeviceInfo());
                 user.setDeviceCode(userC.getDeviceCode());
+                user.setFromAdminId(card.getFromAdminId());
                 int num = userMapper.insert(user);
                 if (num > 0) {
                     card.setLetUser(user.getUser());
@@ -248,6 +251,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
                     jsonObject.put("remark", userA.getRemark());
                     jsonObject.put("authTime", userA.getAuthTime());
                     jsonObject.put("token", userA.getToken());
+                    jsonObject.put("fromAdminId", userA.getFromAdminId());
                     return Result.ok("登录成功", jsonObject);
                 }
             } else {
@@ -288,6 +292,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
                     jsonObject.put("remark", userA.getRemark());
                     jsonObject.put("authTime", userA.getAuthTime());
                     jsonObject.put("token", userA.getToken());
+                    jsonObject.put("fromAdminId", userA.getFromAdminId());
                     return Result.ok("登录成功", jsonObject);
                 }
             }
@@ -328,6 +333,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
                         jsonObject.put("remark", userA.getRemark());
                         jsonObject.put("authTime", userA.getAuthTime());
                         jsonObject.put("token", userA.getToken());
+                        jsonObject.put("fromAdminId", userA.getFromAdminId());
                         return Result.ok("登录成功", jsonObject);
                     }
                 } else {
@@ -374,6 +380,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
                         jsonObject.put("remark", userA.getRemark());
                         jsonObject.put("authTime", userA.getAuthTime());
                         jsonObject.put("token", userA.getToken());
+                        jsonObject.put("fromAdminId", userA.getFromAdminId());
                         return Result.ok("登录成功", jsonObject);
                     }
                 } else {
@@ -496,6 +503,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         if (!CheckUtils.isObjectEmpty(userR)) {
             userA.setLastTime(userR.getLastTime());
         }
+        userA.setFromAdminId(card.getFromAdminId());
         int num = userMapper.updateById(userA);
         if (num > 0) {
             if (!CheckUtils.isObjectEmpty(userR)) {
@@ -743,6 +751,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         LambdaQueryWrapper.like(!CheckUtils.isObjectEmpty(user.getDeviceInfo()), User::getDeviceInfo, user.getDeviceInfo());
         LambdaQueryWrapper.like(!CheckUtils.isObjectEmpty(user.getDeviceCode()), User::getDeviceCode, user.getDeviceCode());
         LambdaQueryWrapper.like(!CheckUtils.isObjectEmpty(user.getCkey()), User::getCkey, user.getCkey());
+        LambdaQueryWrapper.like(!CheckUtils.isObjectEmpty(user.getFromAdminId()), User::getFromAdminId, user.getFromAdminId());
         return LambdaQueryWrapper;
     }
 
@@ -788,7 +797,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
      * @return
      */
     @Override
-    public Result addUser(User user) {
+    public Result addUser(User user, Admin admin) {
         Soft soft = softMapper.selectById(user.getFromSoftId());
         if (CheckUtils.isObjectEmpty(soft)) {
             return Result.error("fromSoftId错误");
@@ -801,6 +810,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         if (!CheckUtils.isObjectEmpty(user1)) {
             return Result.error("账号在当前软件中已存在");
         }
+        user.setFromAdminId(admin.getId());
+        user.setFromAdminId(1);
         user.setRegTime(Integer.valueOf(MyUtils.getTimeStamp()));
         int num = userMapper.insert(user);
         if (num <= 0) {

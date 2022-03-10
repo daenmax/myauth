@@ -48,6 +48,7 @@ public class PlogServiceImpl extends ServiceImpl<PlogMapper, Plog> implements IP
         LambdaQueryWrapper.eq(!CheckUtils.isObjectEmpty(plog.getFromSoftId()), Plog::getFromSoftId, plog.getFromSoftId());
         LambdaQueryWrapper.eq(!CheckUtils.isObjectEmpty(plog.getFromVerId()), Plog::getFromVerId, plog.getFromVerId());
         LambdaQueryWrapper.like(!CheckUtils.isObjectEmpty(plog.getRemark()), Plog::getRemark, plog.getRemark());
+        LambdaQueryWrapper.orderBy(true,false,Plog::getId);
         return LambdaQueryWrapper;
     }
 

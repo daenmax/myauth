@@ -93,6 +93,18 @@ public class MyInterceptor implements HandlerInterceptor {
                     response.getWriter().write(retStr);
                     return false;
                 }
+                AdminLogin methodAnnotation = ((HandlerMethod) handler).getMethodAnnotation(AdminLogin.class);
+                boolean is_super_admin = methodAnnotation.is_super_admin();
+                if(is_super_admin){
+                    Role role = (Role) redisUtil.get("role:" + admin.getRole());
+                    if(role.getFromSoftId() != 0){
+                        log.info("接收->" + jsonObject.toJSONString());
+                        String retStr = Result.error(500, "你没有权限").toJsonString();
+                        log.info("响应->" + retStr);
+                        response.getWriter().write(retStr);
+                        return false;
+                    }
+                }
                 request.setAttribute("obj_admin", admin);
             }
 

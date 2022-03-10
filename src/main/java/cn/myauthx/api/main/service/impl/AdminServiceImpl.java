@@ -1,10 +1,12 @@
 package cn.myauthx.api.main.service.impl;
 
 import cn.myauthx.api.base.vo.Result;
-import cn.myauthx.api.main.entity.Admin;
-import cn.myauthx.api.main.entity.MyPage;
+import cn.myauthx.api.main.entity.*;
 import cn.myauthx.api.main.enums.AdminEnums;
+import cn.myauthx.api.main.enums.AlogEnums;
 import cn.myauthx.api.main.mapper.AdminMapper;
+import cn.myauthx.api.main.mapper.AlogMapper;
+import cn.myauthx.api.main.mapper.PlogMapper;
 import cn.myauthx.api.main.service.IAdminService;
 import cn.myauthx.api.util.CheckUtils;
 import cn.myauthx.api.util.MyUtils;
@@ -17,6 +19,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -31,6 +34,8 @@ import java.util.List;
 public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin> implements IAdminService {
     @Resource
     private AdminMapper adminMapper;
+    @Resource
+    private AlogMapper alogMapper;
     @Resource
     private RedisUtil redisUtil;
 
@@ -61,11 +66,19 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin> implements
         admin.setToken(token);
         adminMapper.updateById(admin);
         redisUtil.set("admin:" + token, admin, AdminEnums.TOKEN_VALIDITY.getCode());
+        Role role = (Role) redisUtil.get("role:" + admin.getRole());
         JSONObject jsonObject = new JSONObject(true);
         jsonObject.put("user", admin.getUser());
         jsonObject.put("qq", admin.getQq());
         jsonObject.put("regTime", admin.getRegTime());
         jsonObject.put("token", admin.getToken());
+        jsonObject.put("role", admin.getRole());
+        jsonObject.put("roleName", role.getName());
+        jsonObject.put("money", admin.getMoney());
+        if(!CheckUtils.isObjectEmpty(role.getFromSoftId())){
+            Soft obj = (Soft) redisUtil.get("id:soft:" + role.getFromSoftId());
+            jsonObject.put("fromSoftName", obj.getName());
+        }
         return Result.ok("登录成功", jsonObject);
     }
 
@@ -154,6 +167,7 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin> implements
         LambdaQueryWrapper.like(!CheckUtils.isObjectEmpty(admin.getLastTime()), Admin::getLastTime, admin.getLastTime());
         LambdaQueryWrapper.like(!CheckUtils.isObjectEmpty(admin.getLastIp()), Admin::getLastIp, admin.getLastIp());
         LambdaQueryWrapper.eq(!CheckUtils.isObjectEmpty(admin.getStatus()), Admin::getStatus, admin.getStatus());
+        LambdaQueryWrapper.eq(!CheckUtils.isObjectEmpty(admin.getRole()), Admin::getRole, admin.getRole());
         return LambdaQueryWrapper;
     }
 
@@ -176,7 +190,12 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin> implements
         LambdaQueryWrapper<Admin> qwAdmin = getQwAdmin(admin);
         qwAdmin.ne(Admin::getUser, "admin");
         IPage<Admin> msgPage = adminMapper.selectPage(page, qwAdmin);
-
+        for (int i = 0; i < msgPage.getRecords().size(); i++) {
+            Role role = (Role) redisUtil.get("role:" + msgPage.getRecords().get(i).getRole());
+            if (!CheckUtils.isObjectEmpty(role)) {
+                msgPage.getRecords().get(i).setRoleName(role.getName());
+            }
+        }
         return Result.ok("获取成功", msgPage);
     }
 
@@ -271,5 +290,44 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin> implements
         }
         redisUtil.del("admin:" + admin.getToken());
         return Result.ok("删除成功");
+    }
+
+    /**
+     * 奖惩管理员
+     * @param admin 操作对象
+     * @param myAdmin 自己
+     * @return
+     */
+    @Override
+    public Result chaMoney(Admin admin,Admin myAdmin) {
+        LambdaQueryWrapper<Admin> adminLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        if (!CheckUtils.isObjectEmpty(admin.getId())) {
+            adminLambdaQueryWrapper.eq(Admin::getId, admin.getId());
+        }
+        if (!CheckUtils.isObjectEmpty(admin.getUser())) {
+            adminLambdaQueryWrapper.eq(Admin::getUser, admin.getUser());
+        }
+        Admin one = adminMapper.selectOne(adminLambdaQueryWrapper);
+        if (CheckUtils.isObjectEmpty(one)) {
+            return Result.error("未找到");
+        }
+
+        BigDecimal cha = new BigDecimal(admin.getMoney());
+        BigDecimal now = new BigDecimal(one.getMoney());
+        String afterMoney = String.valueOf(cha.add(now));
+        one.setMoney(afterMoney);
+        int num = adminMapper.updateById(one);
+        if (num <= 0) {
+            return Result.error("奖惩失败");
+        }
+        Alog alog = new Alog();
+        alog.setMoney(admin.getMoney());
+        alog.setAfterMoney(afterMoney);
+        alog.setAdminId(myAdmin.getId());
+        alog.setData(null);
+        alog.setType(AlogEnums.ADMIN_MAKE.getDesc());
+        alog.setAddTime(Integer.valueOf(MyUtils.getTimeStamp()));
+        alogMapper.insert(alog);
+        return Result.ok("奖惩成功");
     }
 }

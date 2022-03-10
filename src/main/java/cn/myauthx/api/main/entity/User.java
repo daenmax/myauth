@@ -10,7 +10,7 @@ import lombok.experimental.Accessors;
 
 /**
  * <p>
- * 
+ *
  * </p>
  *
  * @author DaenMax
@@ -119,4 +119,8 @@ public class User extends Model {
     @TableField(exist = false)
     private String fromSoftName;
 
+    /**
+     * 上级ID
+     */
+    private Integer fromAdminId;
 }

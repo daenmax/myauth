@@ -1,10 +1,7 @@
 package cn.myauthx.api.main.service;
 
 import cn.myauthx.api.base.vo.Result;
-import cn.myauthx.api.main.entity.MyPage;
-import cn.myauthx.api.main.entity.Soft;
-import cn.myauthx.api.main.entity.User;
-import cn.myauthx.api.main.entity.Version;
+import cn.myauthx.api.main.entity.*;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
@@ -121,7 +118,7 @@ public interface IUserService extends IService<User> {
      * @param user
      * @return
      */
-    Result addUser(User user);
+    Result addUser(User user, Admin admin);
 
     /**
      * 删除用户，支持批量

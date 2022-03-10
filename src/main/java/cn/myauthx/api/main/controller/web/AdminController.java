@@ -155,7 +155,8 @@ public class AdminController {
             return Result.error("账号不能修改为admin");
         }
         if (CheckUtils.isObjectEmpty(admin.getUser()) && CheckUtils.isObjectEmpty(admin.getPass())
-                && CheckUtils.isObjectEmpty(admin.getQq()) && CheckUtils.isObjectEmpty(admin.getStatus())) {
+                && CheckUtils.isObjectEmpty(admin.getQq()) && CheckUtils.isObjectEmpty(admin.getStatus())
+                && CheckUtils.isObjectEmpty(admin.getRole()) && CheckUtils.isObjectEmpty(admin.getMoney())) {
             return Result.error("参数不能全部为空");
         }
         return adminService.updAdmin(admin);
@@ -206,7 +207,7 @@ public class AdminController {
             return Result.error("你没有权限");
         }
         if (CheckUtils.isObjectEmpty(admin.getUser()) || CheckUtils.isObjectEmpty(admin.getPass()) || CheckUtils.isObjectEmpty(admin.getQq())
-                || CheckUtils.isObjectEmpty(admin.getStatus())) {
+                || CheckUtils.isObjectEmpty(admin.getStatus()) || CheckUtils.isObjectEmpty(admin.getRole()) || CheckUtils.isObjectEmpty(admin.getMoney())) {
             return Result.error("参数不全");
         }
         if ("admin".equals(admin.getUser())) {
@@ -242,5 +243,30 @@ public class AdminController {
             return Result.error("id不能为空");
         }
         return adminService.delAdmin(admin);
+    }
+
+    /**
+     * 奖惩管理员
+     *
+     * @param request
+     * @return
+     */
+    @OpenApi
+    @AdminLogin
+    @PostMapping("chaMoney")
+    public Result chaMoney(HttpServletRequest request) {
+        JSONObject jsonObject = (JSONObject) request.getAttribute("json");
+        Admin admin = jsonObject.toJavaObject(Admin.class);
+        if (CheckUtils.isObjectEmpty(admin)) {
+            return Result.error("参数错误");
+        }
+        if (CheckUtils.isObjectEmpty(admin.getId()) && CheckUtils.isObjectEmpty(admin.getUser())) {
+            return Result.error("id和账号不能都为空");
+        }
+        if (CheckUtils.isObjectEmpty(admin.getMoney())) {
+            return Result.error("变动的金额不能为空");
+        }
+        Admin myAdmin = (Admin) request.getAttribute("obj_admin");
+        return adminService.chaMoney(admin,myAdmin);
     }
 }

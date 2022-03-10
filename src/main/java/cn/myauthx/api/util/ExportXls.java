@@ -36,9 +36,9 @@ public class ExportXls {
         }
         //如果用这种方式导出，WPS或者office打开文件时会检测到是SYLK，即此文件是一个文本文件
         //这样没啥问题，但是如果第一个字符是"ID"，就会有弹窗警告提示，如果用小写的"id"或者其他字符就不会再有弹窗提示
-        String ret = "id\t卡密\t点数\t秒数\t生成时间\t使用时间\t使用人账号\t卡密状态\t所属软件";
+        String ret = "id\t卡密\t点数\t秒数\t生成时间\t使用时间\t使用人账号\t卡密状态\t所属软件\t生成人ID";
         for (Card card : list) {
-            ret = ret + "\n" + card.getId() + "\t" + card.getCkey() + "\t" + card.getPoint() + "\t" + card.getSeconds() + "\t" +MyUtils.dateToStr(card.getAddTimeName())+ "\t" +MyUtils.dateToStr(card.getLetTimeName()) + "\t" + card.getLetUser() + "\t" + card.getStatusName() + "\t" + card.getFromSoftName();
+            ret = ret + "\n" + card.getId() + "\t" + card.getCkey() + "\t" + card.getPoint() + "\t" + card.getSeconds() + "\t" +MyUtils.dateToStr(card.getAddTimeName())+ "\t" +MyUtils.dateToStr(card.getLetTimeName()) + "\t" + card.getLetUser() + "\t" + card.getStatusName() + "\t" + card.getFromSoftName() + "\t" + card.getFromAdminId();
         }
         OutputStream outputStream = null;
         try {

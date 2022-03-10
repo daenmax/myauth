@@ -1,6 +1,7 @@
 package cn.myauthx.api.main.service.impl;
 
 import cn.myauthx.api.base.vo.Result;
+import cn.myauthx.api.main.entity.Admin;
 import cn.myauthx.api.main.entity.Card;
 import cn.myauthx.api.main.entity.MyPage;
 import cn.myauthx.api.main.entity.Soft;
@@ -55,6 +56,7 @@ public class CardServiceImpl extends ServiceImpl<CardMapper, Card> implements IC
         LambdaQueryWrapper.like(!CheckUtils.isObjectEmpty(card.getLetTime()), Card::getLetTime, card.getLetTime());
         LambdaQueryWrapper.like(!CheckUtils.isObjectEmpty(card.getLetUser()), Card::getLetUser, card.getLetUser());
         LambdaQueryWrapper.eq(!CheckUtils.isObjectEmpty(card.getStatus()), Card::getStatus, card.getStatus());
+        LambdaQueryWrapper.eq(!CheckUtils.isObjectEmpty(card.getFromAdminId()), Card::getFromAdminId, card.getFromAdminId());
         LambdaQueryWrapper.eq(!CheckUtils.isObjectEmpty(card.getFromSoftId()), Card::getFromSoftId, card.getFromSoftId());
         return LambdaQueryWrapper;
     }
@@ -172,7 +174,7 @@ public class CardServiceImpl extends ServiceImpl<CardMapper, Card> implements IC
      * @return
      */
     @Override
-    public Result addCard(String prefix, Integer count, Card card) {
+    public Result addCard(String prefix, Integer count, Card card, Admin admin) {
         Soft soft = softMapper.selectById(card.getFromSoftId());
         if (CheckUtils.isObjectEmpty(soft)) {
             return Result.error("fromSoftId错误");
@@ -199,6 +201,7 @@ public class CardServiceImpl extends ServiceImpl<CardMapper, Card> implements IC
             newCard.setAddTime(timeStamp);
             newCard.setStatus(0);
             newCard.setFromSoftId(card.getFromSoftId());
+            newCard.setFromAdminId(admin.getId());
             int insert = cardMapper.insert(newCard);
             okCount = okCount + insert;
         }

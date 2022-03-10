@@ -89,4 +89,12 @@ public interface IAdminService extends IService<Admin> {
      * @return
      */
     Result delAdmin(Admin admin);
+
+    /**
+     * 奖惩管理员
+     * @param admin 操作对象
+     * @param myAdmin 自己
+     * @return
+     */
+    Result chaMoney(Admin admin,Admin myAdmin);
 }

@@ -10,4 +10,9 @@ import java.lang.annotation.*;
 @Inherited
 
 public @interface AdminLogin {
+    /**
+     * 是否强制超级管理员权限
+     * @return
+     */
+    boolean is_super_admin() default true;
 }

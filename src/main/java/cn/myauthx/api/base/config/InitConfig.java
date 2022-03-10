@@ -31,6 +31,8 @@ public class InitConfig implements ApplicationRunner {
     @Resource
     private IAdminService adminService;
     @Resource
+    private IRoleService roleService;
+    @Resource
     private IVersionService versionService;
     @Resource
     private IBanService banService;
@@ -46,6 +48,10 @@ public class InitConfig implements ApplicationRunner {
             redisUtil.del(s.toString());
         }
         scan = redisUtil.scan("admin*");
+        for (String s : scan) {
+            redisUtil.del(s.toString());
+        }
+        scan = redisUtil.scan("role*");
         for (String s : scan) {
             redisUtil.del(s.toString());
         }
@@ -77,14 +83,33 @@ public class InitConfig implements ApplicationRunner {
         redisUtil.set("config", config);
         log.info("[config]配置表初始化完毕");
 
+        log.info("[role]初始化角色...");
+        long roleCount = roleService.count();
+        if (roleCount == 0) {
+            Role role = new Role();
+            role.setId(1);
+            role.setFromSoftId(0);
+            role.setName("超级管理员");
+            role.setDiscount(100);
+            roleService.save(role);
+        }
+        LambdaQueryWrapper<Role> roleLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        List<Role> roleList = roleService.list(roleLambdaQueryWrapper);
+        for (Role role : roleList) {
+            redisUtil.set("role:" + role.getId(), role);
+        }
+        log.info("[role]角色初始化完毕");
+
         log.info("[admin]初始化管理员...");
         long adminCount = adminService.count();
         if (adminCount == 0) {
             Admin admin = new Admin();
+            admin.setId(1);
             admin.setUser("admin");
             admin.setPass("123456");
             admin.setRegTime(Integer.valueOf(MyUtils.getTimeStamp()));
             admin.setStatus(AdminEnums.STATUS_ABLE.getCode());
+            admin.setRole(1);
             adminService.save(admin);
         }
         log.info("[admin]管理员初始化完毕");

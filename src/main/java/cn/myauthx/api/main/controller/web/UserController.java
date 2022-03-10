@@ -3,6 +3,7 @@ package cn.myauthx.api.main.controller.web;
 import cn.myauthx.api.base.annotation.AdminLogin;
 import cn.myauthx.api.base.annotation.OpenApi;
 import cn.myauthx.api.base.vo.Result;
+import cn.myauthx.api.main.entity.Admin;
 import cn.myauthx.api.main.entity.MyPage;
 import cn.myauthx.api.main.entity.User;
 import cn.myauthx.api.main.service.IUserService;
@@ -151,7 +152,8 @@ public class UserController {
                 && CheckUtils.isObjectEmpty(user.getCkey())) {
             return Result.error("参数不能全部为空");
         }
-        return userService.addUser(user);
+        Admin myAdmin = (Admin) request.getAttribute("obj_admin");
+        return userService.addUser(user, myAdmin);
     }
 
     /**
