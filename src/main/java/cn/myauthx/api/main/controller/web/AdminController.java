@@ -244,4 +244,29 @@ public class AdminController {
         }
         return adminService.delAdmin(admin);
     }
+
+    /**
+     * 奖惩管理员
+     *
+     * @param request
+     * @return
+     */
+    @OpenApi
+    @AdminLogin
+    @PostMapping("chaMoney")
+    public Result chaMoney(HttpServletRequest request) {
+        JSONObject jsonObject = (JSONObject) request.getAttribute("json");
+        Admin admin = jsonObject.toJavaObject(Admin.class);
+        if (CheckUtils.isObjectEmpty(admin)) {
+            return Result.error("参数错误");
+        }
+        if (CheckUtils.isObjectEmpty(admin.getId()) && CheckUtils.isObjectEmpty(admin.getUser())) {
+            return Result.error("id和账号不能都为空");
+        }
+        if (CheckUtils.isObjectEmpty(admin.getMoney())) {
+            return Result.error("变动的金额不能为空");
+        }
+
+        return adminService.chaMoney(admin);
+    }
 }

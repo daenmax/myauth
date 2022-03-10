@@ -1,6 +1,7 @@
 package cn.myauthx.api.main.service;
 
 import cn.myauthx.api.base.vo.Result;
+import cn.myauthx.api.main.entity.Admin;
 import cn.myauthx.api.main.entity.Card;
 import cn.myauthx.api.main.entity.MyPage;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -57,7 +58,7 @@ public interface ICardService extends IService<Card> {
      * @param card
      * @return
      */
-    Result addCard(String prefix, Integer count, Card card);
+    Result addCard(String prefix, Integer count, Card card, Admin admin);
 
     /**
      * 删除卡密，支持批量

@@ -4,6 +4,8 @@ import cn.myauthx.api.base.vo.Result;
 import cn.myauthx.api.main.entity.*;
 import cn.myauthx.api.main.mapper.MenuMapper;
 import cn.myauthx.api.main.service.IMenuService;
+import cn.myauthx.api.util.CheckUtils;
+import cn.myauthx.api.util.MyUtils;
 import cn.myauthx.api.util.RedisUtil;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -102,11 +104,71 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements IM
      * @param list
      */
     public void sortMenuList(List<Menu> list) {
-        // 按照分数排名(从低到高)
         list.sort((menu1, menu2) -> {
             Integer sort1 = menu1.getSort();
             Integer sort2 = menu2.getSort();
             return sort1.compareTo(sort2);
         });
+    }
+
+    /**
+     * 查询菜单，根据id
+     *
+     * @param menu
+     * @return
+     */
+    @Override
+    public Result getMenu(Menu menu) {
+        Menu newMenu = menuMapper.selectById(menu.getId());
+        if (CheckUtils.isObjectEmpty(newMenu)) {
+            return Result.error("查询失败，未找到");
+        }
+        return Result.ok("查询成功", newMenu);
+    }
+
+    /**
+     * 修改菜单
+     *
+     * @param menu
+     * @return
+     */
+    @Override
+    public Result updMenu(Menu menu) {
+        int num = menuMapper.updateById(menu);
+        if (num <= 0) {
+            return Result.error("修改失败");
+        }
+        return Result.ok("修改成功");
+    }
+
+    /**
+     * 添加菜单
+     *
+     * @param menu
+     * @return
+     */
+    @Override
+    public Result addMenu(Menu menu) {
+        menu.setId(MyUtils.getUUID(true));
+        int num = menuMapper.insert(menu);
+        if (num <= 0) {
+            return Result.error("添加失败");
+        }
+        return Result.ok("添加成功");
+    }
+
+    /**
+     * 删除菜单
+     *
+     * @param menu
+     * @return
+     */
+    @Override
+    public Result delMenu(Menu menu) {
+        int num = menuMapper.deleteById(menu.getId());
+        if (num <= 0) {
+            return Result.error("删除失败");
+        }
+        return Result.ok("删除成功");
     }
 }

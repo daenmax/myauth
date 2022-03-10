@@ -797,7 +797,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
      * @return
      */
     @Override
-    public Result addUser(User user) {
+    public Result addUser(User user, Admin admin) {
         Soft soft = softMapper.selectById(user.getFromSoftId());
         if (CheckUtils.isObjectEmpty(soft)) {
             return Result.error("fromSoftId错误");
@@ -810,6 +810,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         if (!CheckUtils.isObjectEmpty(user1)) {
             return Result.error("账号在当前软件中已存在");
         }
+        user.setFromAdminId(admin.getId());
         user.setFromAdminId(1);
         user.setRegTime(Integer.valueOf(MyUtils.getTimeStamp()));
         int num = userMapper.insert(user);

@@ -16,8 +16,41 @@ import com.baomidou.mybatisplus.extension.service.IService;
 public interface IMenuService extends IService<Menu> {
     /**
      * 获取菜单列表
+     *
      * @param admin
      * @return
      */
     Result getMenuList(Admin admin);
+
+    /**
+     * 查询菜单，根据id
+     *
+     * @param menu
+     * @return
+     */
+    Result getMenu(Menu menu);
+
+    /**
+     * 修改菜单
+     *
+     * @param menu
+     * @return
+     */
+    Result updMenu(Menu menu);
+
+    /**
+     * 添加菜单
+     *
+     * @param menu
+     * @return
+     */
+    Result addMenu(Menu menu);
+
+    /**
+     * 删除菜单
+     *
+     * @param menu
+     * @return
+     */
+    Result delMenu(Menu menu);
 }
