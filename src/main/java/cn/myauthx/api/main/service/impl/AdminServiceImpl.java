@@ -77,7 +77,9 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin> implements
         jsonObject.put("money", admin.getMoney());
         if(!CheckUtils.isObjectEmpty(role.getFromSoftId())){
             Soft obj = (Soft) redisUtil.get("id:soft:" + role.getFromSoftId());
-            jsonObject.put("fromSoftName", obj.getName());
+            if(!CheckUtils.isObjectEmpty(obj)){
+                jsonObject.put("fromSoftName", obj.getName());
+            }
         }
         return Result.ok("登录成功", jsonObject);
     }

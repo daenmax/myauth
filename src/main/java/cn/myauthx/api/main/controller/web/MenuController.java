@@ -33,7 +33,7 @@ public class MenuController {
     private IMenuService menuService;
 
     /**
-     * 获取菜单
+     * 获取权限菜单
      *
      * @param request
      * @return
@@ -45,6 +45,20 @@ public class MenuController {
         JSONObject jsonObject = (JSONObject) request.getAttribute("json");
         Admin admin = (Admin) request.getAttribute("obj_admin");
         return menuService.getMenuList(admin);
+    }
+
+    /**
+     * 获取菜单列表
+     *
+     * @param request
+     * @return
+     */
+    @OpenApi
+    @AdminLogin()
+    @GetMapping("getMenuListAll")
+    public Result getMenuListAll(HttpServletRequest request) {
+        JSONObject jsonObject = (JSONObject) request.getAttribute("json");
+        return menuService.getMenuListAll();
     }
 
     /**

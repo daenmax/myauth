@@ -52,4 +52,7 @@ public class Menu extends Model {
     @TableField(exist = false)
     private List<Menu> children;
 
+    @TableField(exist = false)
+    private List<String> ids;
+
 }

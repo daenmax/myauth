@@ -37,7 +37,38 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements IM
     private RedisUtil redisUtil;
 
     /**
-     * 获取菜单列表
+     * 获取权限菜单，treeListMap版
+     *
+     * @param admin
+     * @return
+     */
+    @Override
+    public Result getMenuListEx(Admin admin) {
+        Menu menu = new Menu();
+        menu.setParentId("0");
+        Role role = roleMapper.selectById(admin.getRole());
+        JSONArray jsonArray = JSONArray.parseArray(role.getMeunIds());
+        List<String> list = (List<String>) JSONArray.toJavaObject(jsonArray, List.class);
+        menu.setIds(list);
+        List<Menu> menus = menuMapper.treeList(menu);
+        return Result.ok(menus);
+    }
+
+    /**
+     * 获取菜单列表，全部，treeListMap版
+     *
+     * @return
+     */
+    @Override
+    public Result getMenuListExAll() {
+        Menu menu = new Menu();
+        menu.setParentId("0");
+        List<Menu> menus = menuMapper.treeList(menu);
+        return Result.ok(menus);
+    }
+
+    /**
+     * 获取权限菜单，算法版
      *
      * @param admin
      * @return
@@ -47,12 +78,47 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements IM
         Role role = roleMapper.selectById(admin.getRole());
         JSONArray jsonArray = JSONArray.parseArray(role.getMeunIds());
         LambdaQueryWrapper<Menu> menuLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        if (role.getFromSoftId().equals(0)) {
-            menuLambdaQueryWrapper.orderBy(true, true, Menu::getLevel);
-        } else {
-            menuLambdaQueryWrapper.in(Menu::getId, jsonArray);
-            menuLambdaQueryWrapper.orderBy(true, true, Menu::getLevel);
+        menuLambdaQueryWrapper.in(Menu::getId, jsonArray);
+        menuLambdaQueryWrapper.orderBy(true, true, Menu::getLevel);
+        List<Menu> menuList = menuMapper.selectList(menuLambdaQueryWrapper);
+        List<Menu> tmpMenuList = new ArrayList<>();
+        if (menuList.size() == 0) {
+            return Result.error("没有任何菜单", tmpMenuList);
         }
+        //最深的层次数
+        Integer maxLevel = menuList.get(menuList.size() - 1).getLevel();
+        //从最里层开始循环
+        for (Integer i = maxLevel; i > 0; i--) {
+            List<Menu> menuListByLevel = getMenuListByLevel(menuList, i);
+            if (i.equals(maxLevel)) {
+                tmpMenuList = menuListByLevel;
+            } else {
+                //外循环父节点
+                for (Menu menu : menuListByLevel) {
+                    List<Menu> children = new ArrayList<>();
+                    //内循环子节点
+                    for (Menu tmpMenu : tmpMenuList) {
+                        if (menu.getId().equals(tmpMenu.getParentId())) {
+                            children.add(tmpMenu);
+                        }
+                    }
+                    menu.setChildren(children);
+                }
+                tmpMenuList = menuListByLevel;
+            }
+        }
+        return Result.ok("获取成功", tmpMenuList);
+    }
+
+    /**
+     * 获取菜单列表，全部，算法版
+     *
+     * @return
+     */
+    @Override
+    public Result getMenuListAll() {
+        LambdaQueryWrapper<Menu> menuLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        menuLambdaQueryWrapper.orderBy(true, true, Menu::getLevel);
         List<Menu> menuList = menuMapper.selectList(menuLambdaQueryWrapper);
         List<Menu> tmpMenuList = new ArrayList<>();
         if (menuList.size() == 0) {
