@@ -68,7 +68,7 @@ public class StrategyController {
      * @return
      */
     @OpenApi
-    @AdminLogin
+    @AdminLogin(is_super_admin = false)
     @PostMapping("getStrategyListEx")
     public Result getStrategyListEx(HttpServletRequest request) {
         JSONObject jsonObject = (JSONObject) request.getAttribute("json");
