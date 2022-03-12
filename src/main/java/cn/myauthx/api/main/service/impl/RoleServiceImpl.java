@@ -148,6 +148,7 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements IR
         if (num <= 0) {
             return Result.error("修改失败");
         }
+        redisUtil.set("role:" + role.getId(), role);
         return Result.ok("修改成功");
     }
 
@@ -177,6 +178,7 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements IR
         if (num <= 0) {
             return Result.error("添加失败");
         }
+        redisUtil.set("role:" + role.getId(), role);
         return Result.ok("添加成功");
     }
 
@@ -202,6 +204,7 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements IR
         if (num <= 0) {
             return Result.error("删除失败");
         }
+        redisUtil.del("role:" + role.getId());
         return Result.ok("删除成功");
     }
 }
