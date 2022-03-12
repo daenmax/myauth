@@ -234,10 +234,39 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements IM
      */
     @Override
     public Result delMenu(Menu menu) {
-        int num = menuMapper.deleteById(menu.getId());
+        Menu newMenu = menuMapper.selectById(menu.getId());
+        if (CheckUtils.isObjectEmpty(newMenu)) {
+            return Result.error("查询失败，未找到");
+        }
+        int num = 0 ;
+        if(newMenu.getType().equals(1)){
+            //目录
+            LambdaQueryWrapper<Menu> wrapper = new LambdaQueryWrapper<>();
+            wrapper.eq(Menu::getParentId,newMenu.getId());
+            List<Menu> menus = menuMapper.selectList(wrapper);
+            Boolean has = false;
+            for (Menu menu1 : menus) {
+                if(menu1.getType().equals(1)){
+                    has = true;
+                    break;
+                }
+            }
+            if(has){
+                //还有子目录
+                return Result.error("请先删除该目录下的子目录");
+            }else{
+                //没有子目录
+                num = menuMapper.delete(wrapper);
+                num = num + menuMapper.deleteById(menu.getId());
+            }
+        }else{
+            //菜单
+            num = menuMapper.deleteById(menu.getId());
+        }
         if (num <= 0) {
             return Result.error("删除失败");
         }
         return Result.ok("删除成功");
+
     }
 }
