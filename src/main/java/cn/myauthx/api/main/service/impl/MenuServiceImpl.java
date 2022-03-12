@@ -9,14 +9,12 @@ import cn.myauthx.api.util.CheckUtils;
 import cn.myauthx.api.util.MyUtils;
 import cn.myauthx.api.util.RedisUtil;
 import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -75,13 +73,19 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements IM
      */
     @Override
     public Result getMenuList(Admin admin) {
+        List<Menu> tmpMenuList = new ArrayList<>();
         Role role = roleMapper.selectById(admin.getRole());
+        if (CheckUtils.isObjectEmpty(role.getMeunIds())) {
+            return Result.error("没有任何菜单", tmpMenuList);
+        }
         JSONArray jsonArray = JSONArray.parseArray(role.getMeunIds());
+        if (jsonArray.size() == 0) {
+            return Result.error("没有任何菜单", tmpMenuList);
+        }
         LambdaQueryWrapper<Menu> menuLambdaQueryWrapper = new LambdaQueryWrapper<>();
         menuLambdaQueryWrapper.in(Menu::getId, jsonArray);
         menuLambdaQueryWrapper.orderBy(true, true, Menu::getLevel);
         List<Menu> menuList = menuMapper.selectList(menuLambdaQueryWrapper);
-        List<Menu> tmpMenuList = new ArrayList<>();
         if (menuList.size() == 0) {
             return Result.error("没有任何菜单", tmpMenuList);
         }
@@ -117,10 +121,10 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements IM
      */
     @Override
     public Result getMenuListAll() {
+        List<Menu> tmpMenuList = new ArrayList<>();
         LambdaQueryWrapper<Menu> menuLambdaQueryWrapper = new LambdaQueryWrapper<>();
         menuLambdaQueryWrapper.orderBy(true, true, Menu::getLevel);
         List<Menu> menuList = menuMapper.selectList(menuLambdaQueryWrapper);
-        List<Menu> tmpMenuList = new ArrayList<>();
         if (menuList.size() == 0) {
             return Result.error("没有任何菜单", tmpMenuList);
         }
@@ -238,28 +242,28 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements IM
         if (CheckUtils.isObjectEmpty(newMenu)) {
             return Result.error("查询失败，未找到");
         }
-        int num = 0 ;
-        if(newMenu.getType().equals(1)){
+        int num = 0;
+        if (newMenu.getType().equals(1)) {
             //目录
             LambdaQueryWrapper<Menu> wrapper = new LambdaQueryWrapper<>();
-            wrapper.eq(Menu::getParentId,newMenu.getId());
+            wrapper.eq(Menu::getParentId, newMenu.getId());
             List<Menu> menus = menuMapper.selectList(wrapper);
             Boolean has = false;
             for (Menu menu1 : menus) {
-                if(menu1.getType().equals(1)){
+                if (menu1.getType().equals(1)) {
                     has = true;
                     break;
                 }
             }
-            if(has){
+            if (has) {
                 //还有子目录
                 return Result.error("请先删除该目录下的子目录");
-            }else{
+            } else {
                 //没有子目录
                 num = menuMapper.delete(wrapper);
                 num = num + menuMapper.deleteById(menu.getId());
             }
-        }else{
+        } else {
             //菜单
             num = menuMapper.deleteById(menu.getId());
         }

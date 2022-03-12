@@ -2,9 +2,12 @@ package cn.myauthx.api.main.entity;
 
 import cn.myauthx.api.base.po.baseEntity;
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
+import java.util.List;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -47,5 +50,13 @@ public class Role extends baseEntity {
      */
     private Integer discount;
 
+    /**
+     * 所属软件名称
+     */
+    @TableField(exist = false)
+    private String fromSoftName;
+
+    @TableField(exist = false)
+    private List<String> meunList;
 
 }
