@@ -9,14 +9,12 @@ import cn.myauthx.api.util.CheckUtils;
 import cn.myauthx.api.util.MyUtils;
 import cn.myauthx.api.util.RedisUtil;
 import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -37,24 +35,96 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements IM
     private RedisUtil redisUtil;
 
     /**
-     * 获取菜单列表
+     * 获取权限菜单，treeListMap版
+     *
+     * @param admin
+     * @return
+     */
+    @Override
+    public Result getMenuListEx(Admin admin) {
+        Menu menu = new Menu();
+        menu.setParentId("0");
+        Role role = roleMapper.selectById(admin.getRole());
+        JSONArray jsonArray = JSONArray.parseArray(role.getMeunIds());
+        List<String> list = (List<String>) JSONArray.toJavaObject(jsonArray, List.class);
+        menu.setIds(list);
+        List<Menu> menus = menuMapper.treeList(menu);
+        return Result.ok(menus);
+    }
+
+    /**
+     * 获取菜单列表，全部，treeListMap版
+     *
+     * @return
+     */
+    @Override
+    public Result getMenuListExAll() {
+        Menu menu = new Menu();
+        menu.setParentId("0");
+        List<Menu> menus = menuMapper.treeList(menu);
+        return Result.ok(menus);
+    }
+
+    /**
+     * 获取权限菜单，算法版
      *
      * @param admin
      * @return
      */
     @Override
     public Result getMenuList(Admin admin) {
-        Role role = roleMapper.selectById(admin.getRole());
-        JSONArray jsonArray = JSONArray.parseArray(role.getMeunIds());
-        LambdaQueryWrapper<Menu> menuLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        if (role.getFromSoftId().equals(0)) {
-            menuLambdaQueryWrapper.orderBy(true, true, Menu::getLevel);
-        } else {
-            menuLambdaQueryWrapper.in(Menu::getId, jsonArray);
-            menuLambdaQueryWrapper.orderBy(true, true, Menu::getLevel);
-        }
-        List<Menu> menuList = menuMapper.selectList(menuLambdaQueryWrapper);
         List<Menu> tmpMenuList = new ArrayList<>();
+        Role role = roleMapper.selectById(admin.getRole());
+        if (CheckUtils.isObjectEmpty(role.getMeunIds())) {
+            return Result.error("没有任何菜单", tmpMenuList);
+        }
+        JSONArray jsonArray = JSONArray.parseArray(role.getMeunIds());
+        if (jsonArray.size() == 0) {
+            return Result.error("没有任何菜单", tmpMenuList);
+        }
+        LambdaQueryWrapper<Menu> menuLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        menuLambdaQueryWrapper.in(Menu::getId, jsonArray);
+        menuLambdaQueryWrapper.orderBy(true, true, Menu::getLevel);
+        List<Menu> menuList = menuMapper.selectList(menuLambdaQueryWrapper);
+        if (menuList.size() == 0) {
+            return Result.error("没有任何菜单", tmpMenuList);
+        }
+        //最深的层次数
+        Integer maxLevel = menuList.get(menuList.size() - 1).getLevel();
+        //从最里层开始循环
+        for (Integer i = maxLevel; i > 0; i--) {
+            List<Menu> menuListByLevel = getMenuListByLevel(menuList, i);
+            if (i.equals(maxLevel)) {
+                tmpMenuList = menuListByLevel;
+            } else {
+                //外循环父节点
+                for (Menu menu : menuListByLevel) {
+                    List<Menu> children = new ArrayList<>();
+                    //内循环子节点
+                    for (Menu tmpMenu : tmpMenuList) {
+                        if (menu.getId().equals(tmpMenu.getParentId())) {
+                            children.add(tmpMenu);
+                        }
+                    }
+                    menu.setChildren(children);
+                }
+                tmpMenuList = menuListByLevel;
+            }
+        }
+        return Result.ok("获取成功", tmpMenuList);
+    }
+
+    /**
+     * 获取菜单列表，全部，算法版
+     *
+     * @return
+     */
+    @Override
+    public Result getMenuListAll() {
+        List<Menu> tmpMenuList = new ArrayList<>();
+        LambdaQueryWrapper<Menu> menuLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        menuLambdaQueryWrapper.orderBy(true, true, Menu::getLevel);
+        List<Menu> menuList = menuMapper.selectList(menuLambdaQueryWrapper);
         if (menuList.size() == 0) {
             return Result.error("没有任何菜单", tmpMenuList);
         }
@@ -168,10 +238,39 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements IM
      */
     @Override
     public Result delMenu(Menu menu) {
-        int num = menuMapper.deleteById(menu.getId());
+        Menu newMenu = menuMapper.selectById(menu.getId());
+        if (CheckUtils.isObjectEmpty(newMenu)) {
+            return Result.error("查询失败，未找到");
+        }
+        int num = 0;
+        if (newMenu.getType().equals(1)) {
+            //目录
+            LambdaQueryWrapper<Menu> wrapper = new LambdaQueryWrapper<>();
+            wrapper.eq(Menu::getParentId, newMenu.getId());
+            List<Menu> menus = menuMapper.selectList(wrapper);
+            Boolean has = false;
+            for (Menu menu1 : menus) {
+                if (menu1.getType().equals(1)) {
+                    has = true;
+                    break;
+                }
+            }
+            if (has) {
+                //还有子目录
+                return Result.error("请先删除该目录下的子目录");
+            } else {
+                //没有子目录
+                num = menuMapper.delete(wrapper);
+                num = num + menuMapper.deleteById(menu.getId());
+            }
+        } else {
+            //菜单
+            num = menuMapper.deleteById(menu.getId());
+        }
         if (num <= 0) {
             return Result.error("删除失败");
         }
         return Result.ok("删除成功");
+
     }
 }
