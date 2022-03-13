@@ -70,9 +70,6 @@ public class RoleController {
         if (CheckUtils.isObjectEmpty(role)) {
             return Result.error("参数错误");
         }
-        if (CheckUtils.isObjectEmpty(role.getFromSoftId())) {
-            return Result.error("fromSoftId参数不能为空");
-        }
         return roleService.getRoleListEx(role);
     }
 
