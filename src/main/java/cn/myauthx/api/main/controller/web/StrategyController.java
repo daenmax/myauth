@@ -43,7 +43,7 @@ public class StrategyController {
      * @return
      */
     @OpenApi
-    @AdminLogin
+    @AdminLogin(is_admin = true)
     @PostMapping("getStrategyList")
     public Result getStrategyList(HttpServletRequest request) {
         JSONObject jsonObject = (JSONObject) request.getAttribute("json");
@@ -68,7 +68,7 @@ public class StrategyController {
      * @return
      */
     @OpenApi
-    @AdminLogin(is_super_admin = false)
+    @AdminLogin(is_super_role = false)
     @PostMapping("getStrategyListEx")
     public Result getStrategyListEx(HttpServletRequest request) {
         JSONObject jsonObject = (JSONObject) request.getAttribute("json");
@@ -92,7 +92,7 @@ public class StrategyController {
      * @return
      */
     @OpenApi
-    @AdminLogin
+    @AdminLogin(is_admin = true)
     @PostMapping("getStrategy")
     public Result getStrategy(HttpServletRequest request) {
         JSONObject jsonObject = (JSONObject) request.getAttribute("json");
@@ -113,7 +113,7 @@ public class StrategyController {
      * @return
      */
     @OpenApi
-    @AdminLogin
+    @AdminLogin(is_admin = true)
     @PostMapping("updStrategy")
     public Result updStrategy(HttpServletRequest request) {
         JSONObject jsonObject = (JSONObject) request.getAttribute("json");
@@ -133,8 +133,14 @@ public class StrategyController {
         return strategyService.updStrategy(strategy);
     }
 
+    /**
+     * 添加策略
+     *
+     * @param request
+     * @return
+     */
     @OpenApi
-    @AdminLogin
+    @AdminLogin(is_admin = true)
     @PostMapping("addStrategy")
     public Result addStrategy(HttpServletRequest request) {
         JSONObject jsonObject = (JSONObject) request.getAttribute("json");
@@ -158,7 +164,7 @@ public class StrategyController {
      * @return
      */
     @OpenApi
-    @AdminLogin
+    @AdminLogin(is_admin = true)
     @PostMapping("delStrategy")
     public Result delStrategy(HttpServletRequest request) {
         JSONObject jsonObject = (JSONObject) request.getAttribute("json");

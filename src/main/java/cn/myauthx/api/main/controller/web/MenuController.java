@@ -39,7 +39,7 @@ public class MenuController {
      * @return
      */
     @OpenApi
-    @AdminLogin(is_super_admin = false)
+    @AdminLogin(is_super_role = false)
     @GetMapping("getMenuList")
     public Result getMenuList(HttpServletRequest request) {
         JSONObject jsonObject = (JSONObject) request.getAttribute("json");
@@ -54,7 +54,7 @@ public class MenuController {
      * @return
      */
     @OpenApi
-    @AdminLogin()
+    @AdminLogin(is_admin = true)
     @GetMapping("getMenuListAll")
     public Result getMenuListAll(HttpServletRequest request) {
         JSONObject jsonObject = (JSONObject) request.getAttribute("json");
@@ -68,7 +68,7 @@ public class MenuController {
      * @return
      */
     @OpenApi
-    @AdminLogin
+    @AdminLogin(is_admin = true)
     @PostMapping("getMenu")
     public Result getMenu(HttpServletRequest request) {
         JSONObject jsonObject = (JSONObject) request.getAttribute("json");
@@ -89,7 +89,7 @@ public class MenuController {
      * @return
      */
     @OpenApi
-    @AdminLogin
+    @AdminLogin(is_admin = true)
     @PostMapping("updMenu")
     public Result updMenu(HttpServletRequest request) {
         JSONObject jsonObject = (JSONObject) request.getAttribute("json");
@@ -116,7 +116,7 @@ public class MenuController {
      * @return
      */
     @OpenApi
-    @AdminLogin
+    @AdminLogin(is_admin = true)
     @PostMapping("addMenu")
     public Result addMenu(HttpServletRequest request) {
         JSONObject jsonObject = (JSONObject) request.getAttribute("json");
@@ -138,7 +138,7 @@ public class MenuController {
      * @return
      */
     @OpenApi
-    @AdminLogin
+    @AdminLogin(is_admin = true)
     @PostMapping("delMenu")
     public Result delMenu(HttpServletRequest request) {
         JSONObject jsonObject = (JSONObject) request.getAttribute("json");

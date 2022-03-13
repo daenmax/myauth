@@ -94,17 +94,28 @@ public class MyInterceptor implements HandlerInterceptor {
                     return false;
                 }
                 AdminLogin methodAnnotation = ((HandlerMethod) handler).getMethodAnnotation(AdminLogin.class);
-                boolean is_super_admin = methodAnnotation.is_super_admin();
-                if(is_super_admin){
+                boolean is_super_role = methodAnnotation.is_super_role();
+                if(is_super_role){
                     Role role = (Role) redisUtil.get("role:" + admin.getRole());
                     if(role.getFromSoftId() != 0){
                         log.info("接收->" + jsonObject.toJSONString());
-                        String retStr = Result.error(500, "你没有权限").toJsonString();
+                        String retStr = Result.error(500, "你没有权限[1001]").toJsonString();
                         log.info("响应->" + retStr);
                         response.getWriter().write(retStr);
                         return false;
                     }
                 }
+                boolean is_admin = methodAnnotation.is_admin();
+                if(is_admin){
+                    if (!"admin".equals(admin.getUser())) {
+                        log.info("接收->" + jsonObject.toJSONString());
+                        String retStr = Result.error(500, "你没有权限[1002]").toJsonString();
+                        log.info("响应->" + retStr);
+                        response.getWriter().write(retStr);
+                        return false;
+                    }
+                }
+
                 request.setAttribute("obj_admin", admin);
             }
 

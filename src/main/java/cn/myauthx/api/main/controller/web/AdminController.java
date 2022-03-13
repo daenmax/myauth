@@ -106,7 +106,7 @@ public class AdminController {
      * @return
      */
     @OpenApi
-    @AdminLogin
+    @AdminLogin(is_admin = true)
     @PostMapping("getAdminList")
     public Result getAdminList(HttpServletRequest request) {
         JSONObject jsonObject = (JSONObject) request.getAttribute("json");
@@ -118,10 +118,6 @@ public class AdminController {
         if (CheckUtils.isObjectEmpty(myPage.getPageIndex()) || CheckUtils.isObjectEmpty(myPage.getPageSize())) {
             return Result.error("页码和尺寸参数不能为空");
         }
-        Admin myAdmin = (Admin) request.getAttribute("obj_admin");
-        if (!"admin".equals(myAdmin.getUser())) {
-            return Result.error("你没有权限");
-        }
         return adminService.getAdminList(admin, myPage);
     }
 
@@ -132,7 +128,7 @@ public class AdminController {
      * @return
      */
     @OpenApi
-    @AdminLogin
+    @AdminLogin(is_admin = true)
     @PostMapping("updAdmin")
     public Result updAdmin(HttpServletRequest request) {
         JSONObject jsonObject = (JSONObject) request.getAttribute("json");
@@ -146,10 +142,6 @@ public class AdminController {
         admin.setToken(null);
         if (CheckUtils.isObjectEmpty(admin.getId())) {
             return Result.error("id不能为空");
-        }
-        Admin myAdmin = (Admin) request.getAttribute("obj_admin");
-        if (!"admin".equals(myAdmin.getUser())) {
-            return Result.error("你没有权限");
         }
         if ("admin".equals(admin.getUser())) {
             return Result.error("账号不能修改为admin");
@@ -169,7 +161,7 @@ public class AdminController {
      * @return
      */
     @OpenApi
-    @AdminLogin
+    @AdminLogin(is_admin = true)
     @PostMapping("getAdmin")
     public Result getAdmin(HttpServletRequest request) {
         JSONObject jsonObject = (JSONObject) request.getAttribute("json");
@@ -179,10 +171,6 @@ public class AdminController {
         }
         if (CheckUtils.isObjectEmpty(admin.getId())) {
             return Result.error("id不能为空");
-        }
-        Admin myAdmin = (Admin) request.getAttribute("obj_admin");
-        if (!"admin".equals(myAdmin.getUser())) {
-            return Result.error("你没有权限");
         }
         return adminService.getAdmin(admin);
     }
@@ -194,17 +182,13 @@ public class AdminController {
      * @return
      */
     @OpenApi
-    @AdminLogin
+    @AdminLogin(is_admin = true)
     @PostMapping("addAdmin")
     public Result addAdmin(HttpServletRequest request) {
         JSONObject jsonObject = (JSONObject) request.getAttribute("json");
         Admin admin = jsonObject.toJavaObject(Admin.class);
         if (CheckUtils.isObjectEmpty(admin)) {
             return Result.error("参数错误");
-        }
-        Admin myAdmin = (Admin) request.getAttribute("obj_admin");
-        if (!"admin".equals(myAdmin.getUser())) {
-            return Result.error("你没有权限");
         }
         if (CheckUtils.isObjectEmpty(admin.getUser()) || CheckUtils.isObjectEmpty(admin.getPass()) || CheckUtils.isObjectEmpty(admin.getQq())
                 || CheckUtils.isObjectEmpty(admin.getStatus()) || CheckUtils.isObjectEmpty(admin.getRole()) || CheckUtils.isObjectEmpty(admin.getMoney())) {
@@ -227,17 +211,13 @@ public class AdminController {
      * @return
      */
     @OpenApi
-    @AdminLogin
+    @AdminLogin(is_admin = true)
     @PostMapping("delAdmin")
     public Result delAdmin(HttpServletRequest request) {
         JSONObject jsonObject = (JSONObject) request.getAttribute("json");
         Admin admin = jsonObject.toJavaObject(Admin.class);
         if (CheckUtils.isObjectEmpty(admin)) {
             return Result.error("参数错误");
-        }
-        Admin myAdmin = (Admin) request.getAttribute("obj_admin");
-        if (!"admin".equals(myAdmin.getUser())) {
-            return Result.error("你没有权限");
         }
         if (CheckUtils.isObjectEmpty(admin.getId())) {
             return Result.error("id不能为空");
@@ -252,7 +232,7 @@ public class AdminController {
      * @return
      */
     @OpenApi
-    @AdminLogin
+    @AdminLogin(is_admin = true)
     @PostMapping("chaMoney")
     public Result chaMoney(HttpServletRequest request) {
         JSONObject jsonObject = (JSONObject) request.getAttribute("json");
