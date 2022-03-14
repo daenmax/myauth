@@ -347,4 +347,21 @@ public class MyUtils {
         String dateString = formatter.format(date);
         return dateString;
     }
+
+    /**
+     * 获取今日之前指定天数的年月日，例如：2022-03-13
+     * @param value 0=今天，-1=昨天，-2=前天，以此类推
+     * @return
+     */
+    public static String getDateID(Integer value){
+        Date dNow = new Date();
+        Date dBefore = new Date();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(dNow);
+        calendar.add(Calendar.DAY_OF_MONTH, value);
+        dBefore = calendar.getTime();
+        SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
+        String defaultStartDate = sdf.format(dBefore);
+        return defaultStartDate;
+    }
 }

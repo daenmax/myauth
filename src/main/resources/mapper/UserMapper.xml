@@ -1,5 +1,50 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.myauthx.api.main.mapper.UserMapper">
+    <select id="getUserDeviceInfoRanking" resultType="cn.myauthx.api.base.vo.UserDeviceInfoRanking">
+        SELECT device_info, num
+        FROM ( SELECT device_info, count( 0 ) AS num FROM ma_user where from_soft_id = #{fromSoftId} GROUP BY device_info ORDER BY count( 0 ) DESC ) v
+        LIMIT #{pageIndex},#{pageSize}
+    </select>
 
+    <select id="getUserDayNew" resultType="cn.myauthx.api.base.vo.UserDayNew">
+        select day6.number AS d6,
+               day5.number AS d5,
+               day4.number AS d4,
+               day3.number AS
+                              d3,
+               day2.number AS d2,
+               day1.number AS d1,
+               day0.number AS d0
+        from (((((((select count(0) AS
+                               number
+                    from ma_user
+                    where ((ma_user.reg_time &gt;= unix_timestamp((curdate() - interval 0 day))) and
+                           (ma_user.reg_time &lt;= unix_timestamp((curdate() - interval -(1) day))))) day0 join (select count(0) AS
+                                                                                                                            number
+                                                                                                                 from ma_user
+                                                                                                                 where ((ma_user.reg_time &gt;= unix_timestamp((curdate() - interval 1 day))) and
+                                                                                                                        (ma_user.reg_time &lt;= unix_timestamp((curdate() - interval 0 day))))) day1) join (select count(0) AS
+                                                                                                                                                                                                                       number
+                                                                                                                                                                                                            from ma_user
+                                                                                                                                                                                                            where ((ma_user.reg_time &gt;= unix_timestamp((curdate() - interval 2 day))) and
+                                                                                                                                                                                                                   (ma_user.reg_time &lt;= unix_timestamp((curdate() - interval 1 day))))) day2) join (select count(0) AS
+                                                                                                                                                                                                                                                                                                                  number
+                                                                                                                                                                                                                                                                                                       from ma_user
+                                                                                                                                                                                                                                                                                                       where ((ma_user.reg_time &gt;= unix_timestamp((curdate() - interval 3 day))) and
+                                                                                                                                                                                                                                                                                                              (ma_user.reg_time &lt;= unix_timestamp((curdate() - interval 2 day))))) day3) join (select count(0) AS
+                                                                                                                                                                                                                                                                                                                                                                                                             number
+                                                                                                                                                                                                                                                                                                                                                                                                  from ma_user
+                                                                                                                                                                                                                                                                                                                                                                                                  where ((ma_user.reg_time &gt;= unix_timestamp((curdate() - interval 4 day))) and
+                                                                                                                                                                                                                                                                                                                                                                                                         (ma_user.reg_time &lt;= unix_timestamp((curdate() - interval 3 day))))) day4) join (select count(0) AS
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        number
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             from ma_user
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             where ((ma_user.reg_time &gt;= unix_timestamp((curdate() - interval 5 day))) and
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    (ma_user.reg_time &lt;= unix_timestamp((curdate() - interval 4 day))))) day5)
+                 join (select count(0) AS
+                                  number
+                       from ma_user
+                       where ((ma_user.reg_time &gt;= unix_timestamp((curdate() - interval 6 day))) and
+                              (ma_user.reg_time &lt;= unix_timestamp((curdate() - interval 5 day))))) day6)
+    </select>
 </mapper>

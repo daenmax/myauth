@@ -54,4 +54,7 @@ public class Admin extends Model {
 
     @TableField(exist = false)
     private String roleName;
+
+    @TableField(exist = false)
+    private String fromSoftName;
 }

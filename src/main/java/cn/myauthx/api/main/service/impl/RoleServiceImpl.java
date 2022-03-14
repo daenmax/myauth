@@ -91,7 +91,9 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements IR
     @Override
     public Result getRoleListEx(Role role) {
         LambdaQueryWrapper<Role> roleLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        roleLambdaQueryWrapper.eq(Role::getFromSoftId, role.getFromSoftId());
+        if(!CheckUtils.isObjectEmpty(role.getFromSoftId())){
+            roleLambdaQueryWrapper.eq(Role::getFromSoftId, role.getFromSoftId());
+        }
         roleLambdaQueryWrapper.select(Role::getId, Role::getName);
         if (!CheckUtils.isObjectEmpty(role.getName())) {
             roleLambdaQueryWrapper.like(Role::getName, role.getName());

@@ -4,6 +4,7 @@ package cn.myauthx.api.main.controller.web;
 import cn.myauthx.api.base.annotation.AdminLogin;
 import cn.myauthx.api.base.annotation.OpenApi;
 import cn.myauthx.api.base.vo.Result;
+import cn.myauthx.api.main.entity.Admin;
 import cn.myauthx.api.main.entity.MyPage;
 import cn.myauthx.api.main.entity.Role;
 import cn.myauthx.api.main.service.IRoleService;
@@ -39,7 +40,7 @@ public class RoleController {
      * @return
      */
     @OpenApi
-    @AdminLogin
+    @AdminLogin(is_admin = true)
     @PostMapping("getRoleList")
     public Result getRoleList(HttpServletRequest request) {
         JSONObject jsonObject = (JSONObject) request.getAttribute("json");
@@ -61,16 +62,13 @@ public class RoleController {
      * @return
      */
     @OpenApi
-    @AdminLogin
+    @AdminLogin(is_admin = true)
     @PostMapping("getRoleListEx")
     public Result getRoleListEx(HttpServletRequest request) {
         JSONObject jsonObject = (JSONObject) request.getAttribute("json");
         Role role = jsonObject.toJavaObject(Role.class);
         if (CheckUtils.isObjectEmpty(role)) {
             return Result.error("参数错误");
-        }
-        if (CheckUtils.isObjectEmpty(role.getFromSoftId())) {
-            return Result.error("fromSoftId参数不能为空");
         }
         return roleService.getRoleListEx(role);
     }
@@ -82,7 +80,7 @@ public class RoleController {
      * @return
      */
     @OpenApi
-    @AdminLogin
+    @AdminLogin(is_admin = true)
     @PostMapping("getRole")
     public Result getRole(HttpServletRequest request) {
         JSONObject jsonObject = (JSONObject) request.getAttribute("json");
@@ -103,7 +101,7 @@ public class RoleController {
      * @return
      */
     @OpenApi
-    @AdminLogin
+    @AdminLogin(is_admin = true)
     @PostMapping("updRole")
     public Result updRole(HttpServletRequest request) {
         JSONObject jsonObject = (JSONObject) request.getAttribute("json");
@@ -133,7 +131,7 @@ public class RoleController {
      * @return
      */
     @OpenApi
-    @AdminLogin
+    @AdminLogin(is_admin = true)
     @PostMapping("addRole")
     public Result addRole(HttpServletRequest request) {
         JSONObject jsonObject = (JSONObject) request.getAttribute("json");
@@ -160,7 +158,7 @@ public class RoleController {
      * @return
      */
     @OpenApi
-    @AdminLogin
+    @AdminLogin(is_admin = true)
     @PostMapping("delRole")
     public Result delRole(HttpServletRequest request) {
         JSONObject jsonObject = (JSONObject) request.getAttribute("json");

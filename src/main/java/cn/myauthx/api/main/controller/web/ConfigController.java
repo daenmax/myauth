@@ -40,7 +40,7 @@ public class ConfigController {
      * @return
      */
     @OpenApi
-    @AdminLogin
+    @AdminLogin(is_admin = true)
     @PostMapping("editConfig")
     public Result editConfig(HttpServletRequest request) {
         JSONObject jsonObject = (JSONObject) request.getAttribute("json");
@@ -63,7 +63,7 @@ public class ConfigController {
      * @return
      */
     @OpenApi
-    @AdminLogin
+    @AdminLogin(is_admin = true)
     @GetMapping("getConfig")
     public Result getConfig(HttpServletRequest request) {
         return configService.getConfig();
