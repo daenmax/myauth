@@ -17,7 +17,7 @@ spring:
   datasource:
     url: jdbc:mysql://localhost:3306/myauthtest?serverTimezone=Asia/Shanghai
     username: myauthtest
-    password: wTT6JnzfND8srBt8
+    password: myauthtest
     type: com.alibaba.druid.pool.DruidDataSource
     druid:
       #2.连接池配置
@@ -84,4 +84,4 @@ spring:
       # 连接池中的最小空闲连接
       min-idle:
 # 加密token的秘钥，长度必须为16位，不支持中文
-genKey: myauthdaen666888
+genKey: 1234567890123456
