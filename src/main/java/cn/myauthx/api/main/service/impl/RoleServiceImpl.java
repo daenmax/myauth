@@ -3,6 +3,7 @@ package cn.myauthx.api.main.service.impl;
 import cn.myauthx.api.base.vo.Result;
 import cn.myauthx.api.main.entity.*;
 import cn.myauthx.api.main.mapper.AdminMapper;
+import cn.myauthx.api.main.mapper.MenuMapper;
 import cn.myauthx.api.main.mapper.RoleMapper;
 import cn.myauthx.api.main.mapper.SoftMapper;
 import cn.myauthx.api.main.service.IRoleService;
@@ -17,6 +18,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -36,6 +38,8 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements IR
     private SoftMapper softMapper;
     @Resource
     private AdminMapper adminMapper;
+    @Resource
+    private MenuMapper menuMapper;
     @Resource
     private RedisUtil redisUtil;
 
@@ -91,7 +95,7 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements IR
     @Override
     public Result getRoleListEx(Role role) {
         LambdaQueryWrapper<Role> roleLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        if(!CheckUtils.isObjectEmpty(role.getFromSoftId())){
+        if (!CheckUtils.isObjectEmpty(role.getFromSoftId())) {
             roleLambdaQueryWrapper.eq(Role::getFromSoftId, role.getFromSoftId());
         }
         roleLambdaQueryWrapper.select(Role::getId, Role::getName);
@@ -125,6 +129,43 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements IR
     }
 
     /**
+     * 判断List里是否包含一个String，不包含就返回真
+     *
+     * @param menuList
+     * @param parentId
+     * @return
+     */
+    public Boolean isNeedAdd(List<String> menuList, String parentId) {
+        Boolean flag = true;
+        for (String s : menuList) {
+            if (s.equals(parentId)) {
+                flag = false;
+            }
+        }
+        return flag;
+    }
+
+    /**
+     * 遍历获取ParentId
+     *
+     * @param allMenuList
+     * @param id
+     * @return
+     */
+    public String getParId(List<Menu> allMenuList, String id) {
+        Boolean flag = false;
+        for (Menu menu1 : allMenuList) {
+            if (menu1.getId().equals(id)) {
+                if("0".equals(menu1.getParentId()) || CheckUtils.isObjectEmpty(menu1.getParentId())){
+                    return "";
+                }
+                return menu1.getParentId();
+            }
+        }
+        return "";
+    }
+
+    /**
      * 修改角色
      *
      * @param role
@@ -135,6 +176,19 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements IR
         Role newRole = roleMapper.selectById(role.getId());
         if (CheckUtils.isObjectEmpty(newRole)) {
             return Result.error("角色ID错误");
+        }
+        LambdaQueryWrapper<Menu> wrapper = new LambdaQueryWrapper<>();
+        List<Menu> allMenuList = menuMapper.selectList(wrapper);
+        //拷贝一个LIST
+        List<String> menuList = new ArrayList<>();
+        menuList.addAll(role.getMeunList());
+        for (String s : menuList) {
+            String parId = getParId(allMenuList, s);
+            if(!CheckUtils.isObjectEmpty(parId)){
+                if (isNeedAdd(role.getMeunList(), parId)) {
+                    role.getMeunList().add(parId);
+                }
+            }
         }
         if (!CheckUtils.isObjectEmpty(role.getMeunList())) {
             JSONArray jsonArray = new JSONArray();
