@@ -55,7 +55,7 @@ public class CardController {
      */
     @OpenApi
     @GetMapping("exportCard")
-    public void exportCard(String token, String ckey, Integer point, Integer seconds, Integer addTime, Integer letTime, String letUser, Integer status, Integer fromSoftId, Integer fromAdminId,HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public void exportCard(String token, String ckey, Integer point, Integer seconds, Integer addTime, Integer letTime, String letUser, Integer status, Integer fromSoftId, Integer fromAdminId, HttpServletRequest request, HttpServletResponse response) throws IOException {
         if (!adminService.tokenIsOk(token)) {
             return;
         }
@@ -76,7 +76,7 @@ public class CardController {
             return;
         }
         List<Card> cardList = cardService.exportCard(card);
-        ExportXls.exportCard2Xls(request, response, "exportCard",  cardList);
+        ExportXls.exportCard2Xls(request, response, "exportCard", cardList);
         return;
     }
 
@@ -192,7 +192,7 @@ public class CardController {
             card.setPoint(0);
         }
         Admin myAdmin = (Admin) request.getAttribute("obj_admin");
-        return cardService.addCard(prefix, count, card,myAdmin);
+        return cardService.addCard(prefix, count, card, myAdmin);
     }
 
     /**
@@ -247,6 +247,56 @@ public class CardController {
             return Result.error("ids不能为空，多个用英文逗号隔开");
         }
         return cardService.unBanCard(ids);
+    }
+
+    /**
+     * 获取我的卡密
+     *
+     * @param request
+     * @return
+     */
+    @OpenApi
+    @AdminLogin(is_super_role = false)
+    @PostMapping("getMyCardList")
+    public Result getMyCardList(HttpServletRequest request) {
+        JSONObject jsonObject = (JSONObject) request.getAttribute("json");
+        Card card = jsonObject.toJavaObject(Card.class);
+        MyPage myPage = jsonObject.toJavaObject(MyPage.class);
+        Admin admin = (Admin) request.getAttribute("obj_admin");
+        if (CheckUtils.isObjectEmpty(card) || CheckUtils.isObjectEmpty(myPage)) {
+            return Result.error("参数错误");
+        }
+        if (CheckUtils.isObjectEmpty(myPage.getPageIndex()) || CheckUtils.isObjectEmpty(myPage.getPageSize())) {
+            return Result.error("页码和尺寸参数不能为空");
+        }
+        return cardService.getMyCardList(card, myPage, admin);
+    }
+
+    /**
+     * 生成卡密
+     *
+     * @param request
+     * @return
+     */
+    @OpenApi
+    @AdminLogin(is_super_role = false)
+    @PostMapping("addMyCard")
+    public Result addMyCard(HttpServletRequest request) {
+        JSONObject jsonObject = (JSONObject) request.getAttribute("json");
+        String prefix = jsonObject.getString("prefix");
+        Integer count = jsonObject.getInteger("count");
+        Integer strategyId = jsonObject.getInteger("strategyId");
+        if (CheckUtils.isObjectEmpty(count)) {
+            return Result.error("count参数不能为空");
+        }
+        if (count == 0) {
+            return Result.error("生成张数不能为0");
+        }
+        if (strategyId == 0) {
+            return Result.error("策略ID错误");
+        }
+        Admin myAdmin = (Admin) request.getAttribute("obj_admin");
+        return cardService.addMyCard(strategyId, prefix, count, myAdmin);
     }
 
 }

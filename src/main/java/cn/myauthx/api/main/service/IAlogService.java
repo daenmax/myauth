@@ -1,6 +1,7 @@
 package cn.myauthx.api.main.service;
 
 import cn.myauthx.api.base.vo.Result;
+import cn.myauthx.api.main.entity.Admin;
 import cn.myauthx.api.main.entity.Alog;
 import cn.myauthx.api.main.entity.MyPage;
 import cn.myauthx.api.main.entity.Plog;
@@ -8,7 +9,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
  * <p>
- *  服务类
+ * 服务类
  * </p>
  *
  * @author DaenMax
@@ -30,4 +31,14 @@ public interface IAlogService extends IService<Alog> {
      * @return
      */
     Result delAlog(Alog alog);
+
+    /**
+     * 获取我的余额日志
+     *
+     * @param alog
+     * @param myPage
+     * @param admin
+     * @return
+     */
+    Result getMyAlogList(Alog alog, MyPage myPage, Admin admin);
 }

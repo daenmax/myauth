@@ -54,6 +54,7 @@ public class UserController {
         return userService.getUserList(user, myPage);
     }
 
+
     /**
      * 查询用户，根据id
      *
@@ -174,4 +175,26 @@ public class UserController {
         return userService.delUser(ids);
     }
 
+    /**
+     * 获取我的授权
+     *
+     * @param request
+     * @return
+     */
+    @OpenApi
+    @AdminLogin(is_super_role = false)
+    @PostMapping("getMyUserList")
+    public Result getMyUserList(HttpServletRequest request) {
+        JSONObject jsonObject = (JSONObject) request.getAttribute("json");
+        User user = jsonObject.toJavaObject(User.class);
+        MyPage myPage = jsonObject.toJavaObject(MyPage.class);
+        Admin admin = (Admin) request.getAttribute("obj_admin");
+        if (CheckUtils.isObjectEmpty(user) || CheckUtils.isObjectEmpty(myPage)) {
+            return Result.error("参数错误");
+        }
+        if (CheckUtils.isObjectEmpty(myPage.getPageIndex()) || CheckUtils.isObjectEmpty(myPage.getPageSize())) {
+            return Result.error("页码和尺寸参数不能为空");
+        }
+        return userService.getMyUserList(user, myPage, admin);
+    }
 }

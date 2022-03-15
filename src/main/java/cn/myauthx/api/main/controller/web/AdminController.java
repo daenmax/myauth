@@ -9,6 +9,7 @@ import cn.myauthx.api.util.CheckUtils;
 import cn.myauthx.api.util.IpUtil;
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -54,7 +55,7 @@ public class AdminController {
      * @return
      */
     @OpenApi
-    @AdminLogin
+    @AdminLogin(is_super_role = false)
     @PostMapping("checkLogin")
     public Result checkLogin(HttpServletRequest request) {
         return Result.ok("token正常");
@@ -67,7 +68,7 @@ public class AdminController {
      * @return
      */
     @OpenApi
-    @AdminLogin
+    @AdminLogin(is_super_role = false)
     @PostMapping("editPass")
     public Result editPass(HttpServletRequest request) {
         JSONObject jsonObject = (JSONObject) request.getAttribute("json");
@@ -87,7 +88,7 @@ public class AdminController {
      * @return
      */
     @OpenApi
-    @AdminLogin
+    @AdminLogin(is_super_role = false)
     @PostMapping("editQQ")
     public Result editQQ(HttpServletRequest request) {
         JSONObject jsonObject = (JSONObject) request.getAttribute("json");
@@ -248,5 +249,20 @@ public class AdminController {
         }
         Admin myAdmin = (Admin) request.getAttribute("obj_admin");
         return adminService.chaMoney(admin,myAdmin);
+    }
+
+    /**
+     * 获取我的信息
+     *
+     * @param request
+     * @return
+     */
+    @OpenApi
+    @AdminLogin(is_super_role = false)
+    @GetMapping("getMyInfo")
+    public Result getMyInfo(HttpServletRequest request) {
+        JSONObject jsonObject = (JSONObject) request.getAttribute("json");
+        Admin admin = (Admin) request.getAttribute("obj_admin");
+        return adminService.getMyInfo(admin);
     }
 }

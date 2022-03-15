@@ -120,6 +120,12 @@ public class User extends Model {
     private String fromSoftName;
 
     /**
+     * 所属版本名称
+     */
+    @TableField(exist = false)
+    private String fromVerName;
+
+    /**
      * 上级ID
      */
     private Integer fromAdminId;

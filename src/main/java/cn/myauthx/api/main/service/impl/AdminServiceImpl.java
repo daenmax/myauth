@@ -336,4 +336,30 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin> implements
         alogMapper.insert(alog);
         return Result.ok("奖惩成功");
     }
+
+    /**
+     * 获取我的信息
+     *
+     * @param adminC
+     * @return
+     */
+    @Override
+    public Result getMyInfo(Admin adminC) {
+        Admin admin = adminMapper.selectById(adminC.getId());
+        Role role = (Role) redisUtil.get("role:" + admin.getRole());
+        JSONObject jsonObject = new JSONObject(true);
+        jsonObject.put("user", admin.getUser());
+        jsonObject.put("qq", admin.getQq());
+        jsonObject.put("regTime", admin.getRegTime());
+        jsonObject.put("role", admin.getRole());
+        jsonObject.put("roleName", role.getName());
+        jsonObject.put("money", admin.getMoney());
+        if(!CheckUtils.isObjectEmpty(role.getFromSoftId())){
+            Soft obj = (Soft) redisUtil.get("id:soft:" + role.getFromSoftId());
+            if(!CheckUtils.isObjectEmpty(obj)){
+                jsonObject.put("fromSoftName", obj.getName());
+            }
+        }
+        return Result.ok("获取成功", jsonObject);
+    }
 }

@@ -4,13 +4,11 @@ package cn.myauthx.api.main.controller.web;
 import cn.myauthx.api.base.annotation.AdminLogin;
 import cn.myauthx.api.base.annotation.OpenApi;
 import cn.myauthx.api.base.vo.Result;
-import cn.myauthx.api.main.entity.Event;
-import cn.myauthx.api.main.entity.MyPage;
-import cn.myauthx.api.main.entity.Role;
-import cn.myauthx.api.main.entity.Strategy;
+import cn.myauthx.api.main.entity.*;
 import cn.myauthx.api.main.service.IEventService;
 import cn.myauthx.api.main.service.IStrategyService;
 import cn.myauthx.api.util.CheckUtils;
+import cn.myauthx.api.util.RedisUtil;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -35,6 +33,8 @@ import java.util.List;
 public class StrategyController {
     @Resource
     private IStrategyService strategyService;
+    @Resource
+    private RedisUtil redisUtil;
 
     /**
      * 获取策略列表
@@ -76,9 +76,12 @@ public class StrategyController {
         if (CheckUtils.isObjectEmpty(strategy)) {
             return Result.error("参数错误");
         }
-        if (CheckUtils.isObjectEmpty(strategy.getFromSoftId())) {
-            return Result.error("fromSoftId参数不能为空");
+        Admin admin = (Admin) request.getAttribute("obj_admin");
+        Role role = (Role) redisUtil.get("role:" + admin.getRole());
+        if (role.getFromSoftId() == 0) {
+            return Result.error("超级管理员无法使用此接口");
         }
+        strategy.setFromSoftId(role.getFromSoftId());
         if (CheckUtils.isObjectEmpty(strategy.getType())) {
             return Result.error("type参数不能为空");
         }

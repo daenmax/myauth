@@ -724,8 +724,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         }
         IPage<User> msgPage = userMapper.selectPage(page, getQwUser(user));
         for (int i = 0; i < msgPage.getRecords().size(); i++) {
-            Soft obj = (Soft) redisUtil.get("id:soft:" + msgPage.getRecords().get(i).getFromSoftId());
-            msgPage.getRecords().get(i).setFromSoftName(obj.getName());
+            if (!CheckUtils.isObjectEmpty(msgPage.getRecords().get(i).getFromSoftId())) {
+                Soft obj = (Soft) redisUtil.get("id:soft:" + msgPage.getRecords().get(i).getFromSoftId());
+                msgPage.getRecords().get(i).setFromSoftName(obj.getName());
+            }
+            if (!CheckUtils.isObjectEmpty(msgPage.getRecords().get(i).getFromVerId())) {
+                Version obj2 = (Version) redisUtil.get("id:version:" + msgPage.getRecords().get(i).getFromVerId());
+                msgPage.getRecords().get(i).setFromVerName(obj2.getVer());
+            }
         }
         return Result.ok("获取成功", msgPage);
     }
@@ -751,7 +757,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         LambdaQueryWrapper.like(!CheckUtils.isObjectEmpty(user.getDeviceInfo()), User::getDeviceInfo, user.getDeviceInfo());
         LambdaQueryWrapper.like(!CheckUtils.isObjectEmpty(user.getDeviceCode()), User::getDeviceCode, user.getDeviceCode());
         LambdaQueryWrapper.like(!CheckUtils.isObjectEmpty(user.getCkey()), User::getCkey, user.getCkey());
-        LambdaQueryWrapper.like(!CheckUtils.isObjectEmpty(user.getFromAdminId()), User::getFromAdminId, user.getFromAdminId());
+        LambdaQueryWrapper.eq(!CheckUtils.isObjectEmpty(user.getFromAdminId()), User::getFromAdminId, user.getFromAdminId());
         return LambdaQueryWrapper;
     }
 
@@ -835,5 +841,70 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         }
         int okCount = userMapper.deleteBatchIds(strings);
         return Result.ok("成功删除 " + okCount + " 个用户");
+    }
+
+    /**
+     * 获取我的授权
+     *
+     * @param user
+     * @param myPage
+     * @return
+     */
+    @Override
+    public Result getMyUserList(User user, MyPage myPage, Admin admin) {
+        Role role = (Role) redisUtil.get("role:" + admin.getRole());
+        if (role.getFromSoftId() == 0) {
+            return Result.error("超级管理员无法使用此接口");
+        }
+        user.setFromAdminId(admin.getId());
+        user.setFromSoftId(role.getFromSoftId());
+        Page<User> page = new Page<>(myPage.getPageIndex(), myPage.getPageSize(), true);
+        if (!CheckUtils.isObjectEmpty(myPage.getOrders())) {
+            for (int i = 0; i < myPage.getOrders().size(); i++) {
+                myPage.getOrders().get(i).setColumn(MyUtils.camelToUnderline(myPage.getOrders().get(i).getColumn()));
+            }
+            page.setOrders(myPage.getOrders());
+        }
+        IPage<User> msgPage = userMapper.selectPage(page, getQwUserMy(user));
+        for (int i = 0; i < msgPage.getRecords().size(); i++) {
+            if (!CheckUtils.isObjectEmpty(msgPage.getRecords().get(i).getFromSoftId())) {
+                Soft obj = (Soft) redisUtil.get("id:soft:" + msgPage.getRecords().get(i).getFromSoftId());
+                msgPage.getRecords().get(i).setFromSoftName(obj.getName());
+            }
+            if (!CheckUtils.isObjectEmpty(msgPage.getRecords().get(i).getFromVerId())) {
+                Version obj2 = (Version) redisUtil.get("id:version:" + msgPage.getRecords().get(i).getFromVerId());
+                msgPage.getRecords().get(i).setFromVerName(obj2.getVer());
+            }
+            msgPage.getRecords().get(i).setFromVerKey(null);
+            msgPage.getRecords().get(i).setFromSoftKey(null);
+            msgPage.getRecords().get(i).setFromVerId(null);
+            msgPage.getRecords().get(i).setFromSoftId(null);
+            msgPage.getRecords().get(i).setToken(null);
+        }
+        return Result.ok("获取成功", msgPage);
+    }
+
+    /**
+     * 获取查询条件构造器_我的
+     *
+     * @param user
+     * @return
+     */
+    public LambdaQueryWrapper<User> getQwUserMy(User user) {
+        LambdaQueryWrapper<User> LambdaQueryWrapper = new LambdaQueryWrapper<>();
+        LambdaQueryWrapper.like(!CheckUtils.isObjectEmpty(user.getUser()), User::getUser, user.getUser());
+        LambdaQueryWrapper.like(!CheckUtils.isObjectEmpty(user.getName()), User::getName, user.getName());
+        LambdaQueryWrapper.eq(!CheckUtils.isObjectEmpty(user.getPoint()), User::getPoint, user.getPoint());
+        LambdaQueryWrapper.like(!CheckUtils.isObjectEmpty(user.getQq()), User::getQq, user.getQq());
+        LambdaQueryWrapper.like(!CheckUtils.isObjectEmpty(user.getLastIp()), User::getLastIp, user.getLastIp());
+        LambdaQueryWrapper.like(!CheckUtils.isObjectEmpty(user.getLastTime()), User::getLastTime, user.getLastTime());
+        LambdaQueryWrapper.like(!CheckUtils.isObjectEmpty(user.getAuthTime()), User::getAuthTime, user.getAuthTime());
+        LambdaQueryWrapper.like(!CheckUtils.isObjectEmpty(user.getRemark()), User::getRemark, user.getRemark());
+        LambdaQueryWrapper.like(!CheckUtils.isObjectEmpty(user.getDeviceInfo()), User::getDeviceInfo, user.getDeviceInfo());
+        LambdaQueryWrapper.like(!CheckUtils.isObjectEmpty(user.getDeviceCode()), User::getDeviceCode, user.getDeviceCode());
+        LambdaQueryWrapper.like(!CheckUtils.isObjectEmpty(user.getCkey()), User::getCkey, user.getCkey());
+        LambdaQueryWrapper.eq(!CheckUtils.isObjectEmpty(user.getFromAdminId()), User::getFromAdminId, user.getFromAdminId());
+        LambdaQueryWrapper.eq(!CheckUtils.isObjectEmpty(user.getFromSoftId()), User::getFromSoftId, user.getFromSoftId());
+        return LambdaQueryWrapper;
     }
 }

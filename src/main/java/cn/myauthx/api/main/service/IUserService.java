@@ -127,4 +127,14 @@ public interface IUserService extends IService<User> {
      * @return
      */
     Result delUser(String ids);
+
+
+    /**
+     * 获取我的授权
+     *
+     * @param user
+     * @param myPage
+     * @return
+     */
+    Result getMyUserList(User user, MyPage myPage, Admin admin);
 }

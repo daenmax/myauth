@@ -83,4 +83,24 @@ public interface ICardService extends IService<Card> {
      * @return
      */
     Result unBanCard(String ids);
+
+    /**
+     * 获取我的卡密
+     *
+     * @param card
+     * @param myPage
+     * @return
+     */
+    Result getMyCardList(Card card, MyPage myPage, Admin admin);
+
+    /**
+     * 生成我的卡密
+     *
+     * @param strategyId
+     * @param prefix
+     * @param count
+     * @param admin
+     * @return
+     */
+    Result addMyCard(Integer strategyId, String prefix, Integer count, Admin admin);
 }
