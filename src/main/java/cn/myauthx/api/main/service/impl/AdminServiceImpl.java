@@ -163,6 +163,7 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin> implements
      */
     public LambdaQueryWrapper<Admin> getQwAdmin(Admin admin) {
         LambdaQueryWrapper<Admin> LambdaQueryWrapper = new LambdaQueryWrapper<>();
+        LambdaQueryWrapper.eq(!CheckUtils.isObjectEmpty(admin.getId()), Admin::getId, admin.getId());
         LambdaQueryWrapper.like(!CheckUtils.isObjectEmpty(admin.getUser()), Admin::getUser, admin.getUser());
         LambdaQueryWrapper.like(!CheckUtils.isObjectEmpty(admin.getQq()), Admin::getQq, admin.getQq());
         LambdaQueryWrapper.like(!CheckUtils.isObjectEmpty(admin.getRegTime()), Admin::getRegTime, admin.getRegTime());

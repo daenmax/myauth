@@ -94,9 +94,11 @@ public class BanController {
         }
         ban.setAddTime(null);
         ban.setFromSoftId(null);
-        if (CheckUtils.isObjectEmpty(ban.getValue()) && CheckUtils.isObjectEmpty(ban.getToTime())
-                && CheckUtils.isObjectEmpty(ban.getWhy()) && CheckUtils.isObjectEmpty(ban.getType())) {
-            return Result.error("参数不能全部为空");
+        if (CheckUtils.isObjectEmpty(ban.getToTime()) || ban.getToTime() == 0) {
+            ban.setToTime(-1);
+        }
+        if (CheckUtils.isObjectEmpty(ban.getValue()) || CheckUtils.isObjectEmpty(ban.getType())) {
+            return Result.error("参数不全");
         }
         return banService.updBan(ban);
     }
@@ -122,7 +124,7 @@ public class BanController {
         if (CheckUtils.isObjectEmpty(ban.getToTime()) || ban.getToTime() == 0) {
             ban.setToTime(-1);
         }
-        if (CheckUtils.isObjectEmpty(ban.getValue()) || CheckUtils.isObjectEmpty(ban.getWhy()) || CheckUtils.isObjectEmpty(ban.getType())) {
+        if (CheckUtils.isObjectEmpty(ban.getValue()) || CheckUtils.isObjectEmpty(ban.getType())) {
             return Result.error("参数不全");
         }
         return banService.addBan(ban);
