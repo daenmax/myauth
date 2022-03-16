@@ -2,7 +2,8 @@
 
 ### 介绍
     一个简单的授权管理系统，使用了springboot、mybatis-plus、redis、mysql等。
-此仓库为后端代码<br>
+    此仓库为后端代码
+
 ![logo](https://images.gitee.com/uploads/images/2022/0218/215303_dbbda392_5370510.png)
 
 * 我的QQ：[1330166564](https://wpa.qq.com/msgrd?v=3&uin=1330166564&site=qq&menu=yes)
@@ -11,11 +12,9 @@
 
 ### 前端
 - [@TianYe](https://gitee.com/fieldtianye)
-项目地址https://gitee.com/fieldtianye/my-auth-web
+项目地址 https://gitee.com/fieldtianye/my-auth-web
 - [@施瑞贤](https://gitee.com/shiruixian)
-项目地址https://gitee.com/shiruixian/my-auth-vue
-- [@杨灿林](https://gitee.com/yang-canlin)
-项目地址https://gitee.com/yang-canlin/my-auth
+项目地址 https://gitee.com/shiruixian/my-auth-vue
 
 ### 预览
 
