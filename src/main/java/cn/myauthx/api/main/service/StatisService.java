@@ -16,10 +16,18 @@ public interface StatisService {
     /**
      * 获取在线人数
      *
-     * @param soft
+     * @param skey
      * @return
      */
-    Result getOnlineUserCount(Soft soft);
+    Result getOnlineUserCount(String skey);
+
+    /**
+     * 获取用户总数
+     *
+     * @param skey
+     * @return
+     */
+    Result getUserCount(String skey);
 
     /**
      * 获取软件统计

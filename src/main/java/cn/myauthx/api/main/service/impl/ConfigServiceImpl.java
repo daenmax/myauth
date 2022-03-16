@@ -30,6 +30,24 @@ public class ConfigServiceImpl extends ServiceImpl<ConfigMapper, Config> impleme
     private ConfigMapper configMapper;
 
     /**
+     * APIKEY是否正确
+     *
+     * @param skey
+     * @return
+     */
+    @Override
+    public Integer apiKeyIsOk(String skey) {
+        Config config = (Config) redisUtil.get("config");
+        if (CheckUtils.isObjectEmpty(config)) {
+            return -1;
+        }
+        if (CheckUtils.isObjectEmpty(config.getOpenApiKey())) {
+            return -1;
+        }
+        return skey.equals(config.getOpenApiKey())?1:0;
+    }
+
+    /**
      * 获取web信息，redis
      *
      * @return
