@@ -329,8 +329,8 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin> implements
         Alog alog = new Alog();
         alog.setMoney(admin.getMoney());
         alog.setAfterMoney(afterMoney);
-        alog.setAdminId(myAdmin.getId());
-        alog.setData(null);
+        alog.setAdminId(one.getId());
+        alog.setData("操作管理员：" + myAdmin.getUser());
         alog.setType(AlogEnums.ADMIN_MAKE.getDesc());
         alog.setAddTime(Integer.valueOf(MyUtils.getTimeStamp()));
         alogMapper.insert(alog);
