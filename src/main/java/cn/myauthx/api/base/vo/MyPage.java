@@ -1,4 +1,4 @@
-package cn.myauthx.api.main.entity;
+package cn.myauthx.api.base.vo;
 
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import lombok.Data;

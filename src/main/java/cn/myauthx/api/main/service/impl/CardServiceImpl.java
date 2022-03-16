@@ -1,5 +1,6 @@
 package cn.myauthx.api.main.service.impl;
 
+import cn.myauthx.api.base.vo.MyPage;
 import cn.myauthx.api.base.vo.Result;
 import cn.myauthx.api.main.entity.*;
 import cn.myauthx.api.main.enums.CardEnums;
@@ -81,6 +82,8 @@ public class CardServiceImpl extends ServiceImpl<CardMapper, Card> implements IC
             cardList.get(i).setAddTimeName(MyUtils.stamp2Date(String.valueOf(cardList.get(i).getAddTime())));
             if (!CheckUtils.isObjectEmpty(cardList.get(i).getLetTime())) {
                 cardList.get(i).setLetTimeName(MyUtils.stamp2Date(String.valueOf(cardList.get(i).getLetTime())));
+            }else{
+                cardList.get(i).setLetTimeName(null);
             }
         }
         return cardList;

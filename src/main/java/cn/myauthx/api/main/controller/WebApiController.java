@@ -1,10 +1,7 @@
 package cn.myauthx.api.main.controller;
 
-import cn.myauthx.api.base.annotation.AdminLogin;
-import cn.myauthx.api.base.annotation.OpenApi;
+import cn.myauthx.api.base.annotation.NoEncryptNoSign;
 import cn.myauthx.api.base.vo.Result;
-import cn.myauthx.api.main.entity.Admin;
-import cn.myauthx.api.main.service.IAdminService;
 import cn.myauthx.api.main.service.IConfigService;
 import cn.myauthx.api.main.service.IVersionService;
 import cn.myauthx.api.util.CheckUtils;
@@ -17,7 +14,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * 前端web使用的API接口
+ * 公开API，不需要任何鉴权
  *
  * @author DaenMax
  */
@@ -36,7 +33,7 @@ public class WebApiController {
      * @param request
      * @return
      */
-    @OpenApi
+    @NoEncryptNoSign
     @GetMapping("/connect")
     public Result conn(HttpServletRequest request) {
         JSONObject retJson = new JSONObject(true);
@@ -51,12 +48,11 @@ public class WebApiController {
      * @param request
      * @return
      */
-    @OpenApi
+    @NoEncryptNoSign
     @GetMapping("/getWebInfo")
     public Result getWebInfo(HttpServletRequest request) {
         return configService.getWebInfo();
     }
-
 
 
     /**
@@ -65,7 +61,7 @@ public class WebApiController {
      * @param skey
      * @return
      */
-    @OpenApi
+    @NoEncryptNoSign
     @GetMapping("getUpdateLog")
     public Result getUpdateLog(String skey) {
         if (CheckUtils.isObjectEmpty(skey)) {

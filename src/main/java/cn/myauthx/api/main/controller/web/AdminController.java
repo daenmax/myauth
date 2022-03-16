@@ -1,7 +1,8 @@
 package cn.myauthx.api.main.controller.web;
 
 import cn.myauthx.api.base.annotation.AdminLogin;
-import cn.myauthx.api.base.annotation.OpenApi;
+import cn.myauthx.api.base.annotation.NoEncryptNoSign;
+import cn.myauthx.api.base.vo.MyPage;
 import cn.myauthx.api.base.vo.Result;
 import cn.myauthx.api.main.entity.*;
 import cn.myauthx.api.main.service.IAdminService;
@@ -35,7 +36,7 @@ public class AdminController {
      * @param request
      * @return
      */
-    @OpenApi
+    @NoEncryptNoSign
     @PostMapping("login")
     public Result login(HttpServletRequest request) {
         JSONObject jsonObject = (JSONObject) request.getAttribute("json");
@@ -54,7 +55,7 @@ public class AdminController {
      * @param request
      * @return
      */
-    @OpenApi
+    @NoEncryptNoSign
     @AdminLogin(is_super_role = false)
     @PostMapping("checkLogin")
     public Result checkLogin(HttpServletRequest request) {
@@ -67,7 +68,7 @@ public class AdminController {
      * @param request
      * @return
      */
-    @OpenApi
+    @NoEncryptNoSign
     @AdminLogin(is_super_role = false)
     @PostMapping("editPass")
     public Result editPass(HttpServletRequest request) {
@@ -87,7 +88,7 @@ public class AdminController {
      * @param request
      * @return
      */
-    @OpenApi
+    @NoEncryptNoSign
     @AdminLogin(is_super_role = false)
     @PostMapping("editQQ")
     public Result editQQ(HttpServletRequest request) {
@@ -106,7 +107,7 @@ public class AdminController {
      * @param request
      * @return
      */
-    @OpenApi
+    @NoEncryptNoSign
     @AdminLogin(is_admin = true)
     @PostMapping("getAdminList")
     public Result getAdminList(HttpServletRequest request) {
@@ -128,7 +129,7 @@ public class AdminController {
      * @param request
      * @return
      */
-    @OpenApi
+    @NoEncryptNoSign
     @AdminLogin(is_admin = true)
     @PostMapping("updAdmin")
     public Result updAdmin(HttpServletRequest request) {
@@ -161,7 +162,7 @@ public class AdminController {
      * @param request
      * @return
      */
-    @OpenApi
+    @NoEncryptNoSign
     @AdminLogin(is_admin = true)
     @PostMapping("getAdmin")
     public Result getAdmin(HttpServletRequest request) {
@@ -182,7 +183,7 @@ public class AdminController {
      * @param request
      * @return
      */
-    @OpenApi
+    @NoEncryptNoSign
     @AdminLogin(is_admin = true)
     @PostMapping("addAdmin")
     public Result addAdmin(HttpServletRequest request) {
@@ -211,7 +212,7 @@ public class AdminController {
      * @param request
      * @return
      */
-    @OpenApi
+    @NoEncryptNoSign
     @AdminLogin(is_admin = true)
     @PostMapping("delAdmin")
     public Result delAdmin(HttpServletRequest request) {
@@ -232,7 +233,7 @@ public class AdminController {
      * @param request
      * @return
      */
-    @OpenApi
+    @NoEncryptNoSign
     @AdminLogin(is_admin = true)
     @PostMapping("chaMoney")
     public Result chaMoney(HttpServletRequest request) {
@@ -257,7 +258,7 @@ public class AdminController {
      * @param request
      * @return
      */
-    @OpenApi
+    @NoEncryptNoSign
     @AdminLogin(is_super_role = false)
     @GetMapping("getMyInfo")
     public Result getMyInfo(HttpServletRequest request) {

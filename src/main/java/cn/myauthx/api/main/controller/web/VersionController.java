@@ -1,10 +1,10 @@
 package cn.myauthx.api.main.controller.web;
 
 import cn.myauthx.api.base.annotation.AdminLogin;
-import cn.myauthx.api.base.annotation.OpenApi;
+import cn.myauthx.api.base.annotation.NoEncryptNoSign;
 import cn.myauthx.api.base.vo.Result;
 import cn.myauthx.api.main.entity.Msg;
-import cn.myauthx.api.main.entity.MyPage;
+import cn.myauthx.api.base.vo.MyPage;
 import cn.myauthx.api.main.entity.Version;
 import cn.myauthx.api.main.service.IVersionService;
 import cn.myauthx.api.util.CheckUtils;
@@ -35,7 +35,7 @@ public class VersionController {
      * @param request
      * @return
      */
-    @OpenApi
+    @NoEncryptNoSign
     @AdminLogin
     @PostMapping("getVersionList")
     public Result getVersionList(HttpServletRequest request) {
@@ -60,7 +60,7 @@ public class VersionController {
      * @param request
      * @return
      */
-    @OpenApi
+    @NoEncryptNoSign
     @AdminLogin
     @PostMapping("getVersion")
     public Result getVersion(HttpServletRequest request) {
@@ -81,7 +81,7 @@ public class VersionController {
      * @param request
      * @return
      */
-    @OpenApi
+    @NoEncryptNoSign
     @AdminLogin
     @PostMapping("updVersion")
     public Result updVersion(HttpServletRequest request) {
@@ -109,7 +109,7 @@ public class VersionController {
      * @param request
      * @return
      */
-    @OpenApi
+    @NoEncryptNoSign
     @AdminLogin
     @PostMapping("addVersion")
     public Result addVersion(HttpServletRequest request) {
@@ -131,7 +131,7 @@ public class VersionController {
      * @param request
      * @return
      */
-    @OpenApi
+    @NoEncryptNoSign
     @AdminLogin
     @PostMapping("delVersion")
     public Result delVersion(HttpServletRequest request) {
@@ -152,7 +152,7 @@ public class VersionController {
      * @param request
      * @return
      */
-    @OpenApi
+    @NoEncryptNoSign
     @AdminLogin
     @PostMapping("getVersionListEx")
     public Result getVersionListEx(HttpServletRequest request) {
@@ -173,7 +173,7 @@ public class VersionController {
      * @param request
      * @return
      */
-    @OpenApi
+    @NoEncryptNoSign
     @AdminLogin
     @PostMapping("addVersionAndMsg")
     public Result addVersionAndMsg(HttpServletRequest request) {

@@ -1,11 +1,11 @@
 package cn.myauthx.api.main.controller.web;
 
 import cn.myauthx.api.base.annotation.AdminLogin;
-import cn.myauthx.api.base.annotation.OpenApi;
+import cn.myauthx.api.base.annotation.NoEncryptNoSign;
+import cn.myauthx.api.base.vo.MyPage;
 import cn.myauthx.api.base.vo.Result;
 import cn.myauthx.api.main.entity.*;
 import cn.myauthx.api.main.service.IBanService;
-import cn.myauthx.api.main.service.IEventService;
 import cn.myauthx.api.util.CheckUtils;
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
@@ -34,7 +34,7 @@ public class BanController {
      * @param request
      * @return
      */
-    @OpenApi
+    @NoEncryptNoSign
     @AdminLogin
     @PostMapping("getBanList")
     public Result getBanList(HttpServletRequest request) {
@@ -59,7 +59,7 @@ public class BanController {
      * @param request
      * @return
      */
-    @OpenApi
+    @NoEncryptNoSign
     @AdminLogin
     @PostMapping("getBan")
     public Result getBan(HttpServletRequest request) {
@@ -80,7 +80,7 @@ public class BanController {
      * @param request
      * @return
      */
-    @OpenApi
+    @NoEncryptNoSign
     @AdminLogin
     @PostMapping("updBan")
     public Result updBan(HttpServletRequest request) {
@@ -107,7 +107,7 @@ public class BanController {
      * @param request
      * @return
      */
-    @OpenApi
+    @NoEncryptNoSign
     @AdminLogin
     @PostMapping("addBan")
     public Result addBan(HttpServletRequest request) {
@@ -134,7 +134,7 @@ public class BanController {
      * @param request
      * @return
      */
-    @OpenApi
+    @NoEncryptNoSign
     @AdminLogin
     @PostMapping("delBan")
     public Result delBan(HttpServletRequest request) {

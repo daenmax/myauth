@@ -2,14 +2,13 @@ package cn.myauthx.api.main.controller.web;
 
 
 import cn.myauthx.api.base.annotation.AdminLogin;
-import cn.myauthx.api.base.annotation.OpenApi;
+import cn.myauthx.api.base.annotation.NoEncryptNoSign;
+import cn.myauthx.api.base.vo.MyPage;
 import cn.myauthx.api.base.vo.Result;
 import cn.myauthx.api.main.entity.*;
-import cn.myauthx.api.main.service.IEventService;
 import cn.myauthx.api.main.service.IStrategyService;
 import cn.myauthx.api.util.CheckUtils;
 import cn.myauthx.api.util.RedisUtil;
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
 
 /**
  * <p>
@@ -42,7 +40,7 @@ public class StrategyController {
      * @param request
      * @return
      */
-    @OpenApi
+    @NoEncryptNoSign
     @AdminLogin(is_admin = true)
     @PostMapping("getStrategyList")
     public Result getStrategyList(HttpServletRequest request) {
@@ -67,7 +65,7 @@ public class StrategyController {
      * @param request
      * @return
      */
-    @OpenApi
+    @NoEncryptNoSign
     @AdminLogin(is_super_role = false)
     @PostMapping("getStrategyListEx")
     public Result getStrategyListEx(HttpServletRequest request) {
@@ -94,7 +92,7 @@ public class StrategyController {
      * @param request
      * @return
      */
-    @OpenApi
+    @NoEncryptNoSign
     @AdminLogin(is_admin = true)
     @PostMapping("getStrategy")
     public Result getStrategy(HttpServletRequest request) {
@@ -115,7 +113,7 @@ public class StrategyController {
      * @param request
      * @return
      */
-    @OpenApi
+    @NoEncryptNoSign
     @AdminLogin(is_admin = true)
     @PostMapping("updStrategy")
     public Result updStrategy(HttpServletRequest request) {
@@ -142,7 +140,7 @@ public class StrategyController {
      * @param request
      * @return
      */
-    @OpenApi
+    @NoEncryptNoSign
     @AdminLogin(is_admin = true)
     @PostMapping("addStrategy")
     public Result addStrategy(HttpServletRequest request) {
@@ -166,7 +164,7 @@ public class StrategyController {
      * @param request
      * @return
      */
-    @OpenApi
+    @NoEncryptNoSign
     @AdminLogin(is_admin = true)
     @PostMapping("delStrategy")
     public Result delStrategy(HttpServletRequest request) {

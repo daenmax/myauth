@@ -1,12 +1,12 @@
 package cn.myauthx.api.main.service.impl;
 
+import cn.myauthx.api.base.vo.MyPage;
 import cn.myauthx.api.base.vo.Result;
 import cn.myauthx.api.main.entity.*;
 import cn.myauthx.api.main.enums.AdminEnums;
 import cn.myauthx.api.main.enums.AlogEnums;
 import cn.myauthx.api.main.mapper.AdminMapper;
 import cn.myauthx.api.main.mapper.AlogMapper;
-import cn.myauthx.api.main.mapper.PlogMapper;
 import cn.myauthx.api.main.service.IAdminService;
 import cn.myauthx.api.util.CheckUtils;
 import cn.myauthx.api.util.MyUtils;
@@ -117,23 +117,23 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin> implements
      * @return
      */
     @Override
-    public Boolean tokenIsOk(String token) {
+    public Admin tokenIsOk(String token) {
         if (CheckUtils.isObjectEmpty(token)) {
-            return false;
+            return null;
         }
         LambdaQueryWrapper<Admin> adminLambdaQueryWrapper = new LambdaQueryWrapper<>();
         adminLambdaQueryWrapper.eq(Admin::getToken, token);
         Admin admin = adminMapper.selectOne(adminLambdaQueryWrapper);
         if (CheckUtils.isObjectEmpty(admin)) {
-            return false;
+            return null;
         }
         if (admin.getStatus().equals(AdminEnums.STATUS_DISABLE.getCode())) {
-            return false;
+            return null;
         }
         if (admin.getLastTime() + AdminEnums.TOKEN_VALIDITY.getCode() < Integer.parseInt(MyUtils.getTimeStamp())) {
-            return false;
+            return null;
         }
-        return true;
+        return admin;
     }
 
     /**
@@ -329,8 +329,8 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin> implements
         Alog alog = new Alog();
         alog.setMoney(admin.getMoney());
         alog.setAfterMoney(afterMoney);
-        alog.setAdminId(myAdmin.getId());
-        alog.setData(null);
+        alog.setAdminId(one.getId());
+        alog.setData("操作管理员：" + myAdmin.getUser());
         alog.setType(AlogEnums.ADMIN_MAKE.getDesc());
         alog.setAddTime(Integer.valueOf(MyUtils.getTimeStamp()));
         alogMapper.insert(alog);

@@ -9,15 +9,15 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 是否为开放API
+ * 是否不加密不验签
  * @author DaenMax
  */
 
 @AllArgsConstructor
 @Getter
-public enum OpenApiEnums {
-    YES(1,"开放API"),
-    NO(0,"非开放API");
+public enum NoEncryptNoSignEnums {
+    YES(1,"是"),
+    NO(0,"否");
     private Integer code;
     private String desc;
     private static final Map<Integer, String> codeMap;
@@ -27,7 +27,7 @@ public enum OpenApiEnums {
         codeMap = new HashMap<>();
         descMap = new HashMap<>();
         list = new ArrayList<>();
-        for (OpenApiEnums value : OpenApiEnums.values()) {
+        for (NoEncryptNoSignEnums value : NoEncryptNoSignEnums.values()) {
             codeMap.put(value.getCode(), value.getDesc());
             descMap.put(value.getDesc(),value.getCode());
             list.add(value.getCode());

@@ -2,7 +2,7 @@ package cn.myauthx.api.main.service;
 
 import cn.myauthx.api.base.vo.Result;
 import cn.myauthx.api.main.entity.Admin;
-import cn.myauthx.api.main.entity.MyPage;
+import cn.myauthx.api.base.vo.MyPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
@@ -38,7 +38,7 @@ public interface IAdminService extends IService<Admin> {
      * @param token
      * @return
      */
-    Boolean tokenIsOk(String token);
+    Admin tokenIsOk(String token);
 
     /**
      * 修改QQ

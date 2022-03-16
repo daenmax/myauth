@@ -9,9 +9,7 @@ import cn.myauthx.api.main.mapper.UserMapper;
 import cn.myauthx.api.util.*;
 import com.alibaba.fastjson.JSONObject;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -55,11 +53,11 @@ public class MyInterceptor implements HandlerInterceptor {
                 jsonObject = JSONObject.parseObject(reqStr);
             }
             request.setAttribute("json", jsonObject);
-            //判断是否是OpenAPI
-            if (((HandlerMethod) handler).getMethodAnnotation(OpenApi.class) != null) {
-                request.setAttribute("open", OpenApiEnums.YES.getCode());
+            //判断是否是注明了此接口不加密不验签
+            if (((HandlerMethod) handler).getMethodAnnotation(NoEncryptNoSign.class) != null) {
+                request.setAttribute("NoEncryptNoSign", NoEncryptNoSignEnums.YES.getCode());
             } else {
-                request.setAttribute("open", OpenApiEnums.NO.getCode());
+                request.setAttribute("NoEncryptNoSign", NoEncryptNoSignEnums.NO.getCode());
             }
             //@AdminLogin
             if (((HandlerMethod) handler).getMethodAnnotation(AdminLogin.class) != null) {

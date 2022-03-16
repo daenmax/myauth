@@ -1,17 +1,12 @@
 package cn.myauthx.api.main.controller.web;
 
 import cn.myauthx.api.base.annotation.AdminLogin;
-import cn.myauthx.api.base.annotation.OpenApi;
+import cn.myauthx.api.base.annotation.NoEncryptNoSign;
 import cn.myauthx.api.base.vo.Result;
-import cn.myauthx.api.main.entity.Admin;
-import cn.myauthx.api.main.entity.MyPage;
+import cn.myauthx.api.base.vo.MyPage;
 import cn.myauthx.api.main.entity.Soft;
-import cn.myauthx.api.main.service.IAdminService;
-import cn.myauthx.api.main.service.IConfigService;
 import cn.myauthx.api.main.service.StatisService;
 import cn.myauthx.api.util.CheckUtils;
-import cn.myauthx.api.util.IpUtil;
-import cn.myauthx.api.util.RedisUtil;
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.util.Set;
 
 /**
  * 前端web使用的API接口
@@ -41,7 +35,7 @@ public class StatisController {
      * @param request
      * @return
      */
-    @OpenApi
+    @NoEncryptNoSign
     @AdminLogin(is_super_role = false)
     @PostMapping("/getOnlineUserCount")
     public Result getOnlineUserCount(HttpServletRequest request) {
@@ -57,12 +51,12 @@ public class StatisController {
     }
 
     /**
-     * 获取软件统计
+     * 获取软件数据
      *
      * @param request
      * @return
      */
-    @OpenApi
+    @NoEncryptNoSign
     @AdminLogin(is_super_role = false)
     @PostMapping("/getSoftStatisData")
     public Result getSoftStatisData(HttpServletRequest request) {
@@ -83,7 +77,7 @@ public class StatisController {
      * @param request
      * @return
      */
-    @OpenApi
+    @NoEncryptNoSign
     @AdminLogin(is_super_role = false)
     @PostMapping("/getDataRanking")
     public Result getDataRanking(HttpServletRequest request) {
@@ -108,7 +102,7 @@ public class StatisController {
      * @param request
      * @return
      */
-    @OpenApi
+    @NoEncryptNoSign
     @AdminLogin(is_super_role = false)
     @PostMapping("/getUserDeviceInfoRanking")
     public Result getUserDeviceInfoRanking(HttpServletRequest request) {
@@ -133,7 +127,7 @@ public class StatisController {
      * @param request
      * @return
      */
-    @OpenApi
+    @NoEncryptNoSign
     @AdminLogin(is_super_role = false)
     @GetMapping("/getUserDatNew")
     public Result getUserDatNew(HttpServletRequest request) {
@@ -147,7 +141,7 @@ public class StatisController {
      * @param request
      * @return
      */
-    @OpenApi
+    @NoEncryptNoSign
     @AdminLogin(is_super_role = false)
     @GetMapping("/getUserDistribution")
     public Result getUserDistribution(HttpServletRequest request) {
@@ -161,7 +155,7 @@ public class StatisController {
      * @param request
      * @return
      */
-    @OpenApi
+    @NoEncryptNoSign
     @AdminLogin(is_super_role = false)
     @GetMapping("/getCardDistribution")
     public Result getCardDistribution(HttpServletRequest request) {
@@ -175,7 +169,7 @@ public class StatisController {
      * @param request
      * @return
      */
-    @OpenApi
+    @NoEncryptNoSign
     @AdminLogin(is_super_role = false)
     @GetMapping("/getBanTypeCount")
     public Result getBanTypeCount(HttpServletRequest request) {

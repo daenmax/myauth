@@ -1,9 +1,9 @@
 package cn.myauthx.api.main.service.impl;
 
+import cn.myauthx.api.base.vo.MyPage;
 import cn.myauthx.api.base.vo.Result;
 import cn.myauthx.api.main.entity.*;
 import cn.myauthx.api.main.mapper.AlogMapper;
-import cn.myauthx.api.main.mapper.PlogMapper;
 import cn.myauthx.api.main.service.IAlogService;
 import cn.myauthx.api.util.CheckUtils;
 import cn.myauthx.api.util.MyUtils;
