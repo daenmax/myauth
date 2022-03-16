@@ -17,12 +17,13 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 
 /**
  * <p>
- *  服务实现类
+ * 服务实现类
  * </p>
  *
  * @author DaenMax
@@ -248,10 +249,63 @@ public class AcardServiceImpl extends ServiceImpl<AcardMapper, Acard> implements
             acardList.get(i).setAddTimeName(MyUtils.stamp2Date(String.valueOf(acardList.get(i).getAddTime())));
             if (!CheckUtils.isObjectEmpty(acardList.get(i).getLetTime())) {
                 acardList.get(i).setLetTimeName(MyUtils.stamp2Date(String.valueOf(acardList.get(i).getLetTime())));
-            }else{
+            } else {
                 acardList.get(i).setLetTimeName(null);
             }
         }
         return acardList;
+    }
+
+    /**
+     * 使用代理卡密
+     *
+     * @param ckey
+     * @param adminC
+     * @return
+     */
+    @Override
+    public Result letACard(String ckey, Admin adminC) {
+        Role role = (Role) redisUtil.get("role:" + adminC.getRole());
+        if (role.getFromSoftId() == 0) {
+            return Result.error("超级管理员无法使用此接口");
+        }
+        LambdaQueryWrapper<Acard> acardLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        acardLambdaQueryWrapper.eq(Acard::getCkey, ckey);
+        Acard acard = acardMapper.selectOne(acardLambdaQueryWrapper);
+        if (CheckUtils.isObjectEmpty(acard)) {
+            return Result.error("卡密不存在");
+        }
+        if (CardEnums.STATUS_USED.getCode().equals(acard.getStatus())) {
+            return Result.error("卡密已被使用");
+        }
+        if (CardEnums.STATUS_DISABLE.getCode().equals(acard.getStatus())) {
+            return Result.error("卡密已被禁用");
+        }
+        BigDecimal money = new BigDecimal(acard.getMoney());
+        Admin admin = adminMapper.selectById(adminC.getId());
+        BigDecimal myMoney = new BigDecimal(admin.getMoney());
+        myMoney = myMoney.add(money);
+        admin.setMoney(String.valueOf(myMoney));
+
+        acard.setStatus(CardEnums.STATUS_USED.getCode());
+        acard.setLetTime(Integer.valueOf(MyUtils.getTimeStamp()));
+        acard.setLetUser(adminC.getUser());
+        int updNum = acardMapper.updateById(acard);
+        if (updNum == 0) {
+            return Result.error("使用卡密失败[1001]");
+        }
+        int num = adminMapper.updateById(admin);
+        if (num == 0) {
+            return Result.error("使用卡密失败[1002]");
+        }
+        Alog alog = new Alog();
+        alog.setMoney(acard.getMoney());
+        alog.setAfterMoney(String.valueOf(myMoney));
+        alog.setAdminId(admin.getId());
+        alog.setData("使用卡密：" + ckey);
+        alog.setType("使用卡密");
+        alog.setAddTime(Integer.valueOf(MyUtils.getTimeStamp()));
+        alogMapper.insert(alog);
+        return Result.ok("使用卡密成功，余额+" + acard.getMoney());
     }
 }

@@ -26,7 +26,7 @@ import java.util.List;
 
 /**
  * <p>
- *  前端控制器
+ * 前端控制器
  * </p>
  *
  * @author DaenMax
@@ -41,6 +41,7 @@ public class AcardController {
     private IAdminService adminService;
     @Resource
     private RedisUtil redisUtil;
+
     /**
      * 获取卡密列表
      *
@@ -211,9 +212,9 @@ public class AcardController {
      */
     @OpenApi
     @GetMapping("exportACard")
-    public void exportACard(String token, String ckey, String money,  Integer addTime, Integer letTime, String letUser, Integer status,  HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public void exportACard(String token, String ckey, String money, Integer addTime, Integer letTime, String letUser, Integer status, HttpServletRequest request, HttpServletResponse response) throws IOException {
         Admin admin = adminService.tokenIsOk(token);
-        if(CheckUtils.isObjectEmpty(admin)){
+        if (CheckUtils.isObjectEmpty(admin)) {
             return;
         }
         Role role = (Role) redisUtil.get("role:" + admin.getRole());
@@ -233,5 +234,24 @@ public class AcardController {
         List<Acard> acardList = acardService.exportACard(acard);
         ExportXls.exportACard2Xls(request, response, "exportACard", acardList);
         return;
+    }
+
+    /**
+     * 使用代理卡密
+     *
+     * @param request
+     * @return
+     */
+    @OpenApi
+    @AdminLogin(is_super_role = false)
+    @PostMapping("letACard")
+    public Result letACard(HttpServletRequest request) {
+        JSONObject jsonObject = (JSONObject) request.getAttribute("json");
+        String ckey = jsonObject.getString("ckey");
+        if (CheckUtils.isObjectEmpty(ckey)) {
+            return Result.error("ckey参数不能为空");
+        }
+        Admin myAdmin = (Admin) request.getAttribute("obj_admin");
+        return acardService.letACard(ckey, myAdmin);
     }
 }

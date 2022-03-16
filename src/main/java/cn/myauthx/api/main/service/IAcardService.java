@@ -11,7 +11,7 @@ import java.util.List;
 
 /**
  * <p>
- *  服务类
+ * 服务类
  * </p>
  *
  * @author DaenMax
@@ -84,4 +84,13 @@ public interface IAcardService extends IService<Acard> {
      * @return
      */
     List<Acard> exportACard(Acard acard);
+
+    /**
+     * 使用代理卡密
+     *
+     * @param ckey
+     * @param admin
+     * @return
+     */
+    Result letACard(String ckey, Admin admin);
 }
