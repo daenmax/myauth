@@ -1,14 +1,11 @@
 package cn.myauthx.api.main.controller.web;
 
 import cn.myauthx.api.base.annotation.AdminLogin;
-import cn.myauthx.api.base.annotation.OpenApi;
+import cn.myauthx.api.base.annotation.NoEncryptNoSign;
 import cn.myauthx.api.base.vo.Result;
 import cn.myauthx.api.main.entity.Admin;
 import cn.myauthx.api.main.entity.Menu;
-import cn.myauthx.api.main.entity.Msg;
-import cn.myauthx.api.main.entity.MyPage;
 import cn.myauthx.api.main.service.IMenuService;
-import cn.myauthx.api.main.service.IMsgService;
 import cn.myauthx.api.util.CheckUtils;
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
@@ -38,7 +35,7 @@ public class MenuController {
      * @param request
      * @return
      */
-    @OpenApi
+    @NoEncryptNoSign
     @AdminLogin(is_super_role = false)
     @GetMapping("getMenuList")
     public Result getMenuList(HttpServletRequest request) {
@@ -53,7 +50,7 @@ public class MenuController {
      * @param request
      * @return
      */
-    @OpenApi
+    @NoEncryptNoSign
     @AdminLogin(is_admin = true)
     @GetMapping("getMenuListAll")
     public Result getMenuListAll(HttpServletRequest request) {
@@ -67,7 +64,7 @@ public class MenuController {
      * @param request
      * @return
      */
-    @OpenApi
+    @NoEncryptNoSign
     @AdminLogin(is_admin = true)
     @PostMapping("getMenu")
     public Result getMenu(HttpServletRequest request) {
@@ -88,7 +85,7 @@ public class MenuController {
      * @param request
      * @return
      */
-    @OpenApi
+    @NoEncryptNoSign
     @AdminLogin(is_admin = true)
     @PostMapping("updMenu")
     public Result updMenu(HttpServletRequest request) {
@@ -115,7 +112,7 @@ public class MenuController {
      * @param request
      * @return
      */
-    @OpenApi
+    @NoEncryptNoSign
     @AdminLogin(is_admin = true)
     @PostMapping("addMenu")
     public Result addMenu(HttpServletRequest request) {
@@ -137,7 +134,7 @@ public class MenuController {
      * @param request
      * @return
      */
-    @OpenApi
+    @NoEncryptNoSign
     @AdminLogin(is_admin = true)
     @PostMapping("delMenu")
     public Result delMenu(HttpServletRequest request) {

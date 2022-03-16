@@ -1,10 +1,10 @@
 package cn.myauthx.api.main.controller.web;
 
 import cn.myauthx.api.base.annotation.AdminLogin;
-import cn.myauthx.api.base.annotation.OpenApi;
+import cn.myauthx.api.base.annotation.NoEncryptNoSign;
 import cn.myauthx.api.base.vo.Result;
 import cn.myauthx.api.main.entity.Msg;
-import cn.myauthx.api.main.entity.MyPage;
+import cn.myauthx.api.base.vo.MyPage;
 import cn.myauthx.api.main.service.IMsgService;
 import cn.myauthx.api.util.CheckUtils;
 import com.alibaba.fastjson.JSONObject;
@@ -34,7 +34,7 @@ public class MsgController {
      * @param request
      * @return
      */
-    @OpenApi
+    @NoEncryptNoSign
     @AdminLogin
     @PostMapping("getMsgList")
     public Result getMsgList(HttpServletRequest request) {
@@ -59,7 +59,7 @@ public class MsgController {
      * @param request
      * @return
      */
-    @OpenApi
+    @NoEncryptNoSign
     @AdminLogin
     @PostMapping("getMsg")
     public Result getMsg(HttpServletRequest request) {
@@ -80,7 +80,7 @@ public class MsgController {
      * @param request
      * @return
      */
-    @OpenApi
+    @NoEncryptNoSign
     @AdminLogin
     @PostMapping("updMsg")
     public Result updMsg(HttpServletRequest request) {
@@ -106,7 +106,7 @@ public class MsgController {
      * @param request
      * @return
      */
-    @OpenApi
+    @NoEncryptNoSign
     @AdminLogin
     @PostMapping("addMsg")
     public Result addMsg(HttpServletRequest request) {
@@ -128,7 +128,7 @@ public class MsgController {
      * @param request
      * @return
      */
-    @OpenApi
+    @NoEncryptNoSign
     @AdminLogin
     @PostMapping("delMsg")
     public Result delMsg(HttpServletRequest request) {

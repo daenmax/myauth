@@ -1,10 +1,10 @@
 package cn.myauthx.api.main.controller.web;
 
 import cn.myauthx.api.base.annotation.AdminLogin;
-import cn.myauthx.api.base.annotation.OpenApi;
+import cn.myauthx.api.base.annotation.NoEncryptNoSign;
 import cn.myauthx.api.base.vo.Result;
 import cn.myauthx.api.main.entity.Js;
-import cn.myauthx.api.main.entity.MyPage;
+import cn.myauthx.api.base.vo.MyPage;
 import cn.myauthx.api.main.service.IJsService;
 import cn.myauthx.api.util.CheckUtils;
 import com.alibaba.fastjson.JSONObject;
@@ -34,7 +34,7 @@ public class JsController {
      * @param request
      * @return
      */
-    @OpenApi
+    @NoEncryptNoSign
     @AdminLogin
     @PostMapping("getJsList")
     public Result getJsList(HttpServletRequest request) {
@@ -59,7 +59,7 @@ public class JsController {
      * @param request
      * @return
      */
-    @OpenApi
+    @NoEncryptNoSign
     @AdminLogin
     @PostMapping("getJs")
     public Result getJs(HttpServletRequest request) {
@@ -80,7 +80,7 @@ public class JsController {
      * @param request
      * @return
      */
-    @OpenApi
+    @NoEncryptNoSign
     @AdminLogin
     @PostMapping("updJs")
     public Result updJs(HttpServletRequest request) {
@@ -106,7 +106,7 @@ public class JsController {
      * @param request
      * @return
      */
-    @OpenApi
+    @NoEncryptNoSign
     @AdminLogin
     @PostMapping("addJs")
     public Result addJs(HttpServletRequest request) {
@@ -130,7 +130,7 @@ public class JsController {
      * @param request
      * @return
      */
-    @OpenApi
+    @NoEncryptNoSign
     @AdminLogin
     @PostMapping("delJs")
     public Result delJs(HttpServletRequest request) {
@@ -151,7 +151,7 @@ public class JsController {
      * @param request
      * @return
      */
-    @OpenApi
+    @NoEncryptNoSign
     @AdminLogin
     @PostMapping("runJs")
     public Result runJs(HttpServletRequest request) {
@@ -182,7 +182,7 @@ public class JsController {
      * @param request
      * @return
      */
-    @OpenApi
+    @NoEncryptNoSign
     @AdminLogin
     @PostMapping("testJs")
     public Result testJs(HttpServletRequest request) {

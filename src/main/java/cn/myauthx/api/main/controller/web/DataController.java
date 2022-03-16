@@ -1,10 +1,10 @@
 package cn.myauthx.api.main.controller.web;
 
 import cn.myauthx.api.base.annotation.AdminLogin;
-import cn.myauthx.api.base.annotation.OpenApi;
+import cn.myauthx.api.base.annotation.NoEncryptNoSign;
 import cn.myauthx.api.base.vo.Result;
 import cn.myauthx.api.main.entity.Data;
-import cn.myauthx.api.main.entity.MyPage;
+import cn.myauthx.api.base.vo.MyPage;
 import cn.myauthx.api.main.service.IDataService;
 import cn.myauthx.api.util.CheckUtils;
 import com.alibaba.fastjson.JSONObject;
@@ -34,7 +34,7 @@ public class DataController {
      * @param request
      * @return
      */
-    @OpenApi
+    @NoEncryptNoSign
     @AdminLogin
     @PostMapping("getDataList")
     public Result getDataList(HttpServletRequest request) {
@@ -56,7 +56,7 @@ public class DataController {
      * @param request
      * @return
      */
-    @OpenApi
+    @NoEncryptNoSign
     @AdminLogin
     @PostMapping("delData")
     public Result delData(HttpServletRequest request) {

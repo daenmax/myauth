@@ -1,12 +1,12 @@
 package cn.myauthx.api.main.service.impl;
 
+import cn.myauthx.api.base.vo.MyPage;
 import cn.myauthx.api.base.vo.Result;
 import cn.myauthx.api.main.entity.*;
 import cn.myauthx.api.main.enums.AdminEnums;
 import cn.myauthx.api.main.enums.AlogEnums;
 import cn.myauthx.api.main.mapper.AdminMapper;
 import cn.myauthx.api.main.mapper.AlogMapper;
-import cn.myauthx.api.main.mapper.PlogMapper;
 import cn.myauthx.api.main.service.IAdminService;
 import cn.myauthx.api.util.CheckUtils;
 import cn.myauthx.api.util.MyUtils;

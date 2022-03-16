@@ -1,9 +1,9 @@
 package cn.myauthx.api.main.controller.web;
 
 import cn.myauthx.api.base.annotation.AdminLogin;
-import cn.myauthx.api.base.annotation.OpenApi;
+import cn.myauthx.api.base.annotation.NoEncryptNoSign;
 import cn.myauthx.api.base.vo.Result;
-import cn.myauthx.api.main.entity.MyPage;
+import cn.myauthx.api.base.vo.MyPage;
 import cn.myauthx.api.main.entity.Plog;
 import cn.myauthx.api.main.service.IPlogService;
 import cn.myauthx.api.util.CheckUtils;
@@ -34,7 +34,7 @@ public class PlogController {
      * @param request
      * @return
      */
-    @OpenApi
+    @NoEncryptNoSign
     @AdminLogin
     @PostMapping("getPlogList")
     public Result getPlogList(HttpServletRequest request) {
@@ -56,7 +56,7 @@ public class PlogController {
      * @param request
      * @return
      */
-    @OpenApi
+    @NoEncryptNoSign
     @AdminLogin
     @PostMapping("delPlog")
     public Result delPlog(HttpServletRequest request) {

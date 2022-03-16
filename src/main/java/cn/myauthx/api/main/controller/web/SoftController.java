@@ -1,9 +1,9 @@
 package cn.myauthx.api.main.controller.web;
 
 import cn.myauthx.api.base.annotation.AdminLogin;
-import cn.myauthx.api.base.annotation.OpenApi;
+import cn.myauthx.api.base.annotation.NoEncryptNoSign;
 import cn.myauthx.api.base.vo.Result;
-import cn.myauthx.api.main.entity.MyPage;
+import cn.myauthx.api.base.vo.MyPage;
 import cn.myauthx.api.main.entity.Soft;
 import cn.myauthx.api.main.service.ISoftService;
 import cn.myauthx.api.util.CheckUtils;
@@ -34,7 +34,7 @@ public class SoftController {
      * @param request
      * @return
      */
-    @OpenApi
+    @NoEncryptNoSign
     @AdminLogin
     @PostMapping("getSoftList")
     public Result getSoftList(HttpServletRequest request) {
@@ -53,7 +53,7 @@ public class SoftController {
      * @param request
      * @return
      */
-    @OpenApi
+    @NoEncryptNoSign
     @AdminLogin
     @PostMapping("addSoft")
     public Result addSoft(HttpServletRequest request) {
@@ -76,7 +76,7 @@ public class SoftController {
      * @param request
      * @return
      */
-    @OpenApi
+    @NoEncryptNoSign
     @AdminLogin
     @PostMapping("updSoft")
     public Result updSoft(HttpServletRequest request) {
@@ -105,7 +105,7 @@ public class SoftController {
      * @param request
      * @return
      */
-    @OpenApi
+    @NoEncryptNoSign
     @AdminLogin
     @PostMapping("delSoft")
     public Result delSoft(HttpServletRequest request) {
@@ -126,7 +126,7 @@ public class SoftController {
      * @param request
      * @return
      */
-    @OpenApi
+    @NoEncryptNoSign
     @AdminLogin
     @PostMapping("getSoft")
     public Result getSoft(HttpServletRequest request) {
@@ -147,7 +147,7 @@ public class SoftController {
      * @param request
      * @return
      */
-    @OpenApi
+    @NoEncryptNoSign
     @AdminLogin
     @PostMapping("getSoftListEx")
     public Result getSoftListEx(HttpServletRequest request) {

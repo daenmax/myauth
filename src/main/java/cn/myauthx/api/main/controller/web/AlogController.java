@@ -2,14 +2,12 @@ package cn.myauthx.api.main.controller.web;
 
 
 import cn.myauthx.api.base.annotation.AdminLogin;
-import cn.myauthx.api.base.annotation.OpenApi;
+import cn.myauthx.api.base.annotation.NoEncryptNoSign;
 import cn.myauthx.api.base.vo.Result;
 import cn.myauthx.api.main.entity.Admin;
 import cn.myauthx.api.main.entity.Alog;
-import cn.myauthx.api.main.entity.MyPage;
-import cn.myauthx.api.main.entity.Plog;
+import cn.myauthx.api.base.vo.MyPage;
 import cn.myauthx.api.main.service.IAlogService;
-import cn.myauthx.api.main.service.IPlogService;
 import cn.myauthx.api.util.CheckUtils;
 import com.alibaba.fastjson.JSONObject;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -40,7 +38,7 @@ public class AlogController {
      * @param request
      * @return
      */
-    @OpenApi
+    @NoEncryptNoSign
     @AdminLogin(is_admin = true)
     @PostMapping("getAlogList")
     public Result getAlogList(HttpServletRequest request) {
@@ -62,7 +60,7 @@ public class AlogController {
      * @param request
      * @return
      */
-    @OpenApi
+    @NoEncryptNoSign
     @AdminLogin(is_admin = true)
     @PostMapping("delAlog")
     public Result delAlog(HttpServletRequest request) {
@@ -81,7 +79,7 @@ public class AlogController {
      * @param request
      * @return
      */
-    @OpenApi
+    @NoEncryptNoSign
     @AdminLogin(is_super_role = false)
     @PostMapping("getMyAlogList")
     public Result getMyAlogList(HttpServletRequest request) {

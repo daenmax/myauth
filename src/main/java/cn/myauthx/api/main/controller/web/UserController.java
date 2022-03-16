@@ -1,10 +1,10 @@
 package cn.myauthx.api.main.controller.web;
 
 import cn.myauthx.api.base.annotation.AdminLogin;
-import cn.myauthx.api.base.annotation.OpenApi;
+import cn.myauthx.api.base.annotation.NoEncryptNoSign;
 import cn.myauthx.api.base.vo.Result;
 import cn.myauthx.api.main.entity.Admin;
-import cn.myauthx.api.main.entity.MyPage;
+import cn.myauthx.api.base.vo.MyPage;
 import cn.myauthx.api.main.entity.User;
 import cn.myauthx.api.main.service.IUserService;
 import cn.myauthx.api.util.CheckUtils;
@@ -35,7 +35,7 @@ public class UserController {
      * @param request
      * @return
      */
-    @OpenApi
+    @NoEncryptNoSign
     @AdminLogin
     @PostMapping("getUserList")
     public Result getUserList(HttpServletRequest request) {
@@ -61,7 +61,7 @@ public class UserController {
      * @param request
      * @return
      */
-    @OpenApi
+    @NoEncryptNoSign
     @AdminLogin
     @PostMapping("getUser")
     public Result getUser(HttpServletRequest request) {
@@ -82,7 +82,7 @@ public class UserController {
      * @param request
      * @return
      */
-    @OpenApi
+    @NoEncryptNoSign
     @AdminLogin
     @PostMapping("updUser")
     public Result updUser(HttpServletRequest request) {
@@ -123,7 +123,7 @@ public class UserController {
      * @param request
      * @return
      */
-    @OpenApi
+    @NoEncryptNoSign
     @AdminLogin
     @PostMapping("addUser")
     public Result addUser(HttpServletRequest request) {
@@ -163,7 +163,7 @@ public class UserController {
      * @param request
      * @return
      */
-    @OpenApi
+    @NoEncryptNoSign
     @AdminLogin
     @PostMapping("delUser")
     public Result delUser(HttpServletRequest request) {
@@ -181,7 +181,7 @@ public class UserController {
      * @param request
      * @return
      */
-    @OpenApi
+    @NoEncryptNoSign
     @AdminLogin(is_super_role = false)
     @PostMapping("getMyUserList")
     public Result getMyUserList(HttpServletRequest request) {

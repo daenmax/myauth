@@ -2,7 +2,7 @@ package cn.myauthx.api.main.service.impl;
 
 import cn.myauthx.api.base.vo.Result;
 import cn.myauthx.api.main.entity.Msg;
-import cn.myauthx.api.main.entity.MyPage;
+import cn.myauthx.api.base.vo.MyPage;
 import cn.myauthx.api.main.entity.Soft;
 import cn.myauthx.api.main.entity.Version;
 import cn.myauthx.api.main.mapper.MsgMapper;

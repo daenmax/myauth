@@ -1,11 +1,10 @@
 package cn.myauthx.api.main.controller.web;
 
 import cn.myauthx.api.base.annotation.AdminLogin;
-import cn.myauthx.api.base.annotation.OpenApi;
+import cn.myauthx.api.base.annotation.NoEncryptNoSign;
 import cn.myauthx.api.base.vo.Result;
 import cn.myauthx.api.main.entity.Event;
-import cn.myauthx.api.main.entity.Js;
-import cn.myauthx.api.main.entity.MyPage;
+import cn.myauthx.api.base.vo.MyPage;
 import cn.myauthx.api.main.service.IEventService;
 import cn.myauthx.api.util.CheckUtils;
 import com.alibaba.fastjson.JSONObject;
@@ -35,7 +34,7 @@ public class EventController {
      * @param request
      * @return
      */
-    @OpenApi
+    @NoEncryptNoSign
     @AdminLogin
     @PostMapping("getEventList")
     public Result getEventList(HttpServletRequest request) {
@@ -60,7 +59,7 @@ public class EventController {
      * @param request
      * @return
      */
-    @OpenApi
+    @NoEncryptNoSign
     @AdminLogin
     @PostMapping("getEvent")
     public Result getEvent(HttpServletRequest request) {
@@ -81,7 +80,7 @@ public class EventController {
      * @param request
      * @return
      */
-    @OpenApi
+    @NoEncryptNoSign
     @AdminLogin
     @PostMapping("updEvent")
     public Result updEvent(HttpServletRequest request) {
@@ -107,7 +106,7 @@ public class EventController {
      * @param request
      * @return
      */
-    @OpenApi
+    @NoEncryptNoSign
     @AdminLogin
     @PostMapping("addEvent")
     public Result addEvent(HttpServletRequest request) {
@@ -134,7 +133,7 @@ public class EventController {
      * @param request
      * @return
      */
-    @OpenApi
+    @NoEncryptNoSign
     @AdminLogin
     @PostMapping("delEvent")
     public Result delEvent(HttpServletRequest request) {

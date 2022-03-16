@@ -3,7 +3,7 @@ package cn.myauthx.api.base.annotation;
 import java.lang.annotation.*;
 
 /**
- * 开放API，不加密，不验签
+ * 注明此接口，不加密，不验签
  * @author DaenMax
  */
 //定义可以在方法和类上使用此注解
@@ -13,5 +13,5 @@ import java.lang.annotation.*;
 //定义子类可以继承父类中的该注解
 @Inherited
 
-public @interface OpenApi {
+public @interface NoEncryptNoSign {
 }

@@ -1,15 +1,11 @@
 package cn.myauthx.api.main.controller.web;
 
 import cn.myauthx.api.base.annotation.AdminLogin;
-import cn.myauthx.api.base.annotation.OpenApi;
+import cn.myauthx.api.base.annotation.NoEncryptNoSign;
 import cn.myauthx.api.base.vo.Result;
-import cn.myauthx.api.main.entity.Admin;
 import cn.myauthx.api.main.entity.Config;
-import cn.myauthx.api.main.entity.MyPage;
-import cn.myauthx.api.main.service.IAdminService;
 import cn.myauthx.api.main.service.IConfigService;
 import cn.myauthx.api.util.CheckUtils;
-import cn.myauthx.api.util.IpUtil;
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -39,7 +35,7 @@ public class ConfigController {
      * @param request
      * @return
      */
-    @OpenApi
+    @NoEncryptNoSign
     @AdminLogin(is_admin = true)
     @PostMapping("editConfig")
     public Result editConfig(HttpServletRequest request) {
@@ -62,7 +58,7 @@ public class ConfigController {
      * @param request
      * @return
      */
-    @OpenApi
+    @NoEncryptNoSign
     @AdminLogin(is_admin = true)
     @GetMapping("getConfig")
     public Result getConfig(HttpServletRequest request) {

@@ -2,12 +2,12 @@ package cn.myauthx.api.main.controller.web;
 
 
 import cn.myauthx.api.base.annotation.AdminLogin;
-import cn.myauthx.api.base.annotation.OpenApi;
+import cn.myauthx.api.base.annotation.NoEncryptNoSign;
+import cn.myauthx.api.base.vo.MyPage;
 import cn.myauthx.api.base.vo.Result;
 import cn.myauthx.api.main.entity.*;
 import cn.myauthx.api.main.service.IAcardService;
 import cn.myauthx.api.main.service.IAdminService;
-import cn.myauthx.api.main.service.ICardService;
 import cn.myauthx.api.util.CheckUtils;
 import cn.myauthx.api.util.ExportXls;
 import cn.myauthx.api.util.RedisUtil;
@@ -48,7 +48,7 @@ public class AcardController {
      * @param request
      * @return
      */
-    @OpenApi
+    @NoEncryptNoSign
     @AdminLogin(is_admin = true)
     @PostMapping("getACardList")
     public Result getACardList(HttpServletRequest request) {
@@ -70,7 +70,7 @@ public class AcardController {
      * @param request
      * @return
      */
-    @OpenApi
+    @NoEncryptNoSign
     @AdminLogin(is_admin = true)
     @PostMapping("getACard")
     public Result getACard(HttpServletRequest request) {
@@ -91,7 +91,7 @@ public class AcardController {
      * @param request
      * @return
      */
-    @OpenApi
+    @NoEncryptNoSign
     @AdminLogin(is_admin = true)
     @PostMapping("updACard")
     public Result updACard(HttpServletRequest request) {
@@ -119,7 +119,7 @@ public class AcardController {
      * @param request
      * @return
      */
-    @OpenApi
+    @NoEncryptNoSign
     @AdminLogin(is_admin = true)
     @PostMapping("addACard")
     public Result addACard(HttpServletRequest request) {
@@ -149,7 +149,7 @@ public class AcardController {
      * @param request
      * @return
      */
-    @OpenApi
+    @NoEncryptNoSign
     @AdminLogin(is_admin = true)
     @PostMapping("delACard")
     public Result delACard(HttpServletRequest request) {
@@ -167,7 +167,7 @@ public class AcardController {
      * @param request
      * @return
      */
-    @OpenApi
+    @NoEncryptNoSign
     @AdminLogin(is_admin = true)
     @PostMapping("banACard")
     public Result banACard(HttpServletRequest request) {
@@ -185,7 +185,7 @@ public class AcardController {
      * @param request
      * @return
      */
-    @OpenApi
+    @NoEncryptNoSign
     @AdminLogin(is_admin = true)
     @PostMapping("unBanACard")
     public Result unBanACard(HttpServletRequest request) {
@@ -210,7 +210,7 @@ public class AcardController {
      * @param response
      * @throws IOException
      */
-    @OpenApi
+    @NoEncryptNoSign
     @GetMapping("exportACard")
     public void exportACard(String token, String ckey, String money, Integer addTime, Integer letTime, String letUser, Integer status, HttpServletRequest request, HttpServletResponse response) throws IOException {
         Admin admin = adminService.tokenIsOk(token);
@@ -242,7 +242,7 @@ public class AcardController {
      * @param request
      * @return
      */
-    @OpenApi
+    @NoEncryptNoSign
     @AdminLogin(is_super_role = false)
     @PostMapping("letACard")
     public Result letACard(HttpServletRequest request) {

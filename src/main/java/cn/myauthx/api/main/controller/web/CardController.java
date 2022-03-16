@@ -1,11 +1,11 @@
 package cn.myauthx.api.main.controller.web;
 
 import cn.myauthx.api.base.annotation.AdminLogin;
-import cn.myauthx.api.base.annotation.OpenApi;
+import cn.myauthx.api.base.annotation.NoEncryptNoSign;
 import cn.myauthx.api.base.vo.Result;
 import cn.myauthx.api.main.entity.Admin;
 import cn.myauthx.api.main.entity.Card;
-import cn.myauthx.api.main.entity.MyPage;
+import cn.myauthx.api.base.vo.MyPage;
 import cn.myauthx.api.main.service.IAdminService;
 import cn.myauthx.api.main.service.ICardService;
 import cn.myauthx.api.util.CheckUtils;
@@ -53,7 +53,7 @@ public class CardController {
      * @param response
      * @throws IOException
      */
-    @OpenApi
+    @NoEncryptNoSign
     @GetMapping("exportCard")
     public void exportCard(String token, String ckey, Integer point, Integer seconds, Integer addTime, Integer letTime, String letUser, Integer status, Integer fromSoftId, Integer fromAdminId, HttpServletRequest request, HttpServletResponse response) throws IOException {
         Admin admin = adminService.tokenIsOk(token);
@@ -87,7 +87,7 @@ public class CardController {
      * @param request
      * @return
      */
-    @OpenApi
+    @NoEncryptNoSign
     @AdminLogin
     @PostMapping("getCardList")
     public Result getCardList(HttpServletRequest request) {
@@ -112,7 +112,7 @@ public class CardController {
      * @param request
      * @return
      */
-    @OpenApi
+    @NoEncryptNoSign
     @AdminLogin
     @PostMapping("getCard")
     public Result getCard(HttpServletRequest request) {
@@ -133,7 +133,7 @@ public class CardController {
      * @param request
      * @return
      */
-    @OpenApi
+    @NoEncryptNoSign
     @AdminLogin
     @PostMapping("updCard")
     public Result updCard(HttpServletRequest request) {
@@ -163,7 +163,7 @@ public class CardController {
      * @param request
      * @return
      */
-    @OpenApi
+    @NoEncryptNoSign
     @AdminLogin
     @PostMapping("addCard")
     public Result addCard(HttpServletRequest request) {
@@ -202,7 +202,7 @@ public class CardController {
      * @param request
      * @return
      */
-    @OpenApi
+    @NoEncryptNoSign
     @AdminLogin
     @PostMapping("delCard")
     public Result delCard(HttpServletRequest request) {
@@ -220,7 +220,7 @@ public class CardController {
      * @param request
      * @return
      */
-    @OpenApi
+    @NoEncryptNoSign
     @AdminLogin
     @PostMapping("banCard")
     public Result banCard(HttpServletRequest request) {
@@ -238,7 +238,7 @@ public class CardController {
      * @param request
      * @return
      */
-    @OpenApi
+    @NoEncryptNoSign
     @AdminLogin
     @PostMapping("unBanCard")
     public Result unBanCard(HttpServletRequest request) {
@@ -256,7 +256,7 @@ public class CardController {
      * @param request
      * @return
      */
-    @OpenApi
+    @NoEncryptNoSign
     @AdminLogin(is_super_role = false)
     @PostMapping("getMyCardList")
     public Result getMyCardList(HttpServletRequest request) {
@@ -279,7 +279,7 @@ public class CardController {
      * @param request
      * @return
      */
-    @OpenApi
+    @NoEncryptNoSign
     @AdminLogin(is_super_role = false)
     @PostMapping("addMyCard")
     public Result addMyCard(HttpServletRequest request) {
