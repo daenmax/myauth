@@ -41,7 +41,7 @@ public class AlogController {
      * @return
      */
     @OpenApi
-    @AdminLogin
+    @AdminLogin(is_admin = true)
     @PostMapping("getAlogList")
     public Result getAlogList(HttpServletRequest request) {
         JSONObject jsonObject = (JSONObject) request.getAttribute("json");
@@ -63,7 +63,7 @@ public class AlogController {
      * @return
      */
     @OpenApi
-    @AdminLogin
+    @AdminLogin(is_admin = true)
     @PostMapping("delAlog")
     public Result delAlog(HttpServletRequest request) {
         JSONObject jsonObject = (JSONObject) request.getAttribute("json");

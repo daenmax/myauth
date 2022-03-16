@@ -56,7 +56,8 @@ public class CardController {
     @OpenApi
     @GetMapping("exportCard")
     public void exportCard(String token, String ckey, Integer point, Integer seconds, Integer addTime, Integer letTime, String letUser, Integer status, Integer fromSoftId, Integer fromAdminId, HttpServletRequest request, HttpServletResponse response) throws IOException {
-        if (!adminService.tokenIsOk(token)) {
+        Admin admin = adminService.tokenIsOk(token);
+        if(CheckUtils.isObjectEmpty(admin)){
             return;
         }
         Card card = new Card();
@@ -89,7 +90,7 @@ public class CardController {
     @OpenApi
     @AdminLogin
     @PostMapping("getCardList")
-    public Result getMsgList(HttpServletRequest request) {
+    public Result getCardList(HttpServletRequest request) {
         JSONObject jsonObject = (JSONObject) request.getAttribute("json");
         Card card = jsonObject.toJavaObject(Card.class);
         MyPage myPage = jsonObject.toJavaObject(MyPage.class);

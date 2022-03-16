@@ -117,23 +117,23 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin> implements
      * @return
      */
     @Override
-    public Boolean tokenIsOk(String token) {
+    public Admin tokenIsOk(String token) {
         if (CheckUtils.isObjectEmpty(token)) {
-            return false;
+            return null;
         }
         LambdaQueryWrapper<Admin> adminLambdaQueryWrapper = new LambdaQueryWrapper<>();
         adminLambdaQueryWrapper.eq(Admin::getToken, token);
         Admin admin = adminMapper.selectOne(adminLambdaQueryWrapper);
         if (CheckUtils.isObjectEmpty(admin)) {
-            return false;
+            return null;
         }
         if (admin.getStatus().equals(AdminEnums.STATUS_DISABLE.getCode())) {
-            return false;
+            return null;
         }
         if (admin.getLastTime() + AdminEnums.TOKEN_VALIDITY.getCode() < Integer.parseInt(MyUtils.getTimeStamp())) {
-            return false;
+            return null;
         }
-        return true;
+        return admin;
     }
 
     /**
