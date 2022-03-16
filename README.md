@@ -2,7 +2,8 @@
 
 ### 介绍
     一个简单的授权管理系统，使用了springboot、mybatis-plus、redis、mysql等。
-此仓库为后端代码<br>
+    此仓库为后端代码
+
 ![logo](https://images.gitee.com/uploads/images/2022/0218/215303_dbbda392_5370510.png)
 
 * 我的QQ：[1330166564](https://wpa.qq.com/msgrd?v=3&uin=1330166564&site=qq&menu=yes)
@@ -11,11 +12,9 @@
 
 ### 前端
 - [@TianYe](https://gitee.com/fieldtianye)
-项目地址https://gitee.com/fieldtianye/my-auth-web
+项目地址 https://gitee.com/fieldtianye/my-auth-web
 - [@施瑞贤](https://gitee.com/shiruixian)
-项目地址https://gitee.com/shiruixian/my-auth-vue
-- [@杨灿林](https://gitee.com/yang-canlin)
-项目地址https://gitee.com/yang-canlin/my-auth
+项目地址 https://gitee.com/shiruixian/my-auth-vue
 
 ### 预览
 
@@ -46,8 +45,8 @@
 <br>
 [MyAuth 前端 宝塔部署教程](#)
 
-### SDK下载
-[易语言例程和模块](#)
+### 各语言DEMO
+见doc/demo/目录
 
 ### API文档
 在线地址：[https://www.apifox.cn/apidoc/project-646981/](https://www.apifox.cn/apidoc/project-646981/)
@@ -102,9 +101,9 @@
 - [x] 代理我的余额
 
 ##### 开放接口
-- [ ] 获取在线人数
-- [ ] 查询授权
-- [ ] 获取用户总数
+- [x] 获取在线人数
+- [x] 获取用户总数 
+- 目前就这两个，有需要的话，我再加
 
 ##### 其他功能
 - [ ] 钉钉消息推送
@@ -118,4 +117,4 @@
     各位权衡考虑使用哪个
 ![示例](https://images.gitee.com/uploads/images/2022/0301/225502_1788301a_5370510.png)
 #### 感谢
-    我的各位朋友
+    我的各位朋友们

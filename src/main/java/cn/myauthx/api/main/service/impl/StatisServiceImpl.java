@@ -43,14 +43,13 @@ public class StatisServiceImpl implements StatisService {
     /**
      * 获取在线人数
      *
-     * @param soft
+     * @param skey
      * @return
      */
     @Override
-    public Result getOnlineUserCount(Soft soft) {
+    public Result getOnlineUserCount(String skey) {
         LambdaQueryWrapper<Soft> softLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        softLambdaQueryWrapper.eq(!CheckUtils.isObjectEmpty(soft.getId()), Soft::getId, soft.getId());
-        softLambdaQueryWrapper.eq(!CheckUtils.isObjectEmpty(soft.getSkey()), Soft::getSkey, soft.getSkey());
+        softLambdaQueryWrapper.eq(!CheckUtils.isObjectEmpty(skey), Soft::getSkey, skey);
         Soft newSoft = softMapper.selectOne(softLambdaQueryWrapper);
         if (CheckUtils.isObjectEmpty(newSoft)) {
             return Result.error("获取失败，未找到软件");
@@ -59,6 +58,29 @@ public class StatisServiceImpl implements StatisService {
         JSONObject retJson = new JSONObject(true);
         retJson.put("softName", newSoft.getName());
         retJson.put("onlineCount", scan.size());
+        return Result.ok("获取成功", retJson);
+    }
+
+    /**
+     * 获取用户总数
+     *
+     * @param skey
+     * @return
+     */
+    @Override
+    public Result getUserCount(String skey) {
+        LambdaQueryWrapper<Soft> softLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        softLambdaQueryWrapper.eq(!CheckUtils.isObjectEmpty(skey), Soft::getSkey, skey);
+        Soft newSoft = softMapper.selectOne(softLambdaQueryWrapper);
+        if (CheckUtils.isObjectEmpty(newSoft)) {
+            return Result.error("获取失败，未找到软件");
+        }
+        LambdaQueryWrapper<User> userLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        userLambdaQueryWrapper.eq(User::getFromSoftId,newSoft.getId());
+        Long count = userMapper.selectCount(userLambdaQueryWrapper);
+        JSONObject retJson = new JSONObject(true);
+        retJson.put("softName", newSoft.getName());
+        retJson.put("userCount", count);
         return Result.ok("获取成功", retJson);
     }
 

@@ -14,6 +14,14 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface IConfigService extends IService<Config> {
     /**
+     * APIKEY是否正确，一致返回1，不一致返回0，未设置apikey返回-1
+     *
+     * @param skey
+     * @return
+     */
+    Integer apiKeyIsOk(String skey);
+
+    /**
      * 获取web信息，redis
      *
      * @return

@@ -30,27 +30,6 @@ public class StatisController {
     private StatisService statisService;
 
     /**
-     * 获取在线人数
-     *
-     * @param request
-     * @return
-     */
-    @NoEncryptNoSign
-    @AdminLogin(is_super_role = false)
-    @PostMapping("/getOnlineUserCount")
-    public Result getOnlineUserCount(HttpServletRequest request) {
-        JSONObject jsonObject = (JSONObject) request.getAttribute("json");
-        Soft soft = jsonObject.toJavaObject(Soft.class);
-        if (CheckUtils.isObjectEmpty(soft)) {
-            return Result.error("参数错误");
-        }
-        if (CheckUtils.isObjectEmpty(soft.getId()) && CheckUtils.isObjectEmpty(soft.getSkey())) {
-            return Result.error("id和skey不能全部为空");
-        }
-        return statisService.getOnlineUserCount(soft);
-    }
-
-    /**
      * 获取软件数据
      *
      * @param request
