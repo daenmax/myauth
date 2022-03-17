@@ -1,4 +1,4 @@
-<!-- 
+<!--
 MyAuth updateLog
 By Daen
 QQ1330166565
@@ -10,7 +10,7 @@ QQ1330166565
 * QQ 1330166565
 **/
 //服务器地址
-$server_url = "http://myauthtest.daenx.cn/myauth/";
+$server_url = "http://localhost:8080/myauth/";
 //错误跳转地址
 $error_url = "http://mycdn.daenx.cn/error.html";
 $skey = $_GET['skey'];
@@ -32,7 +32,7 @@ function replaceFlag($updLog){
 	return $ret;
 }
 function replaceHr($updLog){
-	return str_replace(array("\r\n","\n","\r"),'<br/>',$updLog); 
+	return str_replace(array("\r\n","\n","\r"),'<br/>',$updLog);
 }
 function redirect($url){
     header("Location: $url");
@@ -56,14 +56,14 @@ function replaceTime($timestamp){
 <body style="padding:20px;max-width:700px;margin:0 auto;">
 <fieldset class="layui-elem-field layui-field-title" style="margin-top: 30px;">
   <legend>๑乛◡乛๑卡在了奇怪的地方</legend>
-</fieldset>      
+</fieldset>
 <center>
 <a href="#"><button type="button" class="layui-btn layui-btn-normal layui-btn-radius"><?=$json['result']['softName']?></button></a><br>
 </center>
 <fieldset class="layui-elem-field layui-field-title" style="margin-top: 30px;">
   <legend>更新日志</legend>
 </fieldset>
-<ul class="layui-timeline">  
+<ul class="layui-timeline">
 <?php
 $huo = '';
 $yuan = '';
@@ -75,7 +75,7 @@ foreach($updlogList as $updlog){
 	echo $updlog['ver'].'&nbsp;&nbsp;'.replaceTime($updlog['upd_time']).'</h3>'.replaceHr(replaceFlag($updlog['upd_log'])).'</div></li>';
 }
 ?>
-</ul>       
+</ul>
 <script src="js/layui.js" charset="utf-8"></script>
 </body>
 </html>
