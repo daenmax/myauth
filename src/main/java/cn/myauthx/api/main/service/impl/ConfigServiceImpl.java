@@ -87,7 +87,7 @@ public class ConfigServiceImpl extends ServiceImpl<ConfigMapper, Config> impleme
             } else {
                 Config selectById = configMapper.selectById(configList.get(0).getId());
                 redisUtil.set("config", selectById);
-                return Result.error("设置修改成功");
+                return Result.ok("设置修改成功");
             }
         }
     }
