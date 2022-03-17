@@ -8,6 +8,8 @@ QQ1330166565
 * 更新日志
 * Daen
 * QQ 1330166565
+*
+* 部署更新日志后，域名 + ?skey=软件KEY 即可
 **/
 //服务器地址
 $server_url = "http://localhost:8080/myauth/";

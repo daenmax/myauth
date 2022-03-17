@@ -118,6 +118,14 @@ https://www.cnblogs.com/daen/p/16019664.html
     - PHP版本可以保证源服务器地址不被泄露
     - JS版本可以部署在各种托管上（只上传index.html即可），不依赖nginx等环境，但是会泄露源服务器地址
     各位权衡考虑使用哪个
-![示例](https://images.gitee.com/uploads/images/2022/0301/225502_1788301a_5370510.png)
+	![示例](https://images.gitee.com/uploads/images/2022/0301/225502_1788301a_5370510.png)
+###### 小贴士
+> 更新内容每行前面加上【新增】【修复】【优化】【其他】【删除】等标签，更新日志页面会自动处理成tag
+
+例如：
+![示例](https://images.gitee.com/uploads/images/2022/0317/235803_7fe34f73_5370510.png)
+效果：
+![示例](https://images.gitee.com/uploads/images/2022/0317/235842_d3407750_5370510.png)
+
 #### 感谢
     我的各位朋友们
