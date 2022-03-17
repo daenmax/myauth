@@ -350,7 +350,7 @@ public class CardServiceImpl extends ServiceImpl<CardMapper, Card> implements IC
             return Result.error("非法行为：跨软件使用策略");
         }
         BigDecimal price = new BigDecimal(strategy.getPrice());
-        BigDecimal allPrice = price.multiply(new BigDecimal(count));
+        BigDecimal allPrice = price.multiply(new BigDecimal(count)).multiply(BigDecimal.valueOf(role.getDiscount())).divide(BigDecimal.valueOf(100));
         Admin admin = adminMapper.selectById(adminC.getId());
         BigDecimal myMoney = new BigDecimal(admin.getMoney());
         if (myMoney.compareTo(allPrice) == -1) {
