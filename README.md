@@ -33,9 +33,10 @@
     1.  克隆仓库到本地
     2.  修改配置：application-dev.yml和application-prod.yml
     3.  启动Redis、MySQL
-    4.  运行MyAuthApplication.java启动类
-    5.  访问测试地址，查看是否正常：http://localhost:8081/myauth/web/connect
-    6.  运行后会检查admin表，如果是首次运行，即没有任何用户，那么会自动添加一个，账号admin，密码123456，该账号拥有最高权限，账号必须为admin不能修改
+    4.  导入doc/myauth.sql到数据库
+    5.  运行MyAuthApplication.java启动类
+    6.  访问测试地址，查看是否正常：http://localhost:8081/myauth/web/connect
+    7.  运行后会检查admin表，如果是首次运行，即没有任何用户，那么会自动添加一个，账号admin，密码123456，该账号拥有最高权限，账号必须为admin不能修改
 #### 2.打包
     1.  修改application.yml里的环境
 ![IDEA打包教程](https://images.gitee.com/uploads/images/2022/0311/191225_bdb8cfee_5370510.png)
