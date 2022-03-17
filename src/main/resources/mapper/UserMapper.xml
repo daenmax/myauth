@@ -7,6 +7,13 @@
         LIMIT #{pageIndex},#{pageSize}
     </select>
 
+    <select id="getUserDeviceInfoRankingCount" resultType="integer">
+        SELECT
+            COUNT( 0 )
+        FROM
+            ( SELECT 0 FROM ( SELECT 0 FROM ma_user WHERE from_soft_id = #{fromSoftId} GROUP BY device_info ) v ) a
+    </select>
+
     <select id="getUserDayNew" resultType="cn.myauthx.api.base.vo.UserDayNew">
         select day6.number AS d6,
                day5.number AS d5,

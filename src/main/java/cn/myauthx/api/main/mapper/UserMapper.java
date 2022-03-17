@@ -24,6 +24,7 @@ public interface UserMapper extends BaseMapper<User> {
      * @return
      */
     List<UserDeviceInfoRanking> getUserDeviceInfoRanking(UserDeviceInfoRanking userDeviceInfoRanking);
+    Integer getUserDeviceInfoRankingCount(UserDeviceInfoRanking userDeviceInfoRanking);
 
     /**
      * 获取近7天每日新增用户数

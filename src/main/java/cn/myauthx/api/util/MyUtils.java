@@ -321,11 +321,12 @@ public class MyUtils {
 
     /**
      * 时间文本转Date
+     *
      * @param strDate yyyy-MM-dd HH:mm:ss
      * @return
      */
     public static Date strToDate(String strDate) {
-        if(!"".equals(strDate)){
+        if (!"".equals(strDate)) {
             SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             ParsePosition pos = new ParsePosition(0);
             Date strtodate = formatter.parse(strDate, pos);
@@ -336,11 +337,12 @@ public class MyUtils {
 
     /**
      * Date转时间文本，例如转成yyyy-MM-dd HH:mm:ss
+     *
      * @param date
      * @return
      */
     public static String dateToStr(Date date) {
-        if(date == null){
+        if (date == null) {
             return "";
         }
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -350,18 +352,31 @@ public class MyUtils {
 
     /**
      * 获取今日之前指定天数的年月日，例如：2022-03-13
+     *
      * @param value 0=今天，-1=昨天，-2=前天，以此类推
      * @return
      */
-    public static String getDateID(Integer value){
+    public static String getDateID(Integer value) {
         Date dNow = new Date();
         Date dBefore = new Date();
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(dNow);
         calendar.add(Calendar.DAY_OF_MONTH, value);
         dBefore = calendar.getTime();
-        SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         String defaultStartDate = sdf.format(dBefore);
         return defaultStartDate;
+    }
+
+    /**
+     * 获取总页数
+     *
+     * @param totalRecord 总数量
+     * @param pageSize    尺寸
+     * @return
+     */
+    public static Integer getPageNum(Integer totalRecord, Integer pageSize) {
+        int totalPageNum = (totalRecord + pageSize - 1) / pageSize;
+        return totalPageNum;
     }
 }
