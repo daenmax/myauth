@@ -217,9 +217,11 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements IR
      */
     @Override
     public Result addRole(Role role) {
-        Soft soft = softMapper.selectById(role.getFromSoftId());
-        if (CheckUtils.isObjectEmpty(soft)) {
-            return Result.error("fromSoftId错误");
+        if(!role.getFromSoftId().equals(0)){
+            Soft soft = softMapper.selectById(role.getFromSoftId());
+            if (CheckUtils.isObjectEmpty(soft)) {
+                return Result.error("fromSoftId错误");
+            }
         }
         if (!CheckUtils.isObjectEmpty(role.getMeunList())) {
             JSONArray jsonArray = new JSONArray();
