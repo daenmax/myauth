@@ -22,7 +22,7 @@
 
 ### 开发环境
     - Windows10 家庭版 21H1
-    - Java JDK 11
+    - Java JDK 17
     - Maven 3.6.3
     - IDEA 2021.1
     - Redis 3.0.504
@@ -41,9 +41,9 @@
 ![IDEA打包教程](https://images.gitee.com/uploads/images/2022/0311/191225_bdb8cfee_5370510.png)
 
 ### 部署教程
-[MyAuth 后端 宝塔部署教程](https://www.cnblogs.com/daen/p/15997872.html)
+[MyAuth 后端 宝塔面板部署教程](https://www.cnblogs.com/daen/p/15997872.html)
 <br>
-[MyAuth 前端 宝塔部署教程](#)
+[MyAuth 前端 宝塔面板部署教程](https://www.cnblogs.com/daen/p/16015813.html)
 
 ### 各语言DEMO
 见doc/demo/目录

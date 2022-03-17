@@ -9,4 +9,10 @@
         order by count(0) desc
         LIMIT #{pageIndex},#{pageSize}
     </select>
+    <select id="getDataRankingCount" resultType="integer">
+        SELECT
+            COUNT( 0 )
+        FROM
+                ( SELECT type FROM ma_data WHERE from_soft_id = #{fromSoftId} GROUP BY content, type ) d
+    </select>
 </mapper>

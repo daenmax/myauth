@@ -159,6 +159,9 @@ public class StatisServiceImpl implements StatisService {
         JSONObject retJson = new JSONObject(true);
         retJson.put("pageIndex", myPage.getPageIndex());
         retJson.put("pageSize", myPage.getPageSize());
+        Integer count = dataMapper.getDataRankingCount(dataRanking);
+        retJson.put("pageNum", MyUtils.getPageNum(count,myPage.getPageSize()));
+        retJson.put("total", count);
         JSONArray array = new JSONArray();
         for (DataRanking ranking : dataRankingList) {
             JSONObject object = new JSONObject(true);
@@ -196,6 +199,9 @@ public class StatisServiceImpl implements StatisService {
         JSONObject retJson = new JSONObject(true);
         retJson.put("pageIndex", myPage.getPageIndex());
         retJson.put("pageSize", myPage.getPageSize());
+        Integer count = userMapper.getUserDeviceInfoRankingCount(userDeviceInfoRanking);
+        retJson.put("pageNum", MyUtils.getPageNum(count,myPage.getPageSize()));
+        retJson.put("total", count);
         JSONArray array = new JSONArray();
         for (UserDeviceInfoRanking deviceInfoRanking : userDeviceInfoRankingList) {
             JSONObject object = new JSONObject(true);
