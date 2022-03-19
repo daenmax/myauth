@@ -507,6 +507,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
             userA.setLastTime(userR.getLastTime());
         }
         userA.setFromAdminId(card.getFromAdminId());
+        userA.setCkey(card.getCkey());
         int num = userMapper.updateById(userA);
         if (num > 0) {
             if (!CheckUtils.isObjectEmpty(userR)) {
@@ -909,5 +910,89 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         LambdaQueryWrapper.eq(!CheckUtils.isObjectEmpty(user.getFromAdminId()), User::getFromAdminId, user.getFromAdminId());
         LambdaQueryWrapper.eq(!CheckUtils.isObjectEmpty(user.getFromSoftId()), User::getFromSoftId, user.getFromSoftId());
         return LambdaQueryWrapper;
+    }
+
+    /**
+     * 自助修改账号
+     *
+     * @param user
+     * @param newUser
+     * @param pass
+     * @param softId
+     * @param ckey
+     * @return
+     */
+    @Override
+    public Result selfChangeUser(String user, String newUser, String pass, Integer softId, String ckey) {
+        if (user.equals(newUser)) {
+            return Result.error("原账号和新账号不能一样");
+        }
+        LambdaQueryWrapper<User> userLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        userLambdaQueryWrapper.eq(User::getUser, user);
+        userLambdaQueryWrapper.eq(User::getFromSoftId, softId);
+        User selectOne = userMapper.selectOne(userLambdaQueryWrapper);
+        if (CheckUtils.isObjectEmpty(selectOne)) {
+            return Result.error("账号不存在");
+        }
+        if (CheckUtils.isObjectEmpty(selectOne.getPass()) && CheckUtils.isObjectEmpty(selectOne.getCkey())) {
+            //密码和ckey都为空，说明免费软件，不允许修改账号
+            return Result.error("当前账号类型无法修改账号");
+        }
+        if (!CheckUtils.isObjectEmpty(user)) {
+            Ban ban = (Ban) redisUtil.get("ban:" + selectOne.getUser() + "-" + 3 + "-" + softId);
+            if (!CheckUtils.isObjectEmpty(ban)) {
+                if (ban.getToTime() == -1) {
+                    return Result.error("账号已被永久封禁，不能修改");
+                } else {
+                    Integer seconds = ban.getToTime() - Integer.parseInt(MyUtils.getTimeStamp());
+                    if (seconds > 0) {
+                        return Result.error("账号已被封禁，不能修改，剩余解封时间：" + seconds + "秒");
+                    }
+                }
+            }
+        }
+        LambdaQueryWrapper<User> userLambdaQueryWrapper1 = new LambdaQueryWrapper<>();
+        userLambdaQueryWrapper1.eq(User::getUser, newUser);
+        userLambdaQueryWrapper1.eq(User::getFromSoftId, softId);
+        User newUser1 = userMapper.selectOne(userLambdaQueryWrapper1);
+        if (!CheckUtils.isObjectEmpty(newUser1)) {
+            return Result.error("新账号已存在");
+        }
+        if (CheckUtils.isObjectEmpty(selectOne.getPass())) {
+            //密码为空，此时必须提供卡密
+            if (CheckUtils.isObjectEmpty(ckey)) {
+                return Result.error("当前修改需要填写最后一次使用的卡密");
+            }
+            if (CheckUtils.isObjectEmpty(selectOne.getCkey())) {
+                return Result.error("账号信息存在异常，请联系管理员");
+            }
+            if (!selectOne.getCkey().equals(ckey)) {
+                return Result.error("卡密错误");
+            }
+            selectOne.setUser(newUser);
+            int num = userMapper.updateById(selectOne);
+            if (num > 0) {
+                redisUtil.del("user:" + softId + ":" + user);
+                return Result.ok("修改成功");
+            } else {
+                return Result.error("修改失败，请联系管理员");
+            }
+        } else {
+            //密码不为空，那么此时必须提供密码，卡密提供不提供都无所谓
+            if (CheckUtils.isObjectEmpty(pass)) {
+                return Result.error("当前修改需要填写当前账号密码");
+            }
+            if (!selectOne.getPass().equals(pass)) {
+                return Result.error("当前密码错误");
+            }
+            selectOne.setUser(newUser);
+            int num = userMapper.updateById(selectOne);
+            if (num > 0) {
+                redisUtil.del("user:" + softId + ":" + user);
+                return Result.ok("修改成功");
+            } else {
+                return Result.error("修改失败，请联系管理员");
+            }
+        }
     }
 }

@@ -39,6 +39,7 @@ public class WebApiController {
     private IUserService userService;
     @Resource
     private RedisUtil redisUtil;
+
     /**
      * 检查服务状态
      *
@@ -112,11 +113,11 @@ public class WebApiController {
         if (CheckUtils.isObjectEmpty(softC)) {
             return Result.error("参数错误");
         }
-        if(CheckUtils.isObjectEmpty(softC.getSkey())){
+        if (CheckUtils.isObjectEmpty(softC.getSkey())) {
             return Result.error("skey不能为空");
         }
         Soft soft = (Soft) redisUtil.get("soft:" + softC.getSkey());
-        if(CheckUtils.isObjectEmpty(soft)){
+        if (CheckUtils.isObjectEmpty(soft)) {
             return Result.error("skey错误");
         }
         if (soft.getRegister().equals(SoftEnums.REGISTER_DISABLE.getCode())) {
@@ -134,6 +135,40 @@ public class WebApiController {
         String ip = IpUtil.getIpAddr(request);
         user.setLastIp(ip);
         return userService.register(user, soft);
+    }
+
+    @NoEncryptNoSign
+    @PostMapping("selfChangeUser")
+    public Result selfChangeUser(HttpServletRequest request) {
+        JSONObject jsonObject = (JSONObject) request.getAttribute("json");
+        String user = jsonObject.getString("user");
+        String newUser = jsonObject.getString("newUser");
+        String pass = jsonObject.getString("pass");
+        String skey = jsonObject.getString("skey");
+        String ckey = jsonObject.getString("ckey");
+        if (CheckUtils.isObjectEmpty(user)) {
+            return Result.error("原账号不能为空");
+        }
+        if (CheckUtils.isObjectEmpty(newUser)) {
+            return Result.error("新账号不能为空");
+        }
+        if (CheckUtils.isObjectEmpty(skey)) {
+            return Result.error("skey不能为空");
+        }
+        if (CheckUtils.isObjectEmpty(ckey) && CheckUtils.isObjectEmpty(pass)) {
+            return Result.error("当前密码和卡密不能都为空");
+        }
+        Soft soft = (Soft) redisUtil.get("soft:" + skey);
+        if (CheckUtils.isObjectEmpty(soft)) {
+            return Result.error("skey错误");
+        }
+        if (soft.getStatus().equals(SoftEnums.STATUS_FIX.getCode())) {
+            return Result.error("软件维护中");
+        }
+        if (soft.getStatus().equals(SoftEnums.STATUS_DISABLE.getCode())) {
+            return Result.error("软件已停用");
+        }
+        return userService.selfChangeUser(user, newUser, pass, soft.getId(), ckey);
     }
 
 }
