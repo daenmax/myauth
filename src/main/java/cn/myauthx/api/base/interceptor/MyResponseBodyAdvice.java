@@ -18,6 +18,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.util.LinkedHashMap;
 
 /**
  * 全局拦截返回值
@@ -33,6 +34,13 @@ public class MyResponseBodyAdvice implements ResponseBodyAdvice {
 
     @Override
     public Object beforeBodyWrite(Object body, MethodParameter returnType, MediaType selectedContentType, Class selectedConverterType, ServerHttpRequest request, ServerHttpResponse response) {
+        //一般情况下，如果body不是我们返回的Result类型，而是LinkedHashMap类型，说明报错了，例如路由不存在之类的
+        if(body.getClass().equals(LinkedHashMap.class)){
+            LinkedHashMap linkedHashMap = (LinkedHashMap) body;
+            Integer status = (Integer) linkedHashMap.get("status");
+            String msg = (String) linkedHashMap.get("error");
+            return Result.error(status,msg);
+        }
         //形如：/myauth/soft/connect
         String requestPath = request.getURI().getPath();
         HttpServletRequest httpServletRequest = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();

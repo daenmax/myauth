@@ -222,4 +222,21 @@ public class SoftServiceImpl extends ServiceImpl<SoftMapper, Soft> implements IS
         List<Map<String, Object>> maps = softMapper.selectMaps(softLambdaQueryWrapper);
         return Result.ok("获取成功", maps);
     }
+
+    /**
+     * 获取软件列表_全部_简要_自助用
+     *
+     * @param name
+     * @return
+     */
+    @Override
+    public Result getSoftListSimple(String name) {
+        LambdaQueryWrapper<Soft> softLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        softLambdaQueryWrapper.select(Soft::getName, Soft::getSkey);
+        if (!CheckUtils.isObjectEmpty(name)) {
+            softLambdaQueryWrapper.like(Soft::getName, name);
+        }
+        List<Map<String, Object>> maps = softMapper.selectMaps(softLambdaQueryWrapper);
+        return Result.ok("获取成功", maps);
+    }
 }

@@ -76,7 +76,7 @@ public class StatisServiceImpl implements StatisService {
             return Result.error("获取失败，未找到软件");
         }
         LambdaQueryWrapper<User> userLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        userLambdaQueryWrapper.eq(User::getFromSoftId,newSoft.getId());
+        userLambdaQueryWrapper.eq(User::getFromSoftId, newSoft.getId());
         Long count = userMapper.selectCount(userLambdaQueryWrapper);
         JSONObject retJson = new JSONObject(true);
         retJson.put("softName", newSoft.getName());
@@ -153,14 +153,14 @@ public class StatisServiceImpl implements StatisService {
         }
         DataRanking dataRanking = new DataRanking();
         dataRanking.setFromSoftId(newSoft.getId());
-        dataRanking.setPageIndex(myPage.getPageIndex());
+        dataRanking.setPageIndex(myPage.getPageIndex() + (myPage.getPageIndex() - 1) * 10);
         dataRanking.setPageSize(myPage.getPageSize());
         List<DataRanking> dataRankingList = dataMapper.getDataRanking(dataRanking);
         JSONObject retJson = new JSONObject(true);
         retJson.put("pageIndex", myPage.getPageIndex());
         retJson.put("pageSize", myPage.getPageSize());
         Integer count = dataMapper.getDataRankingCount(dataRanking);
-        retJson.put("pageNum", MyUtils.getPageNum(count,myPage.getPageSize()));
+        retJson.put("pageNum", MyUtils.getPageNum(count, myPage.getPageSize()));
         retJson.put("total", count);
         JSONArray array = new JSONArray();
         for (DataRanking ranking : dataRankingList) {
@@ -193,14 +193,14 @@ public class StatisServiceImpl implements StatisService {
         }
         UserDeviceInfoRanking userDeviceInfoRanking = new UserDeviceInfoRanking();
         userDeviceInfoRanking.setFromSoftId(newSoft.getId());
-        userDeviceInfoRanking.setPageIndex(myPage.getPageIndex());
+        userDeviceInfoRanking.setPageIndex(myPage.getPageIndex() + (myPage.getPageIndex() - 1) * 10);
         userDeviceInfoRanking.setPageSize(myPage.getPageSize());
         List<UserDeviceInfoRanking> userDeviceInfoRankingList = userMapper.getUserDeviceInfoRanking(userDeviceInfoRanking);
         JSONObject retJson = new JSONObject(true);
         retJson.put("pageIndex", myPage.getPageIndex());
         retJson.put("pageSize", myPage.getPageSize());
         Integer count = userMapper.getUserDeviceInfoRankingCount(userDeviceInfoRanking);
-        retJson.put("pageNum", MyUtils.getPageNum(count,myPage.getPageSize()));
+        retJson.put("pageNum", MyUtils.getPageNum(count, myPage.getPageSize()));
         retJson.put("total", count);
         JSONArray array = new JSONArray();
         for (UserDeviceInfoRanking deviceInfoRanking : userDeviceInfoRankingList) {

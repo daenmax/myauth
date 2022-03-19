@@ -138,4 +138,34 @@ public interface IUserService extends IService<User> {
      * @return
      */
     Result getMyUserList(User user, MyPage myPage, Admin admin);
+
+    /**
+     * 自助修改账号
+     *
+     * @param user
+     * @param newUser
+     * @param pass
+     * @param softId
+     * @param ckey
+     * @return
+     */
+    Result selfChangeUser(String user, String newUser, String pass, Integer softId, String ckey);
+
+    /**
+     * 查询账号信息
+     *
+     * @param user
+     * @param soft
+     * @return
+     */
+    Result queryUserInfo(String user, Soft soft);
+
+    /**
+     * 查询管理员信息
+     *
+     * @param user
+     * @param soft
+     * @return
+     */
+    Result queryAdminInfo(String user, Soft soft);
 }
