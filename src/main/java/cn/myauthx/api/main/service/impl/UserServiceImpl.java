@@ -104,6 +104,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
                 }
                 User user = new User();
                 user.setUser(userC.getUser());
+                user.setPass(userC.getPass());
                 user.setName(userC.getName());
                 user.setCkey(userC.getCkey());
                 user.setQq(userC.getQq());
@@ -146,6 +147,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
                 }
                 User user = new User();
                 user.setUser(userC.getUser());
+                user.setPass(userC.getPass());
                 user.setName(userC.getName());
                 user.setCkey(userC.getCkey());
                 user.setQq(userC.getQq());
