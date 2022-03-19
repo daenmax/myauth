@@ -3,6 +3,7 @@ package cn.myauthx.api.main.controller;
 import cn.myauthx.api.base.annotation.NoEncryptNoSign;
 import cn.myauthx.api.base.vo.Result;
 import cn.myauthx.api.main.service.IConfigService;
+import cn.myauthx.api.main.service.ISoftService;
 import cn.myauthx.api.main.service.IVersionService;
 import cn.myauthx.api.util.CheckUtils;
 import cn.myauthx.api.util.IpUtil;
@@ -26,6 +27,8 @@ public class WebApiController {
     private IVersionService versionService;
     @Resource
     private IConfigService configService;
+    @Resource
+    private ISoftService softService;
 
     /**
      * 检查服务状态
@@ -68,6 +71,18 @@ public class WebApiController {
             return Result.error("skey不能为空");
         }
         return versionService.getUpdateLog(skey);
+    }
+
+    /**
+     * 获取软件列表_全部_简要_自助用
+     *
+     * @param name
+     * @return
+     */
+    @NoEncryptNoSign
+    @GetMapping("getSoftListSimple")
+    public Result getSoftListSimple(String name) {
+        return softService.getSoftListSimple(name);
     }
 
 }
