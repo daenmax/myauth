@@ -938,16 +938,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
             //密码和ckey都为空，说明免费软件，不允许修改账号
             return Result.error("当前账号类型无法修改账号");
         }
-        if (!CheckUtils.isObjectEmpty(user)) {
-            Ban ban = (Ban) redisUtil.get("ban:" + selectOne.getUser() + "-" + 3 + "-" + softId);
-            if (!CheckUtils.isObjectEmpty(ban)) {
-                if (ban.getToTime() == -1) {
-                    return Result.error("账号已被永久封禁，不能修改");
-                } else {
-                    Integer seconds = ban.getToTime() - Integer.parseInt(MyUtils.getTimeStamp());
-                    if (seconds > 0) {
-                        return Result.error("账号已被封禁，不能修改，剩余解封时间：" + seconds + "秒");
-                    }
+        Ban ban = (Ban) redisUtil.get("ban:" + selectOne.getUser() + "-" + 3 + "-" + softId);
+        if (!CheckUtils.isObjectEmpty(ban)) {
+            if (ban.getToTime() == -1) {
+                return Result.error("账号已被永久封禁，不能修改");
+            } else {
+                Integer seconds = ban.getToTime() - Integer.parseInt(MyUtils.getTimeStamp());
+                if (seconds > 0) {
+                    return Result.error("账号已被封禁，不能修改，剩余解封时间：" + seconds + "秒");
                 }
             }
         }
@@ -994,5 +992,46 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
                 return Result.error("修改失败，请联系管理员");
             }
         }
+    }
+
+    /**
+     * 查询账号信息
+     *
+     * @param user
+     * @param softId
+     * @return
+     */
+    @Override
+    public Result queryUserAuth(String user, Integer softId) {
+        LambdaQueryWrapper<User> userLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        userLambdaQueryWrapper.eq(User::getUser, user);
+        userLambdaQueryWrapper.eq(User::getFromSoftId, softId);
+        User selectOne = userMapper.selectOne(userLambdaQueryWrapper);
+        if (CheckUtils.isObjectEmpty(selectOne)) {
+            return Result.error("账号不存在");
+        }
+        JSONObject jsonObject = new JSONObject(true);
+        jsonObject.put("user", selectOne.getUser());
+        jsonObject.put("name", selectOne.getName());
+        jsonObject.put("qq", selectOne.getQq());
+        jsonObject.put("regTime", selectOne.getRegTime());
+        jsonObject.put("authTime", selectOne.getAuthTime());
+        jsonObject.put("point", selectOne.getPoint());
+        jsonObject.put("remark", selectOne.getRemark());
+        Ban ban = (Ban) redisUtil.get("ban:" + selectOne.getUser() + "-" + 3 + "-" + softId);
+        if (!CheckUtils.isObjectEmpty(ban)) {
+            if (ban.getToTime() == -1) {
+                jsonObject.put("status", "账号已被永久封禁，封禁时间：" + MyUtils.dateToStr(MyUtils.stamp2Date(String.valueOf(ban.getAddTime()))) + "，封禁理由：" + ban.getWhy());
+                return Result.ok("查询成功", jsonObject);
+            } else {
+                Integer seconds = ban.getToTime() - Integer.parseInt(MyUtils.getTimeStamp());
+                if (seconds > 0) {
+                    jsonObject.put("status", "账号已被封禁，封禁时间：" + MyUtils.dateToStr(MyUtils.stamp2Date(String.valueOf(ban.getAddTime()))) + "，剩余解封时间：" + seconds + "秒，封禁理由：" + ban.getWhy());
+                    return Result.ok("查询成功", jsonObject);
+                }
+            }
+        }
+        jsonObject.put("status", "账号正常");
+        return Result.ok("查询成功", jsonObject);
     }
 }

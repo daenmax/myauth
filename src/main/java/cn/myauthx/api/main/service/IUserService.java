@@ -150,4 +150,13 @@ public interface IUserService extends IService<User> {
      * @return
      */
     Result selfChangeUser(String user, String newUser, String pass, Integer softId, String ckey);
+
+    /**
+     * 查询账号信息
+     *
+     * @param user
+     * @param softId
+     * @return
+     */
+    Result queryUserAuth(String user, Integer softId);
 }

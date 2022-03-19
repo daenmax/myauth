@@ -171,4 +171,29 @@ public class WebApiController {
         return userService.selfChangeUser(user, newUser, pass, soft.getId(), ckey);
     }
 
+    /**
+     * 查询账号信息
+     *
+     * @param user
+     * @param skey
+     * @return
+     */
+    @NoEncryptNoSign
+    @GetMapping("queryUserAuth")
+    public Result queryUserAuth(String user, String skey) {
+        if (CheckUtils.isObjectEmpty(user) || CheckUtils.isObjectEmpty(skey)) {
+            return Result.error("参数错误");
+        }
+        Soft soft = (Soft) redisUtil.get("soft:" + skey);
+        if (CheckUtils.isObjectEmpty(soft)) {
+            return Result.error("skey错误");
+        }
+        if (soft.getStatus().equals(SoftEnums.STATUS_FIX.getCode())) {
+            return Result.error("软件维护中");
+        }
+        if (soft.getStatus().equals(SoftEnums.STATUS_DISABLE.getCode())) {
+            return Result.error("软件已停用");
+        }
+        return userService.queryUserAuth(user, soft.getId());
+    }
 }
