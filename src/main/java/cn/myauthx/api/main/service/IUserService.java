@@ -155,8 +155,17 @@ public interface IUserService extends IService<User> {
      * 查询账号信息
      *
      * @param user
-     * @param softId
+     * @param soft
      * @return
      */
-    Result queryUserAuth(String user, Integer softId);
+    Result queryUserInfo(String user, Soft soft);
+
+    /**
+     * 查询管理员信息
+     *
+     * @param user
+     * @param soft
+     * @return
+     */
+    Result queryAdminInfo(String user, Soft soft);
 }

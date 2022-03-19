@@ -179,8 +179,8 @@ public class WebApiController {
      * @return
      */
     @NoEncryptNoSign
-    @GetMapping("queryUserAuth")
-    public Result queryUserAuth(String user, String skey) {
+    @GetMapping("queryUserInfo")
+    public Result queryUserInfo(String user, String skey) {
         if (CheckUtils.isObjectEmpty(user) || CheckUtils.isObjectEmpty(skey)) {
             return Result.error("参数错误");
         }
@@ -194,6 +194,32 @@ public class WebApiController {
         if (soft.getStatus().equals(SoftEnums.STATUS_DISABLE.getCode())) {
             return Result.error("软件已停用");
         }
-        return userService.queryUserAuth(user, soft.getId());
+        return userService.queryUserInfo(user, soft);
+    }
+
+    /**
+     * 查询管理员信息
+     *
+     * @param user
+     * @param skey
+     * @return
+     */
+    @NoEncryptNoSign
+    @GetMapping("queryAdminInfo")
+    public Result queryAdminInfo(String user, String skey) {
+        if (CheckUtils.isObjectEmpty(user) || CheckUtils.isObjectEmpty(skey)) {
+            return Result.error("参数错误");
+        }
+        Soft soft = (Soft) redisUtil.get("soft:" + skey);
+        if (CheckUtils.isObjectEmpty(soft)) {
+            return Result.error("skey错误");
+        }
+        if (soft.getStatus().equals(SoftEnums.STATUS_FIX.getCode())) {
+            return Result.error("软件维护中");
+        }
+        if (soft.getStatus().equals(SoftEnums.STATUS_DISABLE.getCode())) {
+            return Result.error("软件已停用");
+        }
+        return userService.queryAdminInfo(user, soft);
     }
 }

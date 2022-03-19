@@ -50,6 +50,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     private PlogMapper plogMapper;
     @Resource
     private VersionMapper versionMapper;
+    @Resource
+    private AdminMapper adminMapper;
+    @Resource
+    private RoleMapper roleMapper;
     @Value("${genKey}")
     private String genKey;
 
@@ -998,14 +1002,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
      * 查询账号信息
      *
      * @param user
-     * @param softId
+     * @param soft
      * @return
      */
     @Override
-    public Result queryUserAuth(String user, Integer softId) {
+    public Result queryUserInfo(String user, Soft soft) {
         LambdaQueryWrapper<User> userLambdaQueryWrapper = new LambdaQueryWrapper<>();
         userLambdaQueryWrapper.eq(User::getUser, user);
-        userLambdaQueryWrapper.eq(User::getFromSoftId, softId);
+        userLambdaQueryWrapper.eq(User::getFromSoftId, soft.getId());
         User selectOne = userMapper.selectOne(userLambdaQueryWrapper);
         if (CheckUtils.isObjectEmpty(selectOne)) {
             return Result.error("账号不存在");
@@ -1018,7 +1022,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         jsonObject.put("authTime", selectOne.getAuthTime());
         jsonObject.put("point", selectOne.getPoint());
         jsonObject.put("remark", selectOne.getRemark());
-        Ban ban = (Ban) redisUtil.get("ban:" + selectOne.getUser() + "-" + 3 + "-" + softId);
+        jsonObject.put("fromSoftName", soft.getName());
+        Ban ban = (Ban) redisUtil.get("ban:" + selectOne.getUser() + "-" + 3 + "-" + soft.getId());
         if (!CheckUtils.isObjectEmpty(ban)) {
             if (ban.getToTime() == -1) {
                 jsonObject.put("status", "账号已被永久封禁，封禁时间：" + MyUtils.dateToStr(MyUtils.stamp2Date(String.valueOf(ban.getAddTime()))) + "，封禁理由：" + ban.getWhy());
@@ -1032,6 +1037,35 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
             }
         }
         jsonObject.put("status", "账号正常");
+        return Result.ok("查询成功", jsonObject);
+    }
+
+    /**
+     * 查询管理员信息
+     *
+     * @param user
+     * @param soft
+     * @return
+     */
+    @Override
+    public Result queryAdminInfo(String user, Soft soft) {
+        LambdaQueryWrapper<Admin> adminLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        adminLambdaQueryWrapper.eq(Admin::getUser,user);
+        Admin admin = adminMapper.selectOne(adminLambdaQueryWrapper);
+        if(CheckUtils.isObjectEmpty(admin)){
+            return Result.error("账号不存在");
+        }
+        Role role = (Role) redisUtil.get("role:" + admin.getRole());
+        if(!role.getFromSoftId().equals(soft.getId())){
+            return Result.error("此账号不属于此软件");
+        }
+        JSONObject jsonObject = new JSONObject(true);
+        jsonObject.put("user", admin.getUser());
+        jsonObject.put("qq", admin.getQq());
+        jsonObject.put("regTime", admin.getRegTime());
+        jsonObject.put("status", admin.getStatus());
+        jsonObject.put("role", role.getName());
+        jsonObject.put("fromSoftName", soft.getName());
         return Result.ok("查询成功", jsonObject);
     }
 }
