@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="cn.myauthx.api.main.mapper.UserMapper">
-    <select id="getUserDeviceInfoRanking" resultType="cn.myauthx.api.base.vo.UserDeviceInfoRanking">
+<mapper namespace="cn.daenx.myauth.main.mapper.UserMapper">
+    <select id="getUserDeviceInfoRanking" resultType="cn.daenx.myauth.base.vo.UserDeviceInfoRanking">
         SELECT device_info, num
         FROM ( SELECT device_info, count( 0 ) AS num FROM ma_user where from_soft_id = #{fromSoftId} GROUP BY device_info ORDER BY count( 0 ) DESC ) v
         LIMIT #{pageIndex},#{pageSize}
@@ -14,7 +14,7 @@
             ( SELECT 0 FROM ( SELECT 0 FROM ma_user WHERE from_soft_id = #{fromSoftId} GROUP BY device_info ) v ) a
     </select>
 
-    <select id="getUserDayNew" resultType="cn.myauthx.api.base.vo.UserDayNew">
+    <select id="getUserDayNew" resultType="cn.daenx.myauth.base.vo.UserDayNew">
         select day6.number AS d6,
                day5.number AS d5,
                day4.number AS d4,

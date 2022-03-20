@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="cn.myauthx.api.main.mapper.DataMapper">
-    <select id="getDataRanking" resultType="cn.myauthx.api.base.vo.DataRanking">
+<mapper namespace="cn.daenx.myauth.main.mapper.DataMapper">
+    <select id="getDataRanking" resultType="cn.daenx.myauth.base.vo.DataRanking">
         select type,content,count(0) AS num
         from ma_data
         where from_soft_id = #{fromSoftId}

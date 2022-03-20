@@ -8,7 +8,6 @@
 
 * 我的QQ：[1330166564](https://wpa.qq.com/msgrd?v=3&uin=1330166564&site=qq&menu=yes)
 * 官方Q群：[1016357430](https://jq.qq.com/?_wv=1027&k=eaectWIr)
-* 官方网站：[https://www.myauthx.cn/](https://www.myauthx.cn/)
 
 ### 前端
 - [@TianYe](https://gitee.com/fieldtianye)
