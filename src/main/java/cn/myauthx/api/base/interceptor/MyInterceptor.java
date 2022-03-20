@@ -257,13 +257,6 @@ public class MyInterceptor implements HandlerInterceptor {
                     response.getWriter().write(retStr);
                     return false;
                 }
-                /*if((user.getLastTime() + UserEnums.TOKEN_VALIDITY.getCode()) < Integer.parseInt(MyUtils.getTimeStamp())){
-                    log.info("接收->" + jsonObject.toJSONString());
-                    String retStr = Result.error("登录失效，请重新登录").toJsonString();
-                    log.info("响应->" + retStr);
-                    response.getWriter().write(retStr);
-                    return false;
-                }*/
                 request.setAttribute("obj_user", user);
             }
             //@SignValidated

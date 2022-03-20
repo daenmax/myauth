@@ -100,7 +100,7 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements
         plog.setFromSoftId(event.getFromSoftId());
         int num = userMapper.updateById(user);
         if (num > 0) {
-            redisUtil.set("user:" + user.getFromSoftId() + ":" + user.getUser(), user, UserEnums.TOKEN_VALIDITY.getCode());
+            redisUtil.set("user:" + user.getFromSoftId() + ":" + user.getUser(), user, soft.getHeartTime());
             plogMapper.insert(plog);
             JSONObject jsonObject = new JSONObject(true);
             jsonObject.put("user", user.getUser());

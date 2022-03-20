@@ -248,7 +248,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
                 userA.setToken(token);
                 int num = userMapper.updateById(userA);
                 if (num > 0) {
-                    redisUtil.set("user:" + userA.getFromSoftId() + ":" + userA.getUser(), userA, UserEnums.TOKEN_VALIDITY.getCode());
+                    redisUtil.set("user:" + userA.getFromSoftId() + ":" + userA.getUser(), userA, softC.getHeartTime());
                     jsonObject.put("user", userA.getUser());
                     jsonObject.put("name", userA.getName());
                     jsonObject.put("qq", userA.getQq());
@@ -289,7 +289,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
                 userA.setToken(token);
                 int num = userMapper.updateById(userA);
                 if (num > 0) {
-                    redisUtil.set("user:" + userA.getFromSoftId() + ":" + userA.getUser(), userA, UserEnums.TOKEN_VALIDITY.getCode());
+                    redisUtil.set("user:" + userA.getFromSoftId() + ":" + userA.getUser(), userA, softC.getHeartTime());
                     jsonObject.put("user", userA.getUser());
                     jsonObject.put("name", userA.getName());
                     jsonObject.put("qq", userA.getQq());
@@ -330,7 +330,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
                     userA.setToken(token);
                     int num = userMapper.updateById(userA);
                     if (num > 0) {
-                        redisUtil.set("user:" + userA.getFromSoftId() + ":" + userA.getUser(), userA, UserEnums.TOKEN_VALIDITY.getCode());
+                        redisUtil.set("user:" + userA.getFromSoftId() + ":" + userA.getUser(), userA, softC.getHeartTime());
                         jsonObject.put("user", userA.getUser());
                         jsonObject.put("name", userA.getName());
                         jsonObject.put("qq", userA.getQq());
@@ -377,7 +377,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
                     userA.setToken(token);
                     int num = userMapper.updateById(userA);
                     if (num > 0) {
-                        redisUtil.set("user:" + userA.getFromSoftId() + ":" + userA.getUser(), userA, UserEnums.TOKEN_VALIDITY.getCode());
+                        redisUtil.set("user:" + userA.getFromSoftId() + ":" + userA.getUser(), userA, softC.getHeartTime());
                         jsonObject.put("user", userA.getUser());
                         jsonObject.put("name", userA.getName());
                         jsonObject.put("qq", userA.getQq());
@@ -408,7 +408,18 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
      */
     @Override
     public Result heart(User userA, Soft softC) {
-        redisUtil.set("user:" + userA.getFromSoftId() + ":" + userA.getUser(), userA, UserEnums.TOKEN_VALIDITY.getCode());
+        if (userA.getAuthTime().equals(-1)) {
+            //已是永久授权
+        } else {
+            //不是永久授权
+            if (userA.getAuthTime() < Integer.parseInt(MyUtils.getTimeStamp())) {
+                //已经到期
+                return Result.error("授权已到期");
+            } else {
+                //未到期
+            }
+        }
+        redisUtil.set("user:" + userA.getFromSoftId() + ":" + userA.getUser(), userA, softC.getHeartTime());
         JSONObject jsonObject = new JSONObject(true);
         jsonObject.put("user", userA.getUser());
         jsonObject.put("name", userA.getName());
@@ -515,7 +526,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         int num = userMapper.updateById(userA);
         if (num > 0) {
             if (!CheckUtils.isObjectEmpty(userR)) {
-                redisUtil.set("user:" + userA.getFromSoftId() + ":" + userA.getUser(), userA, UserEnums.TOKEN_VALIDITY.getCode());
+                redisUtil.set("user:" + userA.getFromSoftId() + ":" + userA.getUser(), userA, softC.getHeartTime());
             }
             plogMapper.insert(plog);
             card.setLetUser(userA.getUser());
@@ -701,7 +712,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         if (num == 0) {
             return Result.error("修改资料失败");
         }
-        redisUtil.set("user:" + soft.getId() + ":" + user.getUser(), userR, UserEnums.TOKEN_VALIDITY.getCode());
+        redisUtil.set("user:" + soft.getId() + ":" + user.getUser(), userR, soft.getHeartTime());
         JSONObject jsonObject = new JSONObject(true);
         jsonObject.put("user", userR.getUser());
         jsonObject.put("name", userR.getName());
