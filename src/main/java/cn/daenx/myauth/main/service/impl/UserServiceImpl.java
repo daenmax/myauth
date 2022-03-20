@@ -83,6 +83,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
             user.setCkey(userC.getCkey());
             user.setQq(userC.getQq());
             user.setLastIp(userC.getLastIp());
+            user.setAuthTime(Integer.valueOf(MyUtils.getTimeStamp()));
             user.setRegTime(Integer.valueOf(MyUtils.getTimeStamp()));
             user.setFromSoftId(softC.getId());
             user.setFromSoftKey(softC.getSkey());
@@ -409,15 +410,20 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
      */
     @Override
     public Result heart(User userA, Soft softC) {
-        if (userA.getAuthTime().equals(-1)) {
-            //已是永久授权
-        } else {
-            //不是永久授权
-            if (userA.getAuthTime() < Integer.parseInt(MyUtils.getTimeStamp())) {
-                //已经到期
-                return Result.error("授权已到期");
+        if (softC.getType().equals(SoftEnums.TYPE_FREE.getCode())) {
+            //免费模式
+        }else{
+            //收费模式
+            if (userA.getAuthTime().equals(-1)) {
+                //已是永久授权
             } else {
-                //未到期
+                //不是永久授权
+                if (userA.getAuthTime() < Integer.parseInt(MyUtils.getTimeStamp())) {
+                    //已经到期
+                    return Result.error("授权已到期");
+                } else {
+                    //未到期
+                }
             }
         }
         redisUtil.set("user:" + userA.getFromSoftId() + ":" + userA.getUser(), userA, softC.getHeartTime());
