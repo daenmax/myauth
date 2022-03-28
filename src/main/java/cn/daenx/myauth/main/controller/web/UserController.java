@@ -94,7 +94,6 @@ public class UserController {
         if (CheckUtils.isObjectEmpty(user.getId())) {
             return Result.error("id不能为空");
         }
-        user.setUser(null);
         user.setLastIp(null);
         user.setLastTime(null);
         user.setRegTime(null);

@@ -205,6 +205,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         LambdaQueryWrapper<Ban> banLambdaQueryWrapper = new LambdaQueryWrapper<>();
         banLambdaQueryWrapper.eq(Ban::getValue, userA.getUser());
         banLambdaQueryWrapper.eq(Ban::getType, 3);
+        banLambdaQueryWrapper.eq(Ban::getFromSoftId, softC.getId());
         Ban ban = banMapper.selectOne(banLambdaQueryWrapper);
         if (!CheckUtils.isObjectEmpty(ban)) {
             if (ban.getToTime() == -1) {
@@ -460,6 +461,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         LambdaQueryWrapper<Ban> banLambdaQueryWrapper = new LambdaQueryWrapper<>();
         banLambdaQueryWrapper.eq(Ban::getValue, userA.getUser());
         banLambdaQueryWrapper.eq(Ban::getType, 3);
+        banLambdaQueryWrapper.eq(Ban::getFromSoftId, softC.getId());
         Ban ban = banMapper.selectOne(banLambdaQueryWrapper);
         if (!CheckUtils.isObjectEmpty(ban)) {
             if (ban.getToTime() == -1) {
@@ -671,6 +673,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         LambdaQueryWrapper<Ban> banLambdaQueryWrapper = new LambdaQueryWrapper<>();
         banLambdaQueryWrapper.eq(Ban::getValue, userA.getUser());
         banLambdaQueryWrapper.eq(Ban::getType, 3);
+        banLambdaQueryWrapper.eq(Ban::getFromSoftId, softC.getId());
         Ban ban = banMapper.selectOne(banLambdaQueryWrapper);
         if (!CheckUtils.isObjectEmpty(ban)) {
             if (ban.getToTime() == -1) {
@@ -810,15 +813,15 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
      */
     @Override
     public Result updUser(User user) {
-        User newUser = userMapper.selectById(user.getId());
-        if (CheckUtils.isObjectEmpty(newUser)) {
+        User oldUser = userMapper.selectById(user.getId());
+        if (CheckUtils.isObjectEmpty(oldUser)) {
             return Result.error("用户ID错误");
         }
         int num = userMapper.updateById(user);
         if (num <= 0) {
             return Result.error("修改失败");
         }
-        redisUtil.del("user:" + newUser.getFromSoftId() + ":" + newUser.getUser());
+        redisUtil.del("user:" + oldUser.getFromSoftId() + ":" + oldUser.getUser());
         return Result.ok("修改成功");
     }
 
