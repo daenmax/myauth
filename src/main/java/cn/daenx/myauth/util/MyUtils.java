@@ -2,6 +2,7 @@ package cn.daenx.myauth.util;
 
 import cn.daenx.myauth.base.vo.Result;
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.Base64Utils;
 import org.springframework.util.DigestUtils;
@@ -125,7 +126,8 @@ public class MyUtils {
         if (gen_status != 1) {
             return Result.ok(msg, jsonObject).sign(sign);
         }
-        String enStr = AESUtils.encrypt(jsonObject.toJSONString(), gen_key);
+        String str = JSONObject.toJSONString(jsonObject,SerializerFeature.WriteMapNullValue);
+        String enStr = AESUtils.encrypt(str, gen_key);
         return Result.ok(msg, enStr).sign(sign);
     }
 
