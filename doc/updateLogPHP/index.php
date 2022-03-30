@@ -13,13 +13,25 @@ QQ1330166565
 **/
 //服务器地址
 $server_url = "http://localhost:8080/myauth/";
+//服务器地址是否为HTTPS，如果是的话，加设为true，否则为false
+$server_url_is_ssl = false;
 //错误跳转地址
 $error_url = "http://mycdn.daenx.cn/error.html";
 $skey = $_GET['skey'];
 if($skey == ''){
 	redirect($error_url);
 }
-$ret = file_get_contents($server_url."web/getUpdateLog?skey=".$skey);
+if($server_url_is_ssl == true){
+	$stream_opts = [
+    "ssl" => [
+        "verify_peer"=>false,
+        "verify_peer_name"=>false,
+    ]
+];  
+$ret = file_get_contents($server_url."web/getUpdateLog?skey=".$skey,false, stream_context_create($stream_opts));
+}else{
+	$ret = file_get_contents($server_url."web/getUpdateLog?skey=".$skey);
+}
 $json = json_decode($ret,true);
 if( $json['code'] != 200){
 	redirect($error_url);
