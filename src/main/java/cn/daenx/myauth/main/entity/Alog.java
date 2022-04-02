@@ -4,8 +4,7 @@ import cn.daenx.myauth.base.po.baseEntity;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 import lombok.experimental.Accessors;
 
 /**
@@ -16,8 +15,7 @@ import lombok.experimental.Accessors;
  * @author DaenMax
  * @since 2022-03-10
  */
-@Getter
-@Setter
+@Data
 @Accessors(chain = true)
 @TableName("ma_alog")
 public class Alog extends baseEntity {

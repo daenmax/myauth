@@ -29,7 +29,7 @@ public class MsgController {
     private IMsgService msgService;
 
     /**
-     * 获取软件列表
+     * 获取回复列表
      *
      * @param request
      * @return

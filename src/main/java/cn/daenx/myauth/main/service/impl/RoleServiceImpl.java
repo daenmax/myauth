@@ -125,6 +125,10 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements IR
         }
         JSONArray jsonArray = JSONArray.parseArray(newRole.getMeunIds());
         List<String> list = (List<String>) JSONArray.toJavaObject(jsonArray, List.class);
+        LambdaQueryWrapper<Menu> menuLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        menuLambdaQueryWrapper.in(Menu::getId,list);
+        menuLambdaQueryWrapper.eq(Menu::getType,2);
+
         newRole.setMeunList(list);
         if (!CheckUtils.isObjectEmpty(newRole.getFromSoftId()) && !newRole.getFromSoftId().equals(0)) {
             Soft obj = (Soft) redisUtil.get("id:soft:" + newRole.getFromSoftId());

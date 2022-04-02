@@ -2,11 +2,9 @@ package cn.daenx.myauth.main.entity;
 
 import cn.daenx.myauth.base.po.baseEntity;
 import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-
-import java.util.List;
+import java.io.Serializable;
 
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -17,44 +15,36 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author DaenMax
- * @since 2022-03-09
+ * @since 2022-04-01
  */
 @Data
 @Accessors(chain = true)
-@TableName("ma_role")
-public class Role extends baseEntity {
+@TableName("ma_storage")
+public class Storage extends baseEntity {
 
     private static final long serialVersionUID = 1L;
 
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
-    /**
-     * 角色名
-     */
-    private String name;
-    /**
-     * 0=超级管理员
-     */
     private Integer fromSoftId;
 
     /**
-     * 只存menu的id，json数组
+     * 所属存储类型ID
      */
-    private String meunIds;
+    private Integer fromStorageTypeId;
+
+    private String content;
 
     /**
-     * 折扣，单位百分%
+     * 数量
      */
-    private Integer discount;
+    private Integer number;
 
     /**
-     * 所属软件名称
+     * 状态，0=禁用，1=正常
      */
-    @TableField(exist = false)
-    private String fromSoftName;
+    private Integer status;
 
-    @TableField(exist = false)
-    private List<String> meunList;
 
 }

@@ -8,8 +8,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 
 import java.util.Date;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 import lombok.experimental.Accessors;
 
 /**
@@ -20,8 +19,7 @@ import lombok.experimental.Accessors;
  * @author DaenMax
  * @since 2022-03-16
  */
-@Getter
-@Setter
+@Data
 @Accessors(chain = true)
 @TableName("ma_acard")
 public class Acard extends baseEntity {
