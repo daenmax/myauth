@@ -4,7 +4,7 @@ server:
   servlet:
     context-path: /myauth
 
-# 日志输出路径
+# 日志输出路径，如果是linux，直接写log即可，如果是windows，那就写，例如：C:/wwwroot/myauth/log
 log-file-path: D:/idea-workspace/myauth/log
 
 # mybatis-plus配置控制台打印完整带参数SQL语句
