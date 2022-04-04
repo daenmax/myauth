@@ -311,7 +311,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
             //收费模式
             if (CheckUtils.isObjectEmpty(userA.getPass())) {
                 //密码为空
-                if (Integer.parseInt(MyUtils.getTimeStamp()) < userA.getAuthTime()) {
+                if (Integer.parseInt(MyUtils.getTimeStamp()) < userA.getAuthTime() || userA.getAuthTime().equals(-1)) {
                     //授权未到期
                     if (softC.getBindDeviceCode().equals(SoftEnums.BIND_ABLE.getCode())) {
                         //绑定机器码
@@ -358,7 +358,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
                 if (!userA.getPass().equals(userC.getPass())) {
                     return Result.error("密码错误");
                 }
-                if (Integer.parseInt(MyUtils.getTimeStamp()) < userA.getAuthTime()) {
+                if (Integer.parseInt(MyUtils.getTimeStamp()) < userA.getAuthTime() || userA.getAuthTime().equals(-1)) {
                     //授权未到期
                     if (softC.getBindDeviceCode().equals(SoftEnums.BIND_ABLE.getCode())) {
                         //绑定机器码
