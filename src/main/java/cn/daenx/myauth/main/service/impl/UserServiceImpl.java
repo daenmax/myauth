@@ -1135,6 +1135,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
                 }
             }
         }
-        return Result.ok("账号正常");
+        JSONObject jsonObject = new JSONObject(true);
+        jsonObject.put("user", userA.getUser());
+        return Result.ok("账号正常", jsonObject);
     }
 }
