@@ -425,4 +425,30 @@ public class SoftApiController {
         }
         return userService.editInfo(user, soft);
     }
+
+    /**
+     * 检查账号状态
+     *
+     * @param request
+     * @return
+     */
+    @SoftValidated
+    @VersionValidated
+    @DataDecrypt
+    @SignValidated
+    @BanValidated(is_ip = true, is_device_code = true, is_user = false)
+    @PostMapping("checkUser")
+    public Result checkUser(HttpServletRequest request) {
+        //不管有没有加密和解密，取提交的JSON都要通过下面这行去取
+        JSONObject jsonObject = (JSONObject) request.getAttribute("json");
+        Soft soft = (Soft) request.getAttribute("obj_soft");
+        Version version = (Version) request.getAttribute("obj_version");
+        User user = jsonObject.getJSONObject("data").toJavaObject(User.class);
+        String ip = IpUtil.getIpAddr(request);
+        user.setLastIp(ip);
+        user.setLastTime(Integer.valueOf(MyUtils.getTimeStamp()));
+        user.setFromVerId(version.getId());
+        user.setFromVerKey(version.getVkey());
+        return userService.checkUser(user, soft);
+    }
 }
