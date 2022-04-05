@@ -868,7 +868,17 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         if (idArray.length == 0) {
             return Result.error("ids参数格式可能错误");
         }
-        int okCount = userMapper.deleteBatchIds(strings);
+        int okCount = 0;
+        for (String id : strings) {
+            User user = userMapper.selectById(id);
+            if(!CheckUtils.isObjectEmpty(user)){
+                int num = userMapper.deleteById(user.getId());
+                if(num > 0){
+                    redisUtil.del("user:" + user.getFromSoftId() + ":" + user.getUser());
+                }
+                okCount = okCount + num;
+            }
+        }
         return Result.ok("成功删除 " + okCount + " 个用户");
     }
 
