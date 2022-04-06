@@ -160,7 +160,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
                 user.setCkey(card.getCkey());
                 user.setLastIp(userC.getLastIp());
                 user.setPoint(card.getPoint());
-                user.setAuthTime(Integer.valueOf(MyUtils.getTimeStamp()) + card.getSeconds());
+                if (card.getSeconds().equals(-1)) {
+                    //永久期限卡密
+                    user.setAuthTime(-1);
+                } else {
+                    //不是永久期限卡密
+                    user.setAuthTime(Integer.valueOf(MyUtils.getTimeStamp()) + card.getSeconds());
+                }
                 user.setRegTime(Integer.valueOf(MyUtils.getTimeStamp()));
                 user.setFromSoftId(softC.getId());
                 user.setFromSoftKey(softC.getSkey());
@@ -505,14 +511,19 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
                 //已是永久授权
             } else {
                 //不是永久授权
-                if (userA.getAuthTime() < Integer.parseInt(MyUtils.getTimeStamp())) {
-                    //已经到期
-                    userA.setAuthTime(Integer.parseInt(MyUtils.getTimeStamp()) + card.getSeconds());
+                if (card.getSeconds().equals(-1)) {
+                    //永久期限卡密
+                    userA.setAuthTime(-1);
                 } else {
-                    //未到期，则续费
-                    userA.setAuthTime(Integer.valueOf(userA.getAuthTime()) + card.getSeconds());
+                    //不是永久期限卡密
+                    if (userA.getAuthTime() < Integer.parseInt(MyUtils.getTimeStamp())) {
+                        //已经到期
+                        userA.setAuthTime(Integer.parseInt(MyUtils.getTimeStamp()) + card.getSeconds());
+                    } else {
+                        //未到期，则续费
+                        userA.setAuthTime(Integer.valueOf(userA.getAuthTime()) + card.getSeconds());
+                    }
                 }
-
             }
         }
         plog.setAfterSeconds(userA.getAuthTime());

@@ -136,6 +136,12 @@ public class WebApiController {
         return userService.register(user, soft);
     }
 
+    /**
+     * 自助修改账号
+     *
+     * @param request
+     * @return
+     */
     @NoEncryptNoSign
     @PostMapping("selfChangeUser")
     public Result selfChangeUser(HttpServletRequest request) {
