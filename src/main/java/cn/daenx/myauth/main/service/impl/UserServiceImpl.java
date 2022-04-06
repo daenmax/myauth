@@ -114,7 +114,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
                 user.setName(userC.getName());
                 user.setCkey(userC.getCkey());
                 user.setQq(userC.getQq());
-                user.setPass(userC.getUser());
                 user.setLastIp(userC.getLastIp());
                 user.setAuthTime(Integer.valueOf(MyUtils.getTimeStamp()));
                 user.setRegTime(Integer.valueOf(MyUtils.getTimeStamp()));
