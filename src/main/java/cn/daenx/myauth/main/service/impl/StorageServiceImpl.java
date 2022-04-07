@@ -153,14 +153,18 @@ public class StorageServiceImpl extends ServiceImpl<StorageMapper, Storage> impl
             if (num <= 0) {
                 return Result.error("添加失败");
             }
-            return Result.ok("添加成功");
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("number",1);
+            return Result.ok("添加成功",jsonObject);
         } else {
             storage1.setNumber(storage1.getNumber() + 1);
             int num = storageMapper.updateById(storage1);
             if (num <= 0) {
                 return Result.error("添加失败");
             }
-            return Result.ok("添加成功");
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("number",storage1.getNumber());
+            return Result.ok("添加成功",jsonObject);
         }
     }
 

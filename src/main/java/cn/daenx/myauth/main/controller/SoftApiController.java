@@ -1,6 +1,7 @@
 package cn.daenx.myauth.main.controller;
 
 import cn.daenx.myauth.base.annotation.*;
+import cn.daenx.myauth.main.entity.Storage;
 import cn.daenx.myauth.main.service.*;
 import cn.daenx.myauth.util.CheckUtils;
 import cn.daenx.myauth.util.IpUtil;
@@ -40,6 +41,8 @@ public class SoftApiController {
     private IDataService dataService;
     @Resource
     private IEventService eventService;
+    @Resource
+    private IStorageService storageService;
 
     /**
      * 初始化软件
@@ -451,4 +454,41 @@ public class SoftApiController {
         user.setFromVerKey(version.getVkey());
         return userService.checkUser(user, soft);
     }
+
+    /**
+     * 上报额外存储
+     *
+     * @param request
+     * @return
+     */
+    @SoftValidated
+    @VersionValidated
+    @DataDecrypt
+    @SignValidated
+    @BanValidated(is_ip = true, is_device_code = true, is_user = false)
+    @PostMapping("upStorage")
+    public Result upStorage(HttpServletRequest request) {
+        //不管有没有加密和解密，取提交的JSON都要通过下面这行去取
+        JSONObject jsonObject = (JSONObject) request.getAttribute("json");
+        Soft soft = (Soft) request.getAttribute("obj_soft");
+        Storage storage = jsonObject.getJSONObject("data").toJavaObject(Storage.class);
+        String skey = soft.getSkey();
+        String type = jsonObject.getJSONObject("data").getString("type");
+        if (CheckUtils.isObjectEmpty(type)) {
+            return Result.error("type不能为空");
+        }
+        if (CheckUtils.isObjectEmpty(storage)) {
+            return Result.error("参数错误");
+        }
+        if (CheckUtils.isObjectEmpty(storage.getContent())) {
+            return Result.error("参数不全");
+        }
+        storage = storageService.toStorage(storage,type,skey);
+        if(CheckUtils.isObjectEmpty(storage)){
+            return Result.error("参数错误");
+        }
+        storage.setNumber(null);
+        return storageService.addStorage(storage);
+    }
+
 }

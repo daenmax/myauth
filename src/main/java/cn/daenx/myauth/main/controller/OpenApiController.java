@@ -37,8 +37,6 @@ public class OpenApiController {
     private IConfigService configService;
     @Resource
     private IStorageService storageService;
-    @Resource
-    private RedisUtil redisUtil;
     /**
      * 获取在线人数
      *
