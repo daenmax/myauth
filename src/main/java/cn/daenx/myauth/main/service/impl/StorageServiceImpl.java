@@ -206,11 +206,38 @@ public class StorageServiceImpl extends ServiceImpl<StorageMapper, Storage> impl
             return Result.error("查询信息不存在");
         }
         JSONObject jsonObject = new JSONObject(true);
+        jsonObject.put("id", storage.getId());
         jsonObject.put("content", storage.getContent());
         jsonObject.put("number", storage.getNumber());
         jsonObject.put("remark", storage.getRemark());
         jsonObject.put("status", storage.getStatus());
         jsonObject.put("fromSoftName", soft.getName());
         return Result.ok("查询成功", jsonObject);
+    }
+
+
+    /**
+     * 根据skey和type填充实体
+     *
+     * @param storage
+     * @param type
+     * @param skey
+     * @return
+     */
+    @Override
+    public Storage toStorage(Storage storage, String type, String skey) {
+        LambdaQueryWrapper<StorageType> storageTypeLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        storageTypeLambdaQueryWrapper.eq(StorageType::getType, type);
+        StorageType storageType = storageTypeMapper.selectOne(storageTypeLambdaQueryWrapper);
+        if (CheckUtils.isObjectEmpty(storageType)) {
+            return null;
+        }
+        Soft soft = (Soft) redisUtil.get("soft:" + skey);
+        if (CheckUtils.isObjectEmpty(soft)) {
+            return null;
+        }
+        storage.setFromStorageTypeId(storageType.getId());
+        storage.setFromSoftId(soft.getId());
+        return storage;
     }
 }

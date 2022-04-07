@@ -66,4 +66,16 @@ public interface IStorageService extends IService<Storage> {
      * @return
      */
     Result queryStorage(String type, String content, Soft soft);
+
+
+
+    /**
+     * 根据skey和type填充实体
+     *
+     * @param storage
+     * @param type
+     * @param skey
+     * @return
+     */
+    Storage toStorage(Storage storage, String type, String skey);
 }
