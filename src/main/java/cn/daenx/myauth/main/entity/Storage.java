@@ -2,6 +2,7 @@ package cn.daenx.myauth.main.entity;
 
 import cn.daenx.myauth.base.po.baseEntity;
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
@@ -36,6 +37,8 @@ public class Storage extends baseEntity {
 
     private String content;
 
+    private String remark;
+
     /**
      * 数量
      */
@@ -46,5 +49,15 @@ public class Storage extends baseEntity {
      */
     private Integer status;
 
+    /**
+     * 所属软件名称
+     */
+    @TableField(exist = false)
+    private String fromSoftName;
 
+    /**
+     * 所属存储类型名称
+     */
+    @TableField(exist = false)
+    private String fromStorageTypeName;
 }

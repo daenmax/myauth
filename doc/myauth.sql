@@ -391,7 +391,8 @@ CREATE TABLE `ma_storage` (
   `from_soft_id` int(11) DEFAULT NULL,
   `from_storage_type_id` int(11) DEFAULT NULL COMMENT '所属存储类型ID',
   `content` text,
-  `number` int(11) DEFAULT '0' COMMENT '数量',
+  `number` int(11) DEFAULT '1' COMMENT '数量',
+  `remark` text,
   `status` int(2) DEFAULT '1' COMMENT '状态，0=禁用，1=正常'
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 

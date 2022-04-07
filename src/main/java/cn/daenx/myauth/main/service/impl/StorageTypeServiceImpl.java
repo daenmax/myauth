@@ -137,9 +137,9 @@ public class StorageTypeServiceImpl extends ServiceImpl<StorageTypeMapper, Stora
         }
         int num = storageTypeMapper.insert(storageType);
         if (num <= 0) {
-            return Result.error("修改失败");
+            return Result.error("添加失败");
         }
-        return Result.ok("修改成功");
+        return Result.ok("添加成功");
     }
 
     /**

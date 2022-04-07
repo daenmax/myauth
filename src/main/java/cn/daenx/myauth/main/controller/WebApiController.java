@@ -1,9 +1,6 @@
 package cn.daenx.myauth.main.controller;
 
-import cn.daenx.myauth.main.service.IConfigService;
-import cn.daenx.myauth.main.service.ISoftService;
-import cn.daenx.myauth.main.service.IUserService;
-import cn.daenx.myauth.main.service.IVersionService;
+import cn.daenx.myauth.main.service.*;
 import cn.daenx.myauth.util.CheckUtils;
 import cn.daenx.myauth.util.IpUtil;
 import cn.daenx.myauth.util.RedisUtil;
@@ -36,6 +33,8 @@ public class WebApiController {
     private ISoftService softService;
     @Resource
     private IUserService userService;
+    @Resource
+    private IStorageService storageService;
     @Resource
     private RedisUtil redisUtil;
 
@@ -226,5 +225,26 @@ public class WebApiController {
             return Result.error("软件已停用");
         }
         return userService.queryAdminInfo(user, soft);
+    }
+
+    /**
+     * 查询额外存储信息
+     *
+     * @param type
+     * @param content
+     * @param skey
+     * @return
+     */
+    @NoEncryptNoSign
+    @GetMapping("queryStorage")
+    public Result queryStorage(String type, String content, String skey) {
+        if (CheckUtils.isObjectEmpty(type) || CheckUtils.isObjectEmpty(content) || CheckUtils.isObjectEmpty(skey)) {
+            return Result.error("参数错误");
+        }
+        Soft soft = (Soft) redisUtil.get("soft:" + skey);
+        if (CheckUtils.isObjectEmpty(soft)) {
+            return Result.error("skey错误");
+        }
+        return storageService.queryStorage(type, content, soft);
     }
 }
