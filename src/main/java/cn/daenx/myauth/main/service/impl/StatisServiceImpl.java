@@ -111,6 +111,7 @@ public class StatisServiceImpl implements StatisService {
         retJson.put("onlineCount", scan.size());
 
         LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(User::getFromSoftId,soft.getId());
         Long allCount = userMapper.selectCount(wrapper);
         retJson.put("allCount", allCount);
 

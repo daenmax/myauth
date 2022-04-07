@@ -37,6 +37,15 @@ public interface IUserService extends IService<User> {
     Result login(User user, Soft softC);
 
     /**
+     * 检查账号状态
+     *
+     * @param user
+     * @param softC
+     * @return
+     */
+    Result checkUser(User user, Soft softC);
+
+    /**
      * 心跳
      *
      * @param user

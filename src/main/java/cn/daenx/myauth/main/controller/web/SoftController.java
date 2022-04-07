@@ -142,7 +142,7 @@ public class SoftController {
     }
 
     /**
-     * 获取软件列表
+     * 获取软件列表_全部_简要
      *
      * @param request
      * @return

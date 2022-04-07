@@ -46,7 +46,7 @@ public class IpUtil {
         } catch (Exception e) {
             ipAddress = "";
         }
-        if (ipAddress.equals("0:0:0:0:0:0:0:1")) {
+        if(ipAddress.contains(":")){
             ipAddress = "127.0.0.1";
         }
         return ipAddress;

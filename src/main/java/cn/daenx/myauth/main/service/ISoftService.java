@@ -65,7 +65,7 @@ public interface ISoftService extends IService<Soft> {
 
     /**
      * 获取软件列表_全部_简要_自助用
-     * @param soft
+     * @param name
      * @return
      */
     Result getSoftListSimple(String name);

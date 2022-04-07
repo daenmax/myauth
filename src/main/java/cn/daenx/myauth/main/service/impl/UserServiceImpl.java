@@ -114,7 +114,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
                 user.setName(userC.getName());
                 user.setCkey(userC.getCkey());
                 user.setQq(userC.getQq());
-                user.setPass(userC.getUser());
                 user.setLastIp(userC.getLastIp());
                 user.setAuthTime(Integer.valueOf(MyUtils.getTimeStamp()));
                 user.setRegTime(Integer.valueOf(MyUtils.getTimeStamp()));
@@ -160,7 +159,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
                 user.setCkey(card.getCkey());
                 user.setLastIp(userC.getLastIp());
                 user.setPoint(card.getPoint());
-                user.setAuthTime(Integer.valueOf(MyUtils.getTimeStamp()) + card.getSeconds());
+                if (card.getSeconds().equals(-1)) {
+                    //永久期限卡密
+                    user.setAuthTime(-1);
+                } else {
+                    //不是永久期限卡密
+                    user.setAuthTime(Integer.valueOf(MyUtils.getTimeStamp()) + card.getSeconds());
+                }
                 user.setRegTime(Integer.valueOf(MyUtils.getTimeStamp()));
                 user.setFromSoftId(softC.getId());
                 user.setFromSoftKey(softC.getSkey());
@@ -311,7 +316,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
             //收费模式
             if (CheckUtils.isObjectEmpty(userA.getPass())) {
                 //密码为空
-                if (Integer.parseInt(MyUtils.getTimeStamp()) > userA.getAuthTime()) {
+                if (Integer.parseInt(MyUtils.getTimeStamp()) < userA.getAuthTime() || userA.getAuthTime().equals(-1)) {
                     //授权未到期
                     if (softC.getBindDeviceCode().equals(SoftEnums.BIND_ABLE.getCode())) {
                         //绑定机器码
@@ -358,7 +363,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
                 if (!userA.getPass().equals(userC.getPass())) {
                     return Result.error("密码错误");
                 }
-                if (Integer.parseInt(MyUtils.getTimeStamp()) < userA.getAuthTime()) {
+                if (Integer.parseInt(MyUtils.getTimeStamp()) < userA.getAuthTime() || userA.getAuthTime().equals(-1)) {
                     //授权未到期
                     if (softC.getBindDeviceCode().equals(SoftEnums.BIND_ABLE.getCode())) {
                         //绑定机器码
@@ -413,7 +418,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     public Result heart(User userA, Soft softC) {
         if (softC.getType().equals(SoftEnums.TYPE_FREE.getCode())) {
             //免费模式
-        }else{
+        } else {
             //收费模式
             if (userA.getAuthTime().equals(-1)) {
                 //已是永久授权
@@ -505,14 +510,19 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
                 //已是永久授权
             } else {
                 //不是永久授权
-                if (userA.getAuthTime() < Integer.parseInt(MyUtils.getTimeStamp())) {
-                    //已经到期
-                    userA.setAuthTime(Integer.parseInt(MyUtils.getTimeStamp()) + card.getSeconds());
+                if (card.getSeconds().equals(-1)) {
+                    //永久期限卡密
+                    userA.setAuthTime(-1);
                 } else {
-                    //未到期，则续费
-                    userA.setAuthTime(Integer.valueOf(userA.getAuthTime()) + card.getSeconds());
+                    //不是永久期限卡密
+                    if (userA.getAuthTime() < Integer.parseInt(MyUtils.getTimeStamp())) {
+                        //已经到期
+                        userA.setAuthTime(Integer.parseInt(MyUtils.getTimeStamp()) + card.getSeconds());
+                    } else {
+                        //未到期，则续费
+                        userA.setAuthTime(Integer.valueOf(userA.getAuthTime()) + card.getSeconds());
+                    }
                 }
-
             }
         }
         plog.setAfterSeconds(userA.getAuthTime());
@@ -868,7 +878,17 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         if (idArray.length == 0) {
             return Result.error("ids参数格式可能错误");
         }
-        int okCount = userMapper.deleteBatchIds(strings);
+        int okCount = 0;
+        for (String id : strings) {
+            User user = userMapper.selectById(id);
+            if (!CheckUtils.isObjectEmpty(user)) {
+                int num = userMapper.deleteById(user.getId());
+                if (num > 0) {
+                    redisUtil.del("user:" + user.getFromSoftId() + ":" + user.getUser());
+                }
+                okCount = okCount + num;
+            }
+        }
         return Result.ok("成功删除 " + okCount + " 个用户");
     }
 
@@ -1071,13 +1091,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     @Override
     public Result queryAdminInfo(String user, Soft soft) {
         LambdaQueryWrapper<Admin> adminLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        adminLambdaQueryWrapper.eq(Admin::getUser,user);
+        adminLambdaQueryWrapper.eq(Admin::getUser, user);
         Admin admin = adminMapper.selectOne(adminLambdaQueryWrapper);
-        if(CheckUtils.isObjectEmpty(admin)){
+        if (CheckUtils.isObjectEmpty(admin)) {
             return Result.error("账号不存在");
         }
         Role role = (Role) redisUtil.get("role:" + admin.getRole());
-        if(!role.getFromSoftId().equals(soft.getId())){
+        if (!role.getFromSoftId().equals(soft.getId())) {
             return Result.error("此账号不属于此软件");
         }
         JSONObject jsonObject = new JSONObject(true);
@@ -1088,5 +1108,45 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         jsonObject.put("role", role.getName());
         jsonObject.put("fromSoftName", soft.getName());
         return Result.ok("查询成功", jsonObject);
+    }
+
+    /**
+     * 检查账号状态
+     *
+     * @param userC
+     * @param softC
+     * @return
+     */
+    @Override
+    public Result checkUser(User userC, Soft softC) {
+        LambdaQueryWrapper<User> userLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        userLambdaQueryWrapper.eq(User::getUser, userC.getUser());
+        userLambdaQueryWrapper.eq(User::getFromSoftId, softC.getId());
+        User userA = userMapper.selectOne(userLambdaQueryWrapper);
+        if (CheckUtils.isObjectEmpty(userA)) {
+            return Result.error("账号不存在");
+        }
+        LambdaQueryWrapper<Ban> banLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        banLambdaQueryWrapper.eq(Ban::getValue, userA.getUser());
+        banLambdaQueryWrapper.eq(Ban::getType, 3);
+        banLambdaQueryWrapper.eq(Ban::getFromSoftId, softC.getId());
+        Ban ban = banMapper.selectOne(banLambdaQueryWrapper);
+        if (!CheckUtils.isObjectEmpty(ban)) {
+            if (ban.getToTime() == -1) {
+                String msg = "msg=被封禁" + "&type=user" + "&value=" + userA.getUser() + "&toTime=-1&time=" + ban.getAddTime()
+                        + "&why=" + ban.getWhy();
+                return Result.error(300, msg);
+            } else {
+                Integer seconds = ban.getToTime() - Integer.parseInt(MyUtils.getTimeStamp());
+                if (seconds > 0) {
+                    String msg = "msg=被封禁" + "&type=user" + "&value=" + userA.getUser() + "&toTime=" + ban.getToTime() + "&time=" + ban.getAddTime()
+                            + "&why=" + ban.getWhy();
+                    return Result.error(300, msg);
+                }
+            }
+        }
+        JSONObject jsonObject = new JSONObject(true);
+        jsonObject.put("user", userA.getUser());
+        return Result.ok("账号正常", jsonObject);
     }
 }

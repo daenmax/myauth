@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import java.io.Serializable;
+
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -14,47 +16,36 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author DaenMax
- * @since 2022-03-09
+ * @since 2022-04-01
  */
 @Data
 @Accessors(chain = true)
-@TableName("ma_strategy")
-public class Strategy extends baseEntity {
+@TableName("ma_storage")
+public class Storage extends baseEntity {
 
     private static final long serialVersionUID = 1L;
 
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
-    /**
-     * 策略名称，例如：月卡，年卡
-     */
-    private String name;
-
-    /**
-     * 1=期限卡，2=余额卡
-     */
-    private Integer type;
-
-    /**
-     * 卡面额
-     */
-    private Integer value;
-
-    /**
-     * 排序，越小越前，从1开始
-     */
-    private Integer sort;
-
-    /**
-     * 价格
-     */
-    private String price;
-
     private Integer fromSoftId;
 
     /**
-     * 状态。1=正常，0=禁用
+     * 所属存储类型ID
+     */
+    private Integer fromStorageTypeId;
+
+    private String content;
+
+    private String remark;
+
+    /**
+     * 数量
+     */
+    private Integer number;
+
+    /**
+     * 状态，0=禁用，1=正常
      */
     private Integer status;
 
@@ -63,4 +54,10 @@ public class Strategy extends baseEntity {
      */
     @TableField(exist = false)
     private String fromSoftName;
+
+    /**
+     * 所属存储类型名称
+     */
+    @TableField(exist = false)
+    private String fromStorageTypeName;
 }

@@ -49,6 +49,8 @@ public class SoftServiceImpl extends ServiceImpl<SoftMapper, Soft> implements IS
     @Resource
     private JsMapper jsMapper;
     @Resource
+    private RoleMapper roleMapper;
+    @Resource
     private MsgMapper msgMapper;
     @Resource
     private PlogMapper plogMapper;
@@ -129,6 +131,11 @@ public class SoftServiceImpl extends ServiceImpl<SoftMapper, Soft> implements IS
         //删除版本表
         LambdaQueryWrapper<Version> versionLambdaQueryWrapper = new LambdaQueryWrapper<>();
         versionLambdaQueryWrapper.eq(Version::getFromSoftId, soft.getId());
+        List<Version> versionList = versionMapper.selectList(versionLambdaQueryWrapper);
+        for (Version version : versionList) {
+            redisUtil.del("version:" + version.getVkey());
+            redisUtil.del("id:version:" + version.getId());
+        }
         versionMapper.delete(versionLambdaQueryWrapper);
         //删除卡密表
         LambdaQueryWrapper<Card> cardLambdaQueryWrapper = new LambdaQueryWrapper<>();
@@ -137,6 +144,10 @@ public class SoftServiceImpl extends ServiceImpl<SoftMapper, Soft> implements IS
         //删除用户表
         LambdaQueryWrapper<User> userLambdaQueryWrapper = new LambdaQueryWrapper<>();
         userLambdaQueryWrapper.eq(User::getFromSoftId, soft.getId());
+        List<User> userList = userMapper.selectList(userLambdaQueryWrapper);
+        for (User user : userList) {
+            redisUtil.del("user:" + user.getFromSoftId() + ":" + user.getUser());
+        }
         userMapper.delete(userLambdaQueryWrapper);
         //删除事件表
         LambdaQueryWrapper<Event> eventLambdaQueryWrapper = new LambdaQueryWrapper<>();
@@ -149,6 +160,10 @@ public class SoftServiceImpl extends ServiceImpl<SoftMapper, Soft> implements IS
         //删除封禁表
         LambdaQueryWrapper<Ban> banLambdaQueryWrapper = new LambdaQueryWrapper<>();
         banLambdaQueryWrapper.eq(Ban::getFromSoftId, soft.getId());
+        List<Ban> banList = banMapper.selectList(banLambdaQueryWrapper);
+        for (Ban ban : banList) {
+            redisUtil.del("ban:" + ban.getValue() + "-" + ban.getType() + "-" + ban.getFromSoftId());
+        }
         banMapper.delete(banLambdaQueryWrapper);
         //删除JS表
         LambdaQueryWrapper<Js> jsLambdaQueryWrapper = new LambdaQueryWrapper<>();
@@ -158,6 +173,14 @@ public class SoftServiceImpl extends ServiceImpl<SoftMapper, Soft> implements IS
         LambdaQueryWrapper<Msg> msgLambdaQueryWrapper = new LambdaQueryWrapper<>();
         msgLambdaQueryWrapper.eq(Msg::getFromSoftId, soft.getId());
         msgMapper.delete(msgLambdaQueryWrapper);
+        //删除角色表
+        LambdaQueryWrapper<Role> roleLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        roleLambdaQueryWrapper.eq(Role::getFromSoftId, soft.getId());
+        List<Role> roleList = roleMapper.selectList(roleLambdaQueryWrapper);
+        for (Role role : roleList) {
+            redisUtil.del("role:" + role.getId());
+        }
+        roleMapper.delete(roleLambdaQueryWrapper);
         //删除日志表
         LambdaQueryWrapper<Plog> plogLambdaQueryWrapper = new LambdaQueryWrapper<>();
         plogLambdaQueryWrapper.eq(Plog::getFromSoftId, soft.getId());

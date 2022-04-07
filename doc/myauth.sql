@@ -380,9 +380,51 @@ CREATE TABLE `ma_version` (
   `status` int(2) DEFAULT NULL COMMENT '0=停用，1=正常'
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
+-- --------------------------------------------------------
+
+--
+-- 表的结构 `ma_storage`
+--
+
+CREATE TABLE `ma_storage` (
+  `id` int(11) NOT NULL,
+  `from_soft_id` int(11) DEFAULT NULL,
+  `from_storage_type_id` int(11) DEFAULT NULL COMMENT '所属存储类型ID',
+  `content` text,
+  `number` int(11) DEFAULT '1' COMMENT '数量',
+  `remark` text,
+  `status` int(2) DEFAULT '1' COMMENT '状态，0=禁用，1=正常'
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+
+-- --------------------------------------------------------
+
+--
+-- 表的结构 `ma_storage_type`
+--
+
+CREATE TABLE `ma_storage_type` (
+   `id` int(11) NOT NULL,
+   `type` varchar(255) DEFAULT NULL COMMENT '类型',
+   `status` int(2) DEFAULT '1' COMMENT '状态，0=禁用，1=正常',
+   `from_soft_id` int(12) DEFAULT NULL COMMENT '所属软件id'
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+
 --
 -- 转储表的索引
 --
+
+--
+-- 表的索引 `ma_storage`
+--
+ALTER TABLE `ma_storage`
+  ADD PRIMARY KEY (`id`) USING BTREE;
+
+--
+-- 表的索引 `ma_storage_type`
+--
+ALTER TABLE `ma_storage_type`
+  ADD PRIMARY KEY (`id`) USING BTREE;
+
 
 --
 -- 表的索引 `ma_acard`
@@ -495,6 +537,17 @@ ALTER TABLE `ma_version`
 --
 -- 在导出的表使用AUTO_INCREMENT
 --
+--
+-- 使用表AUTO_INCREMENT `ma_storage`
+--
+ALTER TABLE `ma_storage`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- 使用表AUTO_INCREMENT `ma_storage_type`
+--
+ALTER TABLE `ma_storage_type`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- 使用表AUTO_INCREMENT `ma_acard`

@@ -73,10 +73,14 @@ public class PlogServiceImpl extends ServiceImpl<PlogMapper, Plog> implements IP
         }
         IPage<Plog> msgPage = plogMapper.selectPage(page, getQwPlog(plog));
         for (int i = 0; i < msgPage.getRecords().size(); i++) {
-            Soft soft = (Soft) redisUtil.get("id:soft:" + msgPage.getRecords().get(i).getFromSoftId());
-            msgPage.getRecords().get(i).setFromSoftName(soft.getName());
-            Version version = (Version) redisUtil.get("id:version:" + msgPage.getRecords().get(i).getFromVerId());
-            msgPage.getRecords().get(i).setFromVer(version.getVer());
+            if(!CheckUtils.isObjectEmpty(msgPage.getRecords().get(i).getFromSoftId())){
+                Soft soft = (Soft) redisUtil.get("id:soft:" + msgPage.getRecords().get(i).getFromSoftId());
+                msgPage.getRecords().get(i).setFromSoftName(soft.getName());
+            }
+            if(!CheckUtils.isObjectEmpty(msgPage.getRecords().get(i).getFromVerId())){
+                Version version = (Version) redisUtil.get("id:version:" + msgPage.getRecords().get(i).getFromVerId());
+                msgPage.getRecords().get(i).setFromVer(version.getVer());
+            }
         }
         return Result.ok("获取成功", msgPage);
     }
