@@ -155,6 +155,12 @@ public class StorageTypeController {
     public Result getStorageTypeListEx(HttpServletRequest request) {
         JSONObject jsonObject = (JSONObject) request.getAttribute("json");
         StorageType storageType = jsonObject.toJavaObject(StorageType.class);
+        if (CheckUtils.isObjectEmpty(storageType)) {
+            return Result.error("参数错误");
+        }
+        if (CheckUtils.isObjectEmpty(storageType.getFromSoftId())) {
+            return Result.error("fromSoftId参数不能为空");
+        }
         return storageTypeService.getStorageTypeListEx(storageType);
     }
 }

@@ -169,6 +169,7 @@ public class StorageTypeServiceImpl extends ServiceImpl<StorageTypeMapper, Stora
         LambdaQueryWrapper<StorageType> lambdaQueryWrapper = new LambdaQueryWrapper<>();
         lambdaQueryWrapper.select(StorageType::getId, StorageType::getType, StorageType::getType);
         lambdaQueryWrapper.eq(StorageType::getStatus,1);
+        lambdaQueryWrapper.eq(StorageType::getFromSoftId,storageTypeC.getFromSoftId());
         if (!CheckUtils.isObjectEmpty(storageTypeC.getType())) {
             lambdaQueryWrapper.like(StorageType::getType, storageTypeC.getType());
         }
