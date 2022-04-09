@@ -135,7 +135,7 @@ public class MsgServiceImpl extends ServiceImpl<MsgMapper, Msg> implements IMsgS
         LambdaQueryWrapper<Msg> msgLambdaQueryWrapper = new LambdaQueryWrapper<>();
         msgLambdaQueryWrapper.eq(Msg::getKeyword, msg.getKeyword());
         msgLambdaQueryWrapper.eq(Msg::getFromSoftId, msg.getFromSoftId());
-        if (CheckUtils.isObjectEmpty(msg.getFromVerId())) {
+        if (!CheckUtils.isObjectEmpty(msg.getFromVerId())) {
             msgLambdaQueryWrapper.eq(Msg::getFromVerId, msg.getFromVerId());
         }
         Long selectCount = msgMapper.selectCount(msgLambdaQueryWrapper);
