@@ -1,6 +1,5 @@
 package cn.daenx.myauth.main.controller.web;
 
-
 import cn.daenx.myauth.base.annotation.AdminLogin;
 import cn.daenx.myauth.base.annotation.NoEncryptNoSign;
 import cn.daenx.myauth.base.vo.MyPage;

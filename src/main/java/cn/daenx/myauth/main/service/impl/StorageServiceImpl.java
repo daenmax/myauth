@@ -12,6 +12,7 @@ import cn.daenx.myauth.main.service.IStorageService;
 import cn.daenx.myauth.util.CheckUtils;
 import cn.daenx.myauth.util.MyUtils;
 import cn.daenx.myauth.util.RedisUtil;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -154,8 +155,8 @@ public class StorageServiceImpl extends ServiceImpl<StorageMapper, Storage> impl
                 return Result.error("添加失败");
             }
             JSONObject jsonObject = new JSONObject();
-            jsonObject.put("number",1);
-            return Result.ok("添加成功",jsonObject);
+            jsonObject.put("number", 1);
+            return Result.ok("添加成功", jsonObject);
         } else {
             storage1.setNumber(storage1.getNumber() + 1);
             int num = storageMapper.updateById(storage1);
@@ -163,8 +164,8 @@ public class StorageServiceImpl extends ServiceImpl<StorageMapper, Storage> impl
                 return Result.error("添加失败");
             }
             JSONObject jsonObject = new JSONObject();
-            jsonObject.put("number",storage1.getNumber());
-            return Result.ok("添加成功",jsonObject);
+            jsonObject.put("number", storage1.getNumber());
+            return Result.ok("添加成功", jsonObject);
         }
     }
 
@@ -243,5 +244,31 @@ public class StorageServiceImpl extends ServiceImpl<StorageMapper, Storage> impl
         storage.setFromStorageTypeId(storageType.getId());
         storage.setFromSoftId(soft.getId());
         return storage;
+    }
+
+    /**
+     * 获取额外存储列表信息
+     *
+     * @param storage
+     * @param type
+     * @return
+     */
+    @Override
+    public Result getStorageListInfo(Storage storage, String type) {
+        LambdaQueryWrapper<Storage> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(Storage::getFromSoftId, storage.getFromSoftId());
+        lambdaQueryWrapper.eq(Storage::getFromStorageTypeId, storage.getFromStorageTypeId());
+        List<Storage> storageList = storageMapper.selectList(lambdaQueryWrapper);
+        JSONArray jsonArray = new JSONArray();
+        for (Storage storage1 : storageList) {
+            JSONObject jsonObject = new JSONObject(true);
+            jsonObject.put("type", type);
+            jsonObject.put("content", storage1.getContent());
+            jsonObject.put("number", storage1.getNumber());
+            jsonObject.put("remark", storage1.getRemark());
+            jsonObject.put("status", storage1.getStatus());
+            jsonArray.add(jsonObject);
+        }
+        return Result.ok("获取成功", jsonArray);
     }
 }

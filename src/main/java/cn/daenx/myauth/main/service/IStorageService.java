@@ -4,7 +4,6 @@ import cn.daenx.myauth.base.vo.MyPage;
 import cn.daenx.myauth.base.vo.Result;
 import cn.daenx.myauth.main.entity.Soft;
 import cn.daenx.myauth.main.entity.Storage;
-import cn.daenx.myauth.main.entity.StorageType;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
@@ -68,7 +67,6 @@ public interface IStorageService extends IService<Storage> {
     Result queryStorage(String type, String content, Soft soft);
 
 
-
     /**
      * 根据skey和type填充实体
      *
@@ -78,4 +76,13 @@ public interface IStorageService extends IService<Storage> {
      * @return
      */
     Storage toStorage(Storage storage, String type, String skey);
+
+    /**
+     * 获取额外存储列表信息
+     *
+     * @param storage
+     * @param type
+     * @return
+     */
+    Result getStorageListInfo(Storage storage, String type);
 }

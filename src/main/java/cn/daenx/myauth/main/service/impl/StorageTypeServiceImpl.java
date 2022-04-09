@@ -2,12 +2,9 @@ package cn.daenx.myauth.main.service.impl;
 
 import cn.daenx.myauth.base.vo.MyPage;
 import cn.daenx.myauth.base.vo.Result;
-import cn.daenx.myauth.main.entity.Msg;
 import cn.daenx.myauth.main.entity.Soft;
 import cn.daenx.myauth.main.entity.StorageType;
-import cn.daenx.myauth.main.entity.Version;
 import cn.daenx.myauth.main.mapper.SoftMapper;
-import cn.daenx.myauth.main.mapper.StorageMapper;
 import cn.daenx.myauth.main.mapper.StorageTypeMapper;
 import cn.daenx.myauth.main.service.IStorageTypeService;
 import cn.daenx.myauth.util.CheckUtils;
