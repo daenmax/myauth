@@ -6,15 +6,12 @@ import cn.daenx.myauth.base.annotation.NoEncryptNoSign;
 import cn.daenx.myauth.base.vo.MyPage;
 import cn.daenx.myauth.base.vo.Result;
 import cn.daenx.myauth.main.entity.Storage;
-import cn.daenx.myauth.main.entity.StorageType;
 import cn.daenx.myauth.main.service.IStorageService;
-import cn.daenx.myauth.main.service.IStorageTypeService;
 import cn.daenx.myauth.util.CheckUtils;
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;

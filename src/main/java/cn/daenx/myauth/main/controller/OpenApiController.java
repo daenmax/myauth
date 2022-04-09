@@ -1,16 +1,13 @@
 package cn.daenx.myauth.main.controller;
 
 
-import cn.daenx.myauth.base.annotation.AdminLogin;
 import cn.daenx.myauth.base.annotation.NoEncryptNoSign;
 import cn.daenx.myauth.base.vo.Result;
-import cn.daenx.myauth.main.entity.Soft;
 import cn.daenx.myauth.main.entity.Storage;
 import cn.daenx.myauth.main.service.IConfigService;
 import cn.daenx.myauth.main.service.IStorageService;
 import cn.daenx.myauth.main.service.StatisService;
 import cn.daenx.myauth.util.CheckUtils;
-import cn.daenx.myauth.util.RedisUtil;
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -37,6 +34,7 @@ public class OpenApiController {
     private IConfigService configService;
     @Resource
     private IStorageService storageService;
+
     /**
      * 获取在线人数
      *
@@ -53,10 +51,10 @@ public class OpenApiController {
             return Result.error("skey不能为空");
         }
         Integer apiKeyIsOk = configService.apiKeyIsOk(apikey);
-        if(apiKeyIsOk.equals(-1)){
+        if (apiKeyIsOk.equals(-1)) {
             return Result.error("系统未设置apikey，无法使用开放接口");
         }
-        if(apiKeyIsOk.equals(0)){
+        if (apiKeyIsOk.equals(0)) {
             return Result.error("apikey不正确");
         }
         return statisService.getOnlineUserCount(skey);
@@ -70,7 +68,7 @@ public class OpenApiController {
      */
     @NoEncryptNoSign
     @GetMapping("/getUserCount")
-    public Result getUserCount(String skey,String apikey) {
+    public Result getUserCount(String skey, String apikey) {
         if (CheckUtils.isObjectEmpty(apikey)) {
             return Result.error("apikey不能为空");
         }
@@ -78,10 +76,10 @@ public class OpenApiController {
             return Result.error("skey不能为空");
         }
         Integer apiKeyIsOk = configService.apiKeyIsOk(apikey);
-        if(apiKeyIsOk.equals(-1)){
+        if (apiKeyIsOk.equals(-1)) {
             return Result.error("系统未设置apikey，无法使用开放接口");
         }
-        if(apiKeyIsOk.equals(0)){
+        if (apiKeyIsOk.equals(0)) {
             return Result.error("apikey不正确");
         }
         return statisService.getUserCount(skey);
@@ -105,10 +103,10 @@ public class OpenApiController {
             return Result.error("apikey不能为空");
         }
         Integer apiKeyIsOk = configService.apiKeyIsOk(apikey);
-        if(apiKeyIsOk.equals(0)){
+        if (apiKeyIsOk.equals(0)) {
             return Result.error("apikey不正确");
         }
-        if(apiKeyIsOk.equals(-1)){
+        if (apiKeyIsOk.equals(-1)) {
             return Result.error("系统未设置apikey，无法使用开放接口");
         }
 
@@ -126,8 +124,8 @@ public class OpenApiController {
         if (CheckUtils.isObjectEmpty(storage.getContent())) {
             return Result.error("参数不全");
         }
-        storage = storageService.toStorage(storage,type,skey);
-        if(CheckUtils.isObjectEmpty(storage)){
+        storage = storageService.toStorage(storage, type, skey);
+        if (CheckUtils.isObjectEmpty(storage)) {
             return Result.error("参数错误");
         }
         storage.setNumber(null);
@@ -153,12 +151,55 @@ public class OpenApiController {
             return Result.error("apikey不能为空");
         }
         Integer apiKeyIsOk = configService.apiKeyIsOk(apikey);
-        if(apiKeyIsOk.equals(0)){
+        if (apiKeyIsOk.equals(0)) {
             return Result.error("apikey不正确");
         }
-        if(apiKeyIsOk.equals(-1)){
+        if (apiKeyIsOk.equals(-1)) {
             return Result.error("系统未设置apikey，无法使用开放接口");
         }
         return storageService.delStorage(ids);
+    }
+
+    /**
+     * 获取额外存储列表信息
+     *
+     * @param request
+     * @return
+     */
+    @NoEncryptNoSign
+    @PostMapping("getStorageListInfo")
+    public Result getStorageListInfo(HttpServletRequest request) {
+        JSONObject jsonObject = (JSONObject) request.getAttribute("json");
+        Storage storage = jsonObject.toJavaObject(Storage.class);
+        String apikey = jsonObject.getString("apikey");
+        String skey = jsonObject.getString("skey");
+        String type = jsonObject.getString("type");
+        if (CheckUtils.isObjectEmpty(apikey)) {
+            return Result.error("apikey不能为空");
+        }
+        Integer apiKeyIsOk = configService.apiKeyIsOk(apikey);
+        if (apiKeyIsOk.equals(0)) {
+            return Result.error("apikey不正确");
+        }
+        if (apiKeyIsOk.equals(-1)) {
+            return Result.error("系统未设置apikey，无法使用开放接口");
+        }
+
+        if (CheckUtils.isObjectEmpty(skey)) {
+            return Result.error("skey不能为空");
+        }
+        if (CheckUtils.isObjectEmpty(type)) {
+            return Result.error("type不能为空");
+        }
+
+
+        if (CheckUtils.isObjectEmpty(storage)) {
+            return Result.error("参数错误");
+        }
+        storage = storageService.toStorage(storage, type, skey);
+        if (CheckUtils.isObjectEmpty(storage)) {
+            return Result.error("参数错误");
+        }
+        return storageService.getStorageListInfo(storage, type);
     }
 }

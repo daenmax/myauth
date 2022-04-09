@@ -2,7 +2,6 @@ package cn.daenx.myauth.main.service;
 
 import cn.daenx.myauth.base.vo.MyPage;
 import cn.daenx.myauth.base.vo.Result;
-import cn.daenx.myauth.main.entity.Msg;
 import cn.daenx.myauth.main.entity.StorageType;
 import com.baomidou.mybatisplus.extension.service.IService;
 

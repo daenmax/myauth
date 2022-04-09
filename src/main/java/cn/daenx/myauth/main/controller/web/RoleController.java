@@ -116,9 +116,6 @@ public class RoleController {
         if (CheckUtils.isObjectEmpty(role.getId())) {
             return Result.error("id不能为空");
         }
-        if(role.getId().equals(1)){
-            return Result.error("该条数据不能被修改");
-        }
         if (CheckUtils.isObjectEmpty(role.getName()) && CheckUtils.isObjectEmpty(role.getFromSoftId())
                 && CheckUtils.isObjectEmpty(role.getDiscount())) {
             return Result.error("参数不能全部为空");
