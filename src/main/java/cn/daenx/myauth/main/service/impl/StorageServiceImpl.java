@@ -56,7 +56,7 @@ public class StorageServiceImpl extends ServiceImpl<StorageMapper, Storage> impl
         LambdaQueryWrapper.like(!CheckUtils.isObjectEmpty(storage.getContent()), Storage::getContent, storage.getContent());
         LambdaQueryWrapper.like(!CheckUtils.isObjectEmpty(storage.getNumber()), Storage::getNumber, storage.getNumber());
         LambdaQueryWrapper.eq(!CheckUtils.isObjectEmpty(storage.getStatus()), Storage::getStatus, storage.getStatus());
-        LambdaQueryWrapper.eq(!CheckUtils.isObjectEmpty(storage.getRemark()), Storage::getRemark, storage.getRemark());
+        LambdaQueryWrapper.like(!CheckUtils.isObjectEmpty(storage.getRemark()), Storage::getRemark, storage.getRemark());
         return LambdaQueryWrapper;
     }
 
@@ -262,6 +262,7 @@ public class StorageServiceImpl extends ServiceImpl<StorageMapper, Storage> impl
         JSONArray jsonArray = new JSONArray();
         for (Storage storage1 : storageList) {
             JSONObject jsonObject = new JSONObject(true);
+            jsonObject.put("id", storage1.getId());
             jsonObject.put("type", type);
             jsonObject.put("content", storage1.getContent());
             jsonObject.put("number", storage1.getNumber());
