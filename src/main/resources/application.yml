@@ -2,6 +2,7 @@ spring:
   profiles:
     active: dev
 
+# 根据需要决定是否要弃用以下自定义配置
 server:
   tomcat:
     accept-count: 1000 #等待队列长度，默认为100
