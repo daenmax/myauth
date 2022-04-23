@@ -1,12 +1,12 @@
 spring:
   profiles:
-    active: dev
+    active: prod
 
-# 根据需要决定是否要弃用以下自定义配置
-server:
-  tomcat:
-    accept-count: 1000 #等待队列长度，默认为100
-    max-connections: 30000  #最大HTTP连接数，默认为10000
-    threads:
-      max: 800 #最大工作线程数，默认为200，一般是CPU核数*2
-      min-spare: 200 #最小工作空闲线程数，默认为10，用来应对突发请求
+# 根据需要决定是否要启用以下自定义配置
+#server:
+#  tomcat:
+#    accept-count: 1000 #等待队列长度，默认为100
+#    max-connections: 30000  #最大HTTP连接数，默认为10000
+#    threads:
+#      max: 800 #最大工作线程数，默认为200，一般是CPU核数*2
+#      min-spare: 200 #最小工作空闲线程数，默认为10，用来应对突发请求
