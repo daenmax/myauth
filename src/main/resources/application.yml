@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: dev
+    active: prod
 
 # 根据需要决定是否要启用以下自定义配置
 #server:
