@@ -8,7 +8,10 @@
 
 * 我的QQ：[1330166564](https://wpa.qq.com/msgrd?v=3&uin=1330166564&site=qq&menu=yes)
 * 官方Q群：[1016357430](https://jq.qq.com/?_wv=1027&k=eaectWIr)
-
+### 其他分支
+- [@Lonely](https://gitee.com/Lonely_LY)
+  项目地址 https://gitee.com/Lonely_LY/myauth <br>
+  在本仓库的基础上增加了邮件通知、易支付等功能
 ### 前端
 - [@TianYe](https://gitee.com/fieldtianye)
 项目地址 https://gitee.com/fieldtianye/my-auth-web
