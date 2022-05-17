@@ -231,14 +231,15 @@ public class StorageServiceImpl extends ServiceImpl<StorageMapper, Storage> impl
      */
     @Override
     public Storage toStorage(Storage storage, String type, String skey) {
-        LambdaQueryWrapper<StorageType> storageTypeLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        storageTypeLambdaQueryWrapper.eq(StorageType::getType, type);
-        StorageType storageType = storageTypeMapper.selectOne(storageTypeLambdaQueryWrapper);
-        if (CheckUtils.isObjectEmpty(storageType)) {
-            return null;
-        }
         Soft soft = (Soft) redisUtil.get("soft:" + skey);
         if (CheckUtils.isObjectEmpty(soft)) {
+            return null;
+        }
+        LambdaQueryWrapper<StorageType> storageTypeLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        storageTypeLambdaQueryWrapper.eq(StorageType::getType, type);
+        storageTypeLambdaQueryWrapper.eq(StorageType::getFromSoftId, soft.getId());
+        StorageType storageType = storageTypeMapper.selectOne(storageTypeLambdaQueryWrapper);
+        if (CheckUtils.isObjectEmpty(storageType)) {
             return null;
         }
         storage.setFromStorageTypeId(storageType.getId());

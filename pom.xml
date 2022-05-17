@@ -94,7 +94,12 @@
             <artifactId>spring-boot-starter-data-redis</artifactId>
         </dependency>
 
-
+        <!--在jdk11就标注了要取消NashornScriptEngineFactory类，在jdk17正式移除，所以在17上得加入pom依赖 -->
+        <dependency>
+            <groupId>org.openjdk.nashorn</groupId>
+            <artifactId>nashorn-core</artifactId>
+            <version>15.3</version>
+        </dependency>
 
 
     </dependencies>
